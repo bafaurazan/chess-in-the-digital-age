@@ -15,6 +15,8 @@ Dataset_path = paste(project_path,"/Dataset", sep = "")
 
 # Tworzenie struktury zbioru danych
 
+<div id="tworzenie-struktury">
+
 #### Wybór tablicy do scrapowania
 
 ```{r}
@@ -131,7 +133,55 @@ downloading()
 
 ```
 
-
-```{r reset, eval=FALSE}
-rm(list=ls())
+```{js eval=FALSE}
+const my_div1 = document.getElementById("tworzenie-struktury");
+  my_div1.style.display = 'none';
+  
+var button = document.getElementById("my_button");
+  
+function myFunction() {
+  if (my_div1.style.display === 'none') {
+    my_div1.style.display = 'block';
+    button.innerHTML = "Ukryj kod";
+  } else {
+    my_div1.style.display = 'none';
+    button.innerHTML = "Pokaż kod";
+  }
+}
 ```
+
+</div>
+
+<button id="my_button" onclick="myFunction()">Pokaż kod</button>
+
+```{js, echo=FALSE}
+const my_div1 = document.getElementById("tworzenie-struktury");
+  my_div1.style.display = 'none';
+  
+var button = document.getElementById("my_button");
+  
+function myFunction() {
+  if (my_div1.style.display === 'none') {
+    my_div1.style.display = 'block';
+    button.innerHTML = "Ukryj kod";
+  } else {
+    my_div1.style.display = 'none';
+    button.innerHTML = "Pokaż kod";
+  }
+}
+```
+
+# Przygotowywanie zbiorów danych do użycia 
+
+```{r}
+pgn_file_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn", sep="")[1]
+head(pgn_file_to_read)
+
+pgn <- read.table(pgn_file_to_read,
+                   quote="", sep="\n", stringsAsFactors=FALSE, nrows = 18321)
+```
+
+
+
+
+

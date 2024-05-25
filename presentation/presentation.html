@@ -359,6 +359,7 @@ display: none;
 
 <div id="tworzenie-struktury-zbioru-danych" class="section level1">
 <h1>Tworzenie struktury zbioru danych</h1>
+<div id="tworzenie-struktury">
 <div id="wybór-tablicy-do-scrapowania" class="section level4">
 <h4>Wybór tablicy do scrapowania</h4>
 <pre class="r"><code>library(rvest)
@@ -507,8 +508,49 @@ head(my_paths)</code></pre>
 <div id="tworzenie-struktury-plikow-i-pobieranie-do-niej-zbiorów-danych" class="section level4">
 <h4>Tworzenie struktury plikow i pobieranie do niej zbiorów danych</h4>
 <pre class="r"><code>downloading()</code></pre>
-<pre class="r"><code>rm(list=ls())</code></pre>
+<pre class="js"><code>const my_div1 = document.getElementById(&quot;tworzenie-struktury&quot;);
+  my_div1.style.display = &#39;none&#39;;
+  
+var button = document.getElementById(&quot;my_button&quot;);
+  
+function myFunction() {
+  if (my_div1.style.display === &#39;none&#39;) {
+    my_div1.style.display = &#39;block&#39;;
+    button.innerHTML = &quot;Ukryj kod&quot;;
+  } else {
+    my_div1.style.display = &#39;none&#39;;
+    button.innerHTML = &quot;Pokaż kod&quot;;
+  }
+}</code></pre>
 </div>
+</div>
+<button id="my_button" onclick="myFunction()">
+Pokaż kod
+</button>
+<script>
+const my_div1 = document.getElementById("tworzenie-struktury");
+  my_div1.style.display = 'none';
+  
+var button = document.getElementById("my_button");
+  
+function myFunction() {
+  if (my_div1.style.display === 'none') {
+    my_div1.style.display = 'block';
+    button.innerHTML = "Ukryj kod";
+  } else {
+    my_div1.style.display = 'none';
+    button.innerHTML = "Pokaż kod";
+  }
+}
+</script>
+</div>
+<div id="przygotowywanie-zbiorów-danych-do-użycia" class="section level1">
+<h1>Przygotowywanie zbiorów danych do użycia</h1>
+<pre class="r"><code>pgn_file_to_read = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/lichess_db_standard_rated_&quot;,full_date_from_imported_links,&quot;.pgn&quot;, sep=&quot;&quot;)[1]
+head(pgn_file_to_read)</code></pre>
+<pre><code>## [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/04. Apr/lichess_db_standard_rated_2024-04.pgn&quot;</code></pre>
+<pre class="r"><code>pgn &lt;- read.table(pgn_file_to_read,
+                   quote=&quot;&quot;, sep=&quot;\n&quot;, stringsAsFactors=FALSE, nrows = 18321)</code></pre>
 </div>
 
 

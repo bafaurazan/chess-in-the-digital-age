@@ -152,4 +152,4 @@ done
 
 ### Tworzenie struktury działa, oraz pobieranie instalek do odpowiednich folderów
 
-## Rozpoczęcie instalacji danych
+## Rozpoczęcie instalacji danych z 2024 roku i 2023 roku
