@@ -1,0 +1,137 @@
+---
+title: "chess_in_the_digital_age"
+author: "Rafal Bazan"
+date: "2024-05-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+project_path = "D:/moje/projekty/chess-in-the-digital-age"
+
+knitr::opts_chunk$set(root= paste(project_path,"/presentation", sep = ""))
+setwd(paste(project_path,"/presentation", sep = ""))
+Dataset_path = paste(project_path,"/Dataset", sep = "")
+```
+
+# Tworzenie struktury zbioru danych
+
+#### Wybór tablicy do scrapowania
+
+```{r}
+library(rvest)
+library(stringi)
+url = "https://database.lichess.org"
+path= "/html/body/div/div[2]/div/section[1]/table"
+wezel = html_node(read_html(url), xpath=path)
+```
+
+#### wyodrębnianie <a></a> tagów
+
+```{r}
+hyperlinks = html_nodes(wezel, "a")
+head(hyperlinks)
+```
+
+#### Wyodrębnianie hiperłączy
+
+```{r}
+my_href = html_attr(hyperlinks, "href")
+head(my_href)
+
+```
+
+#### Łączenie zmiennych w gotowy do pobrania link
+
+```{r}
+links = data.frame(paste(url,my_href,sep="/"))
+head(links)
+```
+
+#### Definiowanie linków gotowych do pobrania
+
+```{r}
+
+links_for_download = data.frame(links[seq(2,nrow(links), by=2), 1])
+head(links_for_download)
+
+```
+
+#### Wyodrębianie daty ze scrapowania
+
+```{r warning=FALSE}
+full_date_from_imported_links = data.frame(stri_match_all(links_for_download,
+                                     regex = "rated_\\s*(.*?)\\s*[.]"))[,2]
+head(data.frame(full_date_from_imported_links))
+```
+
+#### Wyodrębianie roku, miesięcy, nazw miesięcy ze scrapowania
+
+```{r warning=FALSE}
+year_from_imported_links = data.frame(stri_match_all(links_for_download,
+                                     regex = "rated_\\s*(.*?)\\s*[-]"))[,2]
+head(year_from_imported_links)
+
+month_from_imported_links = data.frame(stri_match_all(links_for_download,
+                                     regex = "-\\s*(.*?)\\s*[.]"))[,2]
+head(month_from_imported_links)
+
+my_month_names = month.abb[as.integer(month_from_imported_links)]
+head(my_month_names)
+```
+
+#### Tworzenie struktury plików - lata
+
+```{r}
+my_paths_year <- unique(paste(Dataset_path,"/",year_from_imported_links, sep=""))
+my_paths_year
+
+create_folders_year = function(){
+  for(i in 1:length(my_paths_year)){
+    dir.create(my_paths_year[i])
+  }
+}
+```
+
+#### Tworzenie struktury plików - miesiące
+
+```{r}
+my_paths_month <- paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names, sep="")
+head(my_paths_month)
+tail(my_paths_month)
+
+create_folders_month = function(){
+  for(i in 1:length(my_paths_month)){
+    dir.create(my_paths_month[i])
+  }
+}
+
+```
+
+#### Definiowanie plików które będą pobrane
+
+```{r}
+my_paths = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn.zst.torrent", sep="")
+head(my_paths)
+
+
+
+downloading = function(){
+  create_folders_year()
+  create_folders_month()
+  for(j in 1:length(my_paths)){
+    download.file(links_for_download[j,], my_paths[j], mode="wb",Sys.sleep(0.2))
+  }
+}
+```
+
+#### Tworzenie struktury plikow i pobieranie do niej zbiorów danych
+
+```{r warning=FALSE,eval=FALSE}
+downloading()
+
+```
+
+
+```{r reset, eval=FALSE}
+rm(list=ls())
+```

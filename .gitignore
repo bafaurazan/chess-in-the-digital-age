@@ -1,49 +1,53 @@
-# History files
-.Rhistory
-.Rapp.history
+Dataset/**/*.txt
+Dataset/**/*.pgn
+Dataset/**/*.zst
 
-# Session Data files
-.RData
-.RDataTmp
+# # History files
+# .Rhistory
+# .Rapp.history
 
-# User-specific files
-.Ruserdata
+# # Session Data files
+# .RData
+# .RDataTmp
 
-# Example code in package build process
-*-Ex.R
+# # User-specific files
+# .Ruserdata
 
-# Output files from R CMD build
-/*.tar.gz
+# # Example code in package build process
+# *-Ex.R
 
-# Output files from R CMD check
-/*.Rcheck/
+# # Output files from R CMD build
+# /*.tar.gz
 
-# RStudio files
-.Rproj.user/
+# # Output files from R CMD check
+# /*.Rcheck/
 
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
+# # RStudio files
+# .Rproj.user/
 
-# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
-.httr-oauth
+# # produced vignettes
+# vignettes/*.html
+# vignettes/*.pdf
 
-# knitr and R markdown default cache directories
-*_cache/
-/cache/
+# # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+# .httr-oauth
 
-# Temporary files created by R markdown
-*.utf8.md
-*.knit.md
+# # knitr and R markdown default cache directories
+# *_cache/
+# /cache/
 
-# R Environment Variables
-.Renviron
+# # Temporary files created by R markdown
+# *.utf8.md
+# *.knit.md
 
-# pkgdown site
-docs/
+# # R Environment Variables
+# .Renviron
 
-# translation temp files
-po/*~
+# # pkgdown site
+# docs/
 
-# RStudio Connect folder
-rsconnect/
+# # translation temp files
+# po/*~
+
+# # RStudio Connect folder
+# rsconnect/

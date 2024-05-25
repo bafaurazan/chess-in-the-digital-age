@@ -1,0 +1,155 @@
+---
+title: "Project_implementation_log"
+author: "Rafal Bazan"
+date: "2024-05-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+project_path = "D:/moje/projekty/chess-in-the-digital-age"
+
+knitr::opts_chunk$set(root= paste(project_path,"/log", sep = ""))
+setwd(paste(project_path,"/log", sep = ""))
+```
+
+#### Marzec: 
+
+- Wybranie dziedziny badań projektu, zapoznanie z bazą danych lichess i pierwszy import danych. Znaleziono sposób importu danych ze stackoverflow
+
+- Problem: zaproponowany kod nie uwzględnia braku danych lub ich nadmiaru
+
+#### 14 maj: 
+
+- Wybór tematów do zbadania
+
+#### 15 maj: 
+
+- Zapoznanie ze statystykami z zewnętrznych stron i ocenienie czy zrealizowanie projektu ma sens
+
+#### 16 maj: 
+
+- Przygotowanie planu działań
+
+#### 17 maj: 
+
+- Rozpoczęcie pobierania danych ze strony lichess 
+
+- Problem: zbyt duże zbiory danych
+
+  - Rozwiązanie: pobranie jak największej ilości danych i zamienienie ich na kopie w R z taką ilością w odpowiednim 
+stosunku, by się pomieściły na dysku.
+
+- Problem: za mało ramu do przeanalizowania całych zbiorów danych
+
+  - Rozwiązanie: ograniczenie danych za pomocą R by analizowały tylko początkowe fragmenty zbiorów.
+
+#### 20 maj:
+
+- Planowanie wykorzystania funkcji rm() dla możliwości analizowania większych zbiorów
+
+#### 21 maj:
+
+- Ponowna instalacja z lichess z podaną strukturą katalogową dzięki skryptowi w bashu
+
+```{shell eval=FALSE}
+for year in {2013..2024}; do
+    mkdir -p $year
+    for month in {1..12}; do
+        case $month in
+            1) month_name="01. January" ;;
+            2) month_name="02. February" ;;
+            3) month_name="03. March" ;;
+            4) month_name="04. April" ;;
+            5) month_name="05. May" ;;
+            6) month_name="06. June" ;;
+            7) month_name="07. July" ;;
+            8) month_name="08. August" ;;
+            9) month_name="09. September" ;;
+            10) month_name="10. October" ;;
+            11) month_name="11. November" ;;
+            12) month_name="12. December" ;;
+        esac
+        mkdir -p $year/"$month_name"
+    done
+done
+```
+
+- Problem: Do każdego folderu trzeba pobrać plik ze strony (a tego sporo, już sie wcześniej pogubiłem i musiałem wszystko od nowa pobierać) (da się to wykonać scrapowaniem)
+
+  - Rozwiązanie wykonanie scrapowania z jednoczesnym pobieraniem plików do odpowiednich folderów w R
+
+- Działa wyodrębnianie linku do pobierania scrapowaniem
+
+- Dziala pobieranie na podstawie gotowego linku 
+
+- Trzeba uzyskać gotowy link ze scrapowania i to zautomatyzować z pobieraniem
+
+#### 22 maj: 
+
+- Scrapowanie linków i pobieranie ich ze strony działa, teraz to zautomatyzować
+
+- Tworzenie dataframe z linkami
+
+- Problem: do komendy pobierania ścieżka też musi być dataframe o tej samej długości
+
+  - Rozwiazanie: stworzenie dataframe gdzie każdy wiersz jest tą samą ścieżką 
+
+- Problem: zdefiniowana ścieżka do pobierania musi zawierać również nazwę pobieranego pliku
+
+- Problem: pobrane pliki nie są możliwe do instalacji przez error (torrent jest błędnie kodowany)
+
+  - Rozwiązanie: przy komendzie pobierania należy zmienić metodę pobierania na "wb" ( binarne pobieranie)
+
+#### 23 maj:
+
+- Tworzenie data.frame z nazwami sciezek dla do późniejszejszego pobierania tam danych
+
+- Problem: stworzenie odpowiedniej struktury rok-miesiac
+
+  - Rozwiązanie: wykorzystać regexp do pobrania daty z linków ze-scrapowanych wcześniej ze strony
+
+- Problem: regex
+
+  - sprawdzanie metody \\p{N}
+
+  - sprawdzanie metody (?<=rated_)\\w+ (Zwraca tylko rok bez miesiąca)
+
+  - sprawdzanie stri_sub (nie działa na ramkach tylko wektorach)
+
+  - sprawdzanie regmatches
+
+- Działa metoda stri_match_all
+
+- Do stworzenia ścieżki trzeba dane jako lista a nie data.frame
+
+- Problem: mam numer miesiąca jako str...funkcja month.abb[ ] nie przyjmuje str...
+
+  - Rozwiazanie: zmiana danych na liczbową
+
+#### 24 maj:
+
+- Tworzenie struktury folderów na podstawie dostępnej zmiennej ze ścieżkami
+
+- Problem: create.dir() nie może tworzyć wiele folderów na raz
+  
+  - Rozwiązanie: Tworzenie pętelki for
+
+- Problem download.file() ma problem w działaniu dla wielu elementów
+
+  - Rozwiązanie: zrobienie pętelki która pojedynczo pobiera po kolei pliki
+
+- Problem: download.file() jako argumenty bierze listy, a linki do pobrania muszą być w formie data.frame
+
+  - Rozwiązanie: tylko kolumnę pobierać z dataframe - linki[j, ]
+
+- Problem: z serwera nie można w zbyt szybkim tempie pobierać dużej ilości plików
+
+  - Rozwiązanie: podzielenie funkcji na dwa zbiory po połowie i po wykonaniu jednej wykonuje się sleep, następnie drugi zbiór się wykonuje
+
+- Problem: pobieranie wykonuje się asynchronicznie, przez co sleep jest mało efektywny
+
+  - Rozwiązanie: funkcja download.file() przyjmuje dodatkowe argumenty, więc dodałem do niej sys.sleep(0.2)
+
+### Tworzenie struktury działa, oraz pobieranie instalek do odpowiednich folderów
+
+## Rozpoczęcie instalacji danych
