@@ -496,9 +496,7 @@ head(my_paths)</code></pre>
 ## [4] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/01. Jan/lichess_db_standard_rated_2024-01.pgn.zst.torrent&quot;
 ## [5] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/12. Dec/lichess_db_standard_rated_2023-12.pgn.zst.torrent&quot;
 ## [6] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/11. Nov/lichess_db_standard_rated_2023-11.pgn.zst.torrent&quot;</code></pre>
-<pre class="r"><code>## takowosz
-
-downloading = function(){
+<pre class="r"><code>downloading = function(){
   create_folders_year()
   create_folders_month()
   for(j in 1:length(my_paths)){
@@ -506,8 +504,8 @@ downloading = function(){
   }
 }</code></pre>
 </div>
-<div id="tworzenie-struktury-plikow-i-pobieranie-w-niej-zbiorów-danych" class="section level4">
-<h4>Tworzenie struktury plikow i pobieranie w niej zbiorów danych</h4>
+<div id="tworzenie-struktury-plikow-i-pobieranie-do-niej-zbiorów-danych" class="section level4">
+<h4>Tworzenie struktury plikow i pobieranie do niej zbiorów danych</h4>
 <pre class="r"><code>downloading()</code></pre>
 <pre class="r"><code>rm(list=ls())</code></pre>
 </div>
