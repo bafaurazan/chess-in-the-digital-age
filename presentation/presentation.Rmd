@@ -4,6 +4,16 @@ author: "Rafal Bazan"
 date: "2024-05-21"
 output: html_document
 ---
+```{css, echo=FALSE}
+.my_button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+}
+```
 
 ```{r setup, include=FALSE}
 project_path = "D:/moje/projekty/chess-in-the-digital-age"
@@ -51,9 +61,22 @@ head(links)
 
 #### Definiowanie linków gotowych do pobrania
 
-```{r}
+```{r warning=FALSE}
 
-links_for_download = data.frame(links[seq(2,nrow(links), by=2), 1])
+choose_max_date_to_scrap = function(date = "2024-04"){
+  init_links_for_download = links[seq(2,nrow(links), by=2), 1]
+  
+  full_date_from_imported_links = data.frame(stri_match_all(data.frame(init_links_for_download),
+                                     regex = "rated_\\s*(.*?)\\s*[.]"))[,2]
+  
+  date_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
+  
+  my_links_for_download = init_links_for_download[c(date_location:length(init_links_for_download))]
+  
+  return(my_links_for_download)
+}
+
+links_for_download = choose_max_date_to_scrap()
 head(links_for_download)
 
 ```
@@ -61,7 +84,7 @@ head(links_for_download)
 #### Wyodrębianie daty ze scrapowania
 
 ```{r warning=FALSE}
-full_date_from_imported_links = data.frame(stri_match_all(links_for_download,
+full_date_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = "rated_\\s*(.*?)\\s*[.]"))[,2]
 head(data.frame(full_date_from_imported_links))
 ```
@@ -69,11 +92,11 @@ head(data.frame(full_date_from_imported_links))
 #### Wyodrębianie roku, miesięcy, nazw miesięcy ze scrapowania
 
 ```{r warning=FALSE}
-year_from_imported_links = data.frame(stri_match_all(links_for_download,
+year_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = "rated_\\s*(.*?)\\s*[-]"))[,2]
 head(year_from_imported_links)
 
-month_from_imported_links = data.frame(stri_match_all(links_for_download,
+month_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = "-\\s*(.*?)\\s*[.]"))[,2]
 head(month_from_imported_links)
 
@@ -142,17 +165,17 @@ var button = document.getElementById("my_button");
 function myFunction() {
   if (my_div1.style.display === 'none') {
     my_div1.style.display = 'block';
-    button.innerHTML = "Ukryj kod";
+    button.innerHTML = "Ukryj";
   } else {
     my_div1.style.display = 'none';
-    button.innerHTML = "Pokaż kod";
+    button.innerHTML = "Pokaż";
   }
 }
 ```
 
 </div>
 
-<button id="my_button" onclick="myFunction()">Pokaż kod</button>
+<button id="my_button" class="my_button" onclick="myFunction()">Pokaż</button>
 
 ```{js, echo=FALSE}
 const my_div1 = document.getElementById("tworzenie-struktury");
@@ -163,25 +186,117 @@ var button = document.getElementById("my_button");
 function myFunction() {
   if (my_div1.style.display === 'none') {
     my_div1.style.display = 'block';
-    button.innerHTML = "Ukryj kod";
+    button.innerHTML = "Ukryj";
   } else {
     my_div1.style.display = 'none';
-    button.innerHTML = "Pokaż kod";
+    button.innerHTML = "Pokaż";
   }
 }
 ```
 
 # Przygotowywanie zbiorów danych do użycia 
 
-```{r}
-pgn_file_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn", sep="")[1]
-head(pgn_file_to_read)
+<div id="przygotowywanie-zbiorow">
 
-pgn <- read.table(pgn_file_to_read,
-                   quote="", sep="\n", stringsAsFactors=FALSE, nrows = 18321)
+```{r warning=FALSE}
+library(rvest)
+library(stringi)
+url = "https://database.lichess.org"
+path= "/html/body/div/div[2]/div/section[1]/table"
+wezel = html_node(read_html(url), xpath=path)
+games_count = html_table(wezel)[[3]]
+total_games_count_location = length(games_count)
+head(games_count)
+
+preparing_month_dataset = function(date, data_size = 0.001){
+  searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
+  decreasing_game_number <- round((as.numeric(stri_replace_all(games_count,"",regex = "\\,"))*18*data_size)[-total_games_count_location][searching_location])
+  
+  pgn_file_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn", sep="")[searching_location]
+  
+  my_pgn <- read.table(pgn_file_to_read,
+                   quote="", sep="\n", stringsAsFactors=FALSE, nrows = decreasing_game_number)
+  
+  
+  colnms <- sub("\\[(\\w+).+", "\\1", my_pgn[(decreasing_game_number-22):decreasing_game_number,1])
+  
+  Event_location = which(stri_detect(colnms, regex = "Event") == TRUE) 
+  
+  my_pgn2 = my_pgn[1:(decreasing_game_number-22+Event_location-2),]
+  
+  tail(my_pgn2)
+  
+  pgn_file_to_write = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",date,".pgn", sep="")[searching_location]
+  
+  write.table(my_pgn2,pgn_file_to_write,col.names = FALSE,row.names = FALSE,quote = FALSE)
+  
+  test_path = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",date,".pgn", sep="")[searching_location]
+  
+  testing_last_char <- read.table(test_path,
+                   quote="", sep="\n", stringsAsFactors=FALSE)
+  return(tail(testing_last_char))
+}
+
+removing_oryginal_dataset = function(date){
+  searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
+  
+  file_pgn_zst_to_remove = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn.zst", sep="")[searching_location]
+  
+  file_pgn_to_remove = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn", sep="")[searching_location]
+  
+  file_txt_for_info = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/usunieto_dane.txt", sep="")[searching_location]
+  
+  file.remove(file_pgn_zst_to_remove)
+  
+  file.remove(file_pgn_to_remove)
+  
+  write.table(" ",file_txt_for_info)
+}
 ```
 
+```{r eval=FALSE}
+preparing_month_dataset("2024-04")
 
+removing_oryginal_dataset("2024-03")
+```
+
+```{js eval=FALSE}
+const my_div2 = document.getElementById("przygotowywanie-zbiorow");
+  my_div2.style.display = 'none';
+  
+var button2 = document.getElementById("my_button2");
+  
+function myFunction2() {
+  if (my_div2.style.display === 'none') {
+    my_div2.style.display = 'block';
+    button2.innerHTML = "Ukryj kod";
+  } else {
+    my_div2.style.display = 'none';
+    button2.innerHTML = "Pokaż kod";
+  }
+}
+```
+
+</div>
+
+<button id="my_button2" class="my_button" onclick="myFunction2()">Pokaż</button>
+
+```{js, echo=FALSE}
+const my_div2 = document.getElementById("przygotowywanie-zbiorow");
+  my_div2.style.display = 'none';
+  
+var button2 = document.getElementById("my_button2");
+  
+function myFunction2() {
+  if (my_div2.style.display === 'none') {
+    my_div2.style.display = 'block';
+    button2.innerHTML = "Ukryj";
+  } else {
+    my_div2.style.display = 'none';
+    button2.innerHTML = "Pokaż";
+  }
+}
+```
 
 
 
