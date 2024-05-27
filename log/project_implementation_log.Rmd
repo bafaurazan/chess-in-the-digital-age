@@ -192,6 +192,8 @@ done
 
 - Rozwiązanie: z jakiegoś powodu komenda do wyznaczania godziny z linku zaczęła wypisywać dane w jednym wierszu... trzeba było zmienić w jednym miejscu argument jako data.frame
 
+- Uwzględnienie wyboru lat do zescrapowania dla liczb partii względem miesiąca
+
 - Rozpoczęcie instalacji zbiorów danych z 2021 roku
 
 ### działają funkcje do automatycznej redukcji wielkości danych... teraz tylko pobierać dane i stworzyć funkcje do tworzenia zbioru danych w postaci tabelarycznej

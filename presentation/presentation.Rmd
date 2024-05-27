@@ -204,13 +204,30 @@ library(stringi)
 url = "https://database.lichess.org"
 path= "/html/body/div/div[2]/div/section[1]/table"
 wezel = html_node(read_html(url), xpath=path)
-games_count = html_table(wezel)[[3]]
-total_games_count_location = length(games_count)
+
+
+choose_max_date_to_scrap_game_count = function(date = "2024-04"){
+  my_games_count = html_table(wezel)[[3]]
+  
+  init_links_for_download = links[seq(2,nrow(links), by=2), 1]
+  
+  full_date_from_imported_links = data.frame(stri_match_all(data.frame(init_links_for_download),
+                                     regex = "rated_\\s*(.*?)\\s*[.]"))[,2]
+  
+  date_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
+  
+  games_count = my_games_count[c(date_location:length(init_links_for_download))]
+  
+  return(games_count)
+}
+
+games_count = choose_max_date_to_scrap_game_count()
 head(games_count)
+
 
 preparing_month_dataset = function(date, data_size = 0.001){
   searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
-  decreasing_game_number <- round((as.numeric(stri_replace_all(games_count,"",regex = "\\,"))*18*data_size)[-total_games_count_location][searching_location])
+  decreasing_game_number <- round((as.numeric(stri_replace_all(games_count,"",regex = "\\,"))*18*data_size)[searching_location])
   
   pgn_file_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn", sep="")[searching_location]
   
@@ -248,16 +265,16 @@ removing_oryginal_dataset = function(date){
   
   file.remove(file_pgn_zst_to_remove)
   
-  file.remove(file_pgn_to_remove)
+  #file.remove(file_pgn_to_remove)
   
   write.table(" ",file_txt_for_info)
 }
 ```
 
 ```{r eval=FALSE}
-preparing_month_dataset("2024-04")
+preparing_month_dataset("2024-02")
 
-removing_oryginal_dataset("2024-03")
+removing_oryginal_dataset("2024-02")
 ```
 
 ```{js eval=FALSE}

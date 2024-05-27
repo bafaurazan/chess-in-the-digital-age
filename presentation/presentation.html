@@ -439,31 +439,47 @@ head(links_for_download)</code></pre>
 </div>
 <div id="wyodrębianie-daty-ze-scrapowania" class="section level4">
 <h4>Wyodrębianie daty ze scrapowania</h4>
-<pre class="r"><code>full_date_from_imported_links = data.frame(stri_match_all(links_for_download,
+<pre class="r"><code>full_date_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = &quot;rated_\\s*(.*?)\\s*[.]&quot;))[,2]
 head(data.frame(full_date_from_imported_links))</code></pre>
 <pre><code>##   full_date_from_imported_links
-## 1                       2024-04</code></pre>
+## 1                       2024-04
+## 2                       2024-03
+## 3                       2024-02
+## 4                       2024-01
+## 5                       2023-12
+## 6                       2023-11</code></pre>
 </div>
 <div id="wyodrębianie-roku-miesięcy-nazw-miesięcy-ze-scrapowania" class="section level4">
 <h4>Wyodrębianie roku, miesięcy, nazw miesięcy ze scrapowania</h4>
-<pre class="r"><code>year_from_imported_links = data.frame(stri_match_all(links_for_download,
+<pre class="r"><code>year_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = &quot;rated_\\s*(.*?)\\s*[-]&quot;))[,2]
 head(year_from_imported_links)</code></pre>
-<pre><code>## [1] &quot;2024&quot;</code></pre>
-<pre class="r"><code>month_from_imported_links = data.frame(stri_match_all(links_for_download,
+<pre><code>## [1] &quot;2024&quot; &quot;2024&quot; &quot;2024&quot; &quot;2024&quot; &quot;2023&quot; &quot;2023&quot;</code></pre>
+<pre class="r"><code>month_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = &quot;-\\s*(.*?)\\s*[.]&quot;))[,2]
 head(month_from_imported_links)</code></pre>
-<pre><code>## [1] &quot;04&quot;</code></pre>
+<pre><code>## [1] &quot;04&quot; &quot;03&quot; &quot;02&quot; &quot;01&quot; &quot;12&quot; &quot;11&quot;</code></pre>
 <pre class="r"><code>my_month_names = month.abb[as.integer(month_from_imported_links)]
 head(my_month_names)</code></pre>
-<pre><code>## [1] &quot;Apr&quot;</code></pre>
+<pre><code>## [1] &quot;Apr&quot; &quot;Mar&quot; &quot;Feb&quot; &quot;Jan&quot; &quot;Dec&quot; &quot;Nov&quot;</code></pre>
 </div>
 <div id="tworzenie-struktury-plików---lata" class="section level4">
 <h4>Tworzenie struktury plików - lata</h4>
 <pre class="r"><code>my_paths_year &lt;- unique(paste(Dataset_path,&quot;/&quot;,year_from_imported_links, sep=&quot;&quot;))
 my_paths_year</code></pre>
-<pre><code>## [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024&quot;</code></pre>
+<pre><code>##  [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024&quot;
+##  [2] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023&quot;
+##  [3] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2022&quot;
+##  [4] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2021&quot;
+##  [5] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2020&quot;
+##  [6] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2019&quot;
+##  [7] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2018&quot;
+##  [8] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2017&quot;
+##  [9] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2016&quot;
+## [10] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2015&quot;
+## [11] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2014&quot;
+## [12] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013&quot;</code></pre>
 <pre class="r"><code>create_folders_year = function(){
   for(i in 1:length(my_paths_year)){
     dir.create(my_paths_year[i])
@@ -474,9 +490,19 @@ my_paths_year</code></pre>
 <h4>Tworzenie struktury plików - miesiące</h4>
 <pre class="r"><code>my_paths_month &lt;- paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names, sep=&quot;&quot;)
 head(my_paths_month)</code></pre>
-<pre><code>## [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/04. Apr&quot;</code></pre>
+<pre><code>## [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/04. Apr&quot;
+## [2] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/03. Mar&quot;
+## [3] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/02. Feb&quot;
+## [4] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/01. Jan&quot;
+## [5] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/12. Dec&quot;
+## [6] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/11. Nov&quot;</code></pre>
 <pre class="r"><code>tail(my_paths_month)</code></pre>
-<pre><code>## [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/04. Apr&quot;</code></pre>
+<pre><code>## [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/06. Jun&quot;
+## [2] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/05. May&quot;
+## [3] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/04. Apr&quot;
+## [4] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/03. Mar&quot;
+## [5] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/02. Feb&quot;
+## [6] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/01. Jan&quot;</code></pre>
 <pre class="r"><code>create_folders_month = function(){
   for(i in 1:length(my_paths_month)){
     dir.create(my_paths_month[i])
@@ -487,7 +513,12 @@ head(my_paths_month)</code></pre>
 <h4>Definiowanie plików które będą pobrane</h4>
 <pre class="r"><code>my_paths = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/lichess_db_standard_rated_&quot;,full_date_from_imported_links,&quot;.pgn.zst.torrent&quot;, sep=&quot;&quot;)
 head(my_paths)</code></pre>
-<pre><code>## [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/04. Apr/lichess_db_standard_rated_2024-04.pgn.zst.torrent&quot;</code></pre>
+<pre><code>## [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/04. Apr/lichess_db_standard_rated_2024-04.pgn.zst.torrent&quot;
+## [2] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/03. Mar/lichess_db_standard_rated_2024-03.pgn.zst.torrent&quot;
+## [3] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/02. Feb/lichess_db_standard_rated_2024-02.pgn.zst.torrent&quot;
+## [4] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/01. Jan/lichess_db_standard_rated_2024-01.pgn.zst.torrent&quot;
+## [5] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/12. Dec/lichess_db_standard_rated_2023-12.pgn.zst.torrent&quot;
+## [6] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/11. Nov/lichess_db_standard_rated_2023-11.pgn.zst.torrent&quot;</code></pre>
 <pre class="r"><code>downloading = function(){
   create_folders_year()
   create_folders_month()
@@ -543,14 +574,30 @@ library(stringi)
 url = &quot;https://database.lichess.org&quot;
 path= &quot;/html/body/div/div[2]/div/section[1]/table&quot;
 wezel = html_node(read_html(url), xpath=path)
-games_count = html_table(wezel)[[3]]
-total_games_count_location = length(games_count)
+
+
+choose_max_date_to_scrap_game_count = function(date = &quot;2024-04&quot;){
+  my_games_count = html_table(wezel)[[3]]
+  
+  init_links_for_download = links[seq(2,nrow(links), by=2), 1]
+  
+  full_date_from_imported_links = data.frame(stri_match_all(data.frame(init_links_for_download),
+                                     regex = &quot;rated_\\s*(.*?)\\s*[.]&quot;))[,2]
+  
+  date_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
+  
+  games_count = my_games_count[c(date_location:length(init_links_for_download))]
+  
+  return(games_count)
+}
+
+games_count = choose_max_date_to_scrap_game_count()
 head(games_count)</code></pre>
 <pre><code>## [1] &quot;91,383,489&quot; &quot;95,810,349&quot; &quot;91,628,934&quot; &quot;99,001,912&quot; &quot;96,909,211&quot;
 ## [6] &quot;92,389,636&quot;</code></pre>
 <pre class="r"><code>preparing_month_dataset = function(date, data_size = 0.001){
   searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
-  decreasing_game_number &lt;- round((as.numeric(stri_replace_all(games_count,&quot;&quot;,regex = &quot;\\,&quot;))*18*data_size)[-total_games_count_location][searching_location])
+  decreasing_game_number &lt;- round((as.numeric(stri_replace_all(games_count,&quot;&quot;,regex = &quot;\\,&quot;))*18*data_size)[searching_location])
   
   pgn_file_to_read = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/lichess_db_standard_rated_&quot;,full_date_from_imported_links,&quot;.pgn&quot;, sep=&quot;&quot;)[searching_location]
   
@@ -574,7 +621,7 @@ head(games_count)</code></pre>
   
   testing_last_char &lt;- read.table(test_path,
                    quote=&quot;&quot;, sep=&quot;\n&quot;, stringsAsFactors=FALSE)
-  return(tail(test))
+  return(tail(testing_last_char))
 }
 
 removing_oryginal_dataset = function(date){
@@ -584,13 +631,17 @@ removing_oryginal_dataset = function(date){
   
   file_pgn_to_remove = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/lichess_db_standard_rated_&quot;,full_date_from_imported_links,&quot;.pgn&quot;, sep=&quot;&quot;)[searching_location]
   
+  file_txt_for_info = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/usunieto_dane.txt&quot;, sep=&quot;&quot;)[searching_location]
+  
   file.remove(file_pgn_zst_to_remove)
   
-  file.remove(file_pgn_to_remove)
+  #file.remove(file_pgn_to_remove)
+  
+  write.table(&quot; &quot;,file_txt_for_info)
 }</code></pre>
-<pre class="r"><code>preparing_month_dataset(&quot;2024-04&quot;)
+<pre class="r"><code>preparing_month_dataset(&quot;2024-02&quot;)
 
-removing_oryginal_dataset(&quot;2024-04&quot;)</code></pre>
+removing_oryginal_dataset(&quot;2024-02&quot;)</code></pre>
 <pre class="js"><code>const my_div2 = document.getElementById(&quot;przygotowywanie-zbiorow&quot;);
   my_div2.style.display = &#39;none&#39;;
   
