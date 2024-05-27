@@ -523,7 +523,7 @@ head(my_paths)</code></pre>
   create_folders_year()
   create_folders_month()
   for(j in 1:length(my_paths)){
-    download.file(links_for_download[j,], my_paths[j], mode=&quot;wb&quot;,Sys.sleep(0.2))
+    download.file(links_for_download[j], my_paths[j], mode=&quot;wb&quot;,Sys.sleep(0.2))
   }
 }</code></pre>
 </div>
