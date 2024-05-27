@@ -188,7 +188,9 @@ done
 
 - stworzenie funkcji do usuwania oryginalnych zbiorów według podanej daty
 
-- Problem: nic nie działa
+# Problem: nic nie działa
+
+![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5NMQtJz7vRV5HyLAUNdiBBr6-SfEWOCGGfInuv1EmWw&s)
 
 - Rozwiązanie: z jakiegoś powodu komenda do wyznaczania godziny z linku zaczęła wypisywać dane w jednym wierszu... trzeba było zmienić w jednym miejscu argument jako data.frame
 
