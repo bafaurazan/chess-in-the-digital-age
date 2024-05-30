@@ -13,7 +13,7 @@
 
 <meta name="date" content="2024-05-21" />
 
-<title>chess_in_the_digital_age</title>
+<title>Szachy w erze cyfrowej</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,13 +350,40 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">chess_in_the_digital_age</h1>
+<h1 class="title toc-ignore">Szachy w erze cyfrowej</h1>
+<h3 class="subtitle">Wpływ mediów społecznościowych i internetu w rozwój
+szachów,<br /> jak te dane wykorzystać i jak wprowadzić nowość w
+szachach.<br /><br /></h3>
 <h4 class="author">Rafal Bazan</h4>
 <h4 class="date">2024-05-21</h4>
 
 </div>
 
 
+<div id="css" class="section level1">
+<h1>Css</h1>
+<button id="button_my_css" class="my_button" onclick="hideCss()">
+Pokaż
+</button>
+<div id="my_css">
+<pre class="css"><code>.my_button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  width: 70px;
+}
+h1, h2, h3, h4, h5, h6 {
+      text-align: center;
+    }
+body {
+  background-color: #FFFFDF;
+}
+table {
+   margin:1em auto;
+}</code></pre>
 <style type="text/css">
 .my_button {
 background-color: #4CAF50;
@@ -365,57 +392,161 @@ padding: 10px;
 font-size: 14px;
 border: none;
 cursor: pointer;
+width: 70px;
+}
+h1, h2, h3, h4, h5, h6 {
+text-align: center;
+}
+body {
+background-color: #FFFFDF;
+}
+table {
+margin:1em auto;
 }
 </style>
+<div id="java-script-dla-przycisku" class="section level4">
+<h4>Java-script dla przycisku</h4>
+<pre class="js"><code>const div_my_css = document.getElementById(&quot;my_css&quot;);
+  div_my_css.style.display = &#39;none&#39;;
+  
+var button_my_css = document.getElementById(&quot;button_my_css&quot;);
+  
+function hideCss() {
+  if (div_my_css.style.display === &#39;none&#39;) {
+    div_my_css.style.display = &#39;block&#39;;
+    button_my_css.innerHTML = &quot;Ukryj&quot;;
+  } else {
+    div_my_css.style.display = &#39;none&#39;;
+    button_my_css.innerHTML = &quot;Pokaż&quot;;
+  }
+}</code></pre>
+</div>
+</div>
+<script>
+const div_my_css = document.getElementById("my_css");
+  div_my_css.style.display = 'none';
+  
+var button_my_css = document.getElementById("button_my_css");
+  
+function hideCss() {
+  if (div_my_css.style.display === 'none') {
+    div_my_css.style.display = 'block';
+    button_my_css.innerHTML = "Ukryj";
+  } else {
+    div_my_css.style.display = 'none';
+    button_my_css.innerHTML = "Pokaż";
+  }
+}
+</script>
+</div>
 <div id="tworzenie-struktury-zbioru-danych" class="section level1">
 <h1>Tworzenie struktury zbioru danych</h1>
+<button id="my_button" class="my_button" onclick="myFunction()">
+Pokaż
+</button>
 <div id="tworzenie-struktury">
+<div id="definiowanie-ścieżek" class="section level4">
+<h4>Definiowanie ścieżek</h4>
+<pre class="r"><code>project_path = &quot;D:/moje/projekty/chess-in-the-digital-age&quot;
+setwd(paste(project_path,&quot;/presentation&quot;, sep = &quot;&quot;))
+Dataset_path = paste(project_path,&quot;/Dataset&quot;, sep = &quot;&quot;)
+selected_date = &quot;2024-04&quot;
+
+knitr::opts_chunk$set(root= paste(project_path,&quot;/presentation&quot;, sep = &quot;&quot;))</code></pre>
+</div>
+<div id="definiowanie-paczek" class="section level4">
+<h4>Definiowanie paczek</h4>
+<pre class="r"><code>library(pander)
+panderOptions(&#39;digits&#39;,7)
+library(knitr)
+library(rvest)
+library(stringi)
+library(dplyr)</code></pre>
+</div>
 <div id="wybór-tablicy-do-scrapowania" class="section level4">
 <h4>Wybór tablicy do scrapowania</h4>
-<pre class="r"><code>library(rvest)
-library(stringi)
-url = &quot;https://database.lichess.org&quot;
+<pre class="r"><code>url = &quot;https://database.lichess.org&quot;
 path= &quot;/html/body/div/div[2]/div/section[1]/table&quot;
 wezel = html_node(read_html(url), xpath=path)</code></pre>
 </div>
-<div id="wyodrębnianie-tagów" class="section level4">
-<h4>wyodrębnianie <a></a> tagów</h4>
+<div id="wyodrębnianie-tagów-oraz-hiperłączy" class="section level4">
+<h4>wyodrębnianie tagów oraz hiperłączy</h4>
 <pre class="r"><code>hyperlinks = html_nodes(wezel, &quot;a&quot;)
-head(hyperlinks)</code></pre>
-<pre><code>## {xml_nodeset (6)}
-## [1] &lt;a href=&quot;standard/lichess_db_standard_rated_2024-04.pgn.zst&quot;&gt;.pgn.zst&lt;/a&gt;
-## [2] &lt;a href=&quot;standard/lichess_db_standard_rated_2024-04.pgn.zst.torrent&quot;&gt;.tor ...
-## [3] &lt;a href=&quot;standard/lichess_db_standard_rated_2024-03.pgn.zst&quot;&gt;.pgn.zst&lt;/a&gt;
-## [4] &lt;a href=&quot;standard/lichess_db_standard_rated_2024-03.pgn.zst.torrent&quot;&gt;.tor ...
-## [5] &lt;a href=&quot;standard/lichess_db_standard_rated_2024-02.pgn.zst&quot;&gt;.pgn.zst&lt;/a&gt;
-## [6] &lt;a href=&quot;standard/lichess_db_standard_rated_2024-02.pgn.zst.torrent&quot;&gt;.tor ...</code></pre>
-</div>
-<div id="wyodrębnianie-hiperłączy" class="section level4">
-<h4>Wyodrębnianie hiperłączy</h4>
-<pre class="r"><code>my_href = html_attr(hyperlinks, &quot;href&quot;)
-head(my_href)</code></pre>
-<pre><code>## [1] &quot;standard/lichess_db_standard_rated_2024-04.pgn.zst&quot;        
-## [2] &quot;standard/lichess_db_standard_rated_2024-04.pgn.zst.torrent&quot;
-## [3] &quot;standard/lichess_db_standard_rated_2024-03.pgn.zst&quot;        
-## [4] &quot;standard/lichess_db_standard_rated_2024-03.pgn.zst.torrent&quot;
-## [5] &quot;standard/lichess_db_standard_rated_2024-02.pgn.zst&quot;        
-## [6] &quot;standard/lichess_db_standard_rated_2024-02.pgn.zst.torrent&quot;</code></pre>
+my_href = html_attr(hyperlinks, &quot;href&quot;)
+
+pander(head(bind_rows(lapply(html_attrs(hyperlinks), function(x) data.frame(as.list(x), stringsAsFactors=FALSE)))))</code></pre>
+<table style="width:85%;">
+<colgroup>
+<col width="84%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">href</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">standard/lichess_db_standard_rated_2024-04.pgn.zst</td>
+</tr>
+<tr class="even">
+<td align="center">standard/lichess_db_standard_rated_2024-04.pgn.zst.torrent</td>
+</tr>
+<tr class="odd">
+<td align="center">standard/lichess_db_standard_rated_2024-03.pgn.zst</td>
+</tr>
+<tr class="even">
+<td align="center">standard/lichess_db_standard_rated_2024-03.pgn.zst.torrent</td>
+</tr>
+<tr class="odd">
+<td align="center">standard/lichess_db_standard_rated_2024-02.pgn.zst</td>
+</tr>
+<tr class="even">
+<td align="center">standard/lichess_db_standard_rated_2024-02.pgn.zst.torrent</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="łączenie-zmiennych-w-gotowy-do-pobrania-link" class="section level4">
 <h4>Łączenie zmiennych w gotowy do pobrania link</h4>
-<pre class="r"><code>links = data.frame(paste(url,my_href,sep=&quot;/&quot;))
-head(links)</code></pre>
-<pre><code>##                                                            paste.url..my_href..sep.......
-## 1         https://database.lichess.org/standard/lichess_db_standard_rated_2024-04.pgn.zst
-## 2 https://database.lichess.org/standard/lichess_db_standard_rated_2024-04.pgn.zst.torrent
-## 3         https://database.lichess.org/standard/lichess_db_standard_rated_2024-03.pgn.zst
-## 4 https://database.lichess.org/standard/lichess_db_standard_rated_2024-03.pgn.zst.torrent
-## 5         https://database.lichess.org/standard/lichess_db_standard_rated_2024-02.pgn.zst
-## 6 https://database.lichess.org/standard/lichess_db_standard_rated_2024-02.pgn.zst.torrent</code></pre>
+<pre class="r"><code>links = data.frame(links = paste(url,my_href,sep=&quot;/&quot;))
+pander(head(links))</code></pre>
+<table>
+<colgroup>
+<col width="100%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">links</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2024-04.pgn.zst" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2024-04.pgn.zst</a></td>
+</tr>
+<tr class="even">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2024-04.pgn.zst.torrent" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2024-04.pgn.zst.torrent</a></td>
+</tr>
+<tr class="odd">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2024-03.pgn.zst" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2024-03.pgn.zst</a></td>
+</tr>
+<tr class="even">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2024-03.pgn.zst.torrent" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2024-03.pgn.zst.torrent</a></td>
+</tr>
+<tr class="odd">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2024-02.pgn.zst" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2024-02.pgn.zst</a></td>
+</tr>
+<tr class="even">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2024-02.pgn.zst.torrent" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2024-02.pgn.zst.torrent</a></td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="definiowanie-linków-gotowych-do-pobrania" class="section level4">
-<h4>Definiowanie linków gotowych do pobrania</h4>
-<pre class="r"><code>choose_max_date_to_scrap = function(date = &quot;2024-04&quot;){
+<div id="wybór-wersji-pobierania-.zst.torrent-w-funkcji-ograniczającej-scrapowanie-względem-wybranej-daty" class="section level4">
+<h4>Wybór wersji pobierania (.zst.torrent) w funkcji ograniczającej
+scrapowanie względem wybranej daty</h4>
+<pre class="r"><code>choose_max_date_to_scrap = function(date){
+  
+  # co drugi link to .zst.torrent wiec go wyodrebniam
   init_links_for_download = links[seq(2,nrow(links), by=2), 1]
   
   full_date_from_imported_links = data.frame(stri_match_all(data.frame(init_links_for_download),
@@ -428,58 +559,228 @@ head(links)</code></pre>
   return(my_links_for_download)
 }
 
-links_for_download = choose_max_date_to_scrap()
-head(links_for_download)</code></pre>
-<pre><code>## [1] &quot;https://database.lichess.org/standard/lichess_db_standard_rated_2024-04.pgn.zst.torrent&quot;
-## [2] &quot;https://database.lichess.org/standard/lichess_db_standard_rated_2024-03.pgn.zst.torrent&quot;
-## [3] &quot;https://database.lichess.org/standard/lichess_db_standard_rated_2024-02.pgn.zst.torrent&quot;
-## [4] &quot;https://database.lichess.org/standard/lichess_db_standard_rated_2024-01.pgn.zst.torrent&quot;
-## [5] &quot;https://database.lichess.org/standard/lichess_db_standard_rated_2023-12.pgn.zst.torrent&quot;
-## [6] &quot;https://database.lichess.org/standard/lichess_db_standard_rated_2023-11.pgn.zst.torrent&quot;</code></pre>
+links_for_download = choose_max_date_to_scrap(selected_date)
+pander(data.frame(prepared_links = head(links_for_download)))</code></pre>
+<table>
+<colgroup>
+<col width="100%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">prepared_links</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2024-04.pgn.zst.torrent" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2024-04.pgn.zst.torrent</a></td>
+</tr>
+<tr class="even">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2024-03.pgn.zst.torrent" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2024-03.pgn.zst.torrent</a></td>
+</tr>
+<tr class="odd">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2024-02.pgn.zst.torrent" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2024-02.pgn.zst.torrent</a></td>
+</tr>
+<tr class="even">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2024-01.pgn.zst.torrent" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2024-01.pgn.zst.torrent</a></td>
+</tr>
+<tr class="odd">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2023-12.pgn.zst.torrent" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2023-12.pgn.zst.torrent</a></td>
+</tr>
+<tr class="even">
+<td align="center"><a href="https://database.lichess.org/standard/lichess_db_standard_rated_2023-11.pgn.zst.torrent" class="uri">https://database.lichess.org/standard/lichess_db_standard_rated_2023-11.pgn.zst.torrent</a></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="wyodrębianie-daty-ze-scrapowania" class="section level4">
 <h4>Wyodrębianie daty ze scrapowania</h4>
 <pre class="r"><code>full_date_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = &quot;rated_\\s*(.*?)\\s*[.]&quot;))[,2]
-head(data.frame(full_date_from_imported_links))</code></pre>
-<pre><code>##   full_date_from_imported_links
-## 1                       2024-04
-## 2                       2024-03
-## 3                       2024-02
-## 4                       2024-01
-## 5                       2023-12
-## 6                       2023-11</code></pre>
+pander(head(data.frame(full_date_from_imported_links)))</code></pre>
+<table style="width:44%;">
+<colgroup>
+<col width="44%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">full_date_from_imported_links</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">2024-04</td>
+</tr>
+<tr class="even">
+<td align="center">2024-03</td>
+</tr>
+<tr class="odd">
+<td align="center">2024-02</td>
+</tr>
+<tr class="even">
+<td align="center">2024-01</td>
+</tr>
+<tr class="odd">
+<td align="center">2023-12</td>
+</tr>
+<tr class="even">
+<td align="center">2023-11</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="wyodrębianie-roku-miesięcy-nazw-miesięcy-ze-scrapowania" class="section level4">
 <h4>Wyodrębianie roku, miesięcy, nazw miesięcy ze scrapowania</h4>
 <pre class="r"><code>year_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = &quot;rated_\\s*(.*?)\\s*[-]&quot;))[,2]
-head(year_from_imported_links)</code></pre>
-<pre><code>## [1] &quot;2024&quot; &quot;2024&quot; &quot;2024&quot; &quot;2024&quot; &quot;2023&quot; &quot;2023&quot;</code></pre>
+pander(head(data.frame(year_from_imported_links)))</code></pre>
+<table style="width:38%;">
+<colgroup>
+<col width="37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">year_from_imported_links</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">2024</td>
+</tr>
+<tr class="even">
+<td align="center">2024</td>
+</tr>
+<tr class="odd">
+<td align="center">2024</td>
+</tr>
+<tr class="even">
+<td align="center">2024</td>
+</tr>
+<tr class="odd">
+<td align="center">2023</td>
+</tr>
+<tr class="even">
+<td align="center">2023</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>month_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = &quot;-\\s*(.*?)\\s*[.]&quot;))[,2]
-head(month_from_imported_links)</code></pre>
-<pre><code>## [1] &quot;04&quot; &quot;03&quot; &quot;02&quot; &quot;01&quot; &quot;12&quot; &quot;11&quot;</code></pre>
+pander(head(data.frame(month_from_imported_links)))</code></pre>
+<table style="width:39%;">
+<colgroup>
+<col width="38%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">month_from_imported_links</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">04</td>
+</tr>
+<tr class="even">
+<td align="center">03</td>
+</tr>
+<tr class="odd">
+<td align="center">02</td>
+</tr>
+<tr class="even">
+<td align="center">01</td>
+</tr>
+<tr class="odd">
+<td align="center">12</td>
+</tr>
+<tr class="even">
+<td align="center">11</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>my_month_names = month.abb[as.integer(month_from_imported_links)]
-head(my_month_names)</code></pre>
-<pre><code>## [1] &quot;Apr&quot; &quot;Mar&quot; &quot;Feb&quot; &quot;Jan&quot; &quot;Dec&quot; &quot;Nov&quot;</code></pre>
+pander(head(data.frame(my_month_names)))</code></pre>
+<table style="width:24%;">
+<colgroup>
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">my_month_names</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Apr</td>
+</tr>
+<tr class="even">
+<td align="center">Mar</td>
+</tr>
+<tr class="odd">
+<td align="center">Feb</td>
+</tr>
+<tr class="even">
+<td align="center">Jan</td>
+</tr>
+<tr class="odd">
+<td align="center">Dec</td>
+</tr>
+<tr class="even">
+<td align="center">Nov</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="tworzenie-struktury-plików---lata" class="section level4">
 <h4>Tworzenie struktury plików - lata</h4>
 <pre class="r"><code>my_paths_year &lt;- unique(paste(Dataset_path,&quot;/&quot;,year_from_imported_links, sep=&quot;&quot;))
-my_paths_year</code></pre>
-<pre><code>##  [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024&quot;
-##  [2] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023&quot;
-##  [3] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2022&quot;
-##  [4] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2021&quot;
-##  [5] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2020&quot;
-##  [6] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2019&quot;
-##  [7] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2018&quot;
-##  [8] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2017&quot;
-##  [9] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2016&quot;
-## [10] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2015&quot;
-## [11] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2014&quot;
-## [12] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013&quot;</code></pre>
+pander(data.frame(my_paths_year))</code></pre>
+<table style="width:79%;">
+<colgroup>
+<col width="79%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">my_paths_year</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2024</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2023</td>
+</tr>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2022</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2021</td>
+</tr>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2020</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2019</td>
+</tr>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2018</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2017</td>
+</tr>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2016</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2015</td>
+</tr>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2014</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2013</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>create_folders_year = function(){
   for(i in 1:length(my_paths_year)){
     dir.create(my_paths_year[i])
@@ -489,36 +790,90 @@ my_paths_year</code></pre>
 <div id="tworzenie-struktury-plików---miesiące" class="section level4">
 <h4>Tworzenie struktury plików - miesiące</h4>
 <pre class="r"><code>my_paths_month &lt;- paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names, sep=&quot;&quot;)
-head(my_paths_month)</code></pre>
-<pre><code>## [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/04. Apr&quot;
-## [2] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/03. Mar&quot;
-## [3] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/02. Feb&quot;
-## [4] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/01. Jan&quot;
-## [5] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/12. Dec&quot;
-## [6] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/11. Nov&quot;</code></pre>
-<pre class="r"><code>tail(my_paths_month)</code></pre>
-<pre><code>## [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/06. Jun&quot;
-## [2] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/05. May&quot;
-## [3] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/04. Apr&quot;
-## [4] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/03. Mar&quot;
-## [5] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/02. Feb&quot;
-## [6] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2013/01. Jan&quot;</code></pre>
+pander(head(data.frame(my_paths_month)))</code></pre>
+<table style="width:85%;">
+<colgroup>
+<col width="84%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">my_paths_month</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/04.
+Apr</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/03.
+Mar</td>
+</tr>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/02.
+Feb</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/01.
+Jan</td>
+</tr>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/12.
+Dec</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/11.
+Nov</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>create_folders_month = function(){
   for(i in 1:length(my_paths_month)){
     dir.create(my_paths_month[i])
   }
 }</code></pre>
 </div>
-<div id="definiowanie-plików-które-będą-pobrane" class="section level4">
-<h4>Definiowanie plików które będą pobrane</h4>
+<div id="definiowanie-ścieżek-do-których-będą-pobierane-pliki-i-definiowanie-ich-docelowych-nazw" class="section level4">
+<h4>Definiowanie ścieżek do których będą pobierane pliki i definiowanie
+ich docelowych nazw</h4>
 <pre class="r"><code>my_paths = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/lichess_db_standard_rated_&quot;,full_date_from_imported_links,&quot;.pgn.zst.torrent&quot;, sep=&quot;&quot;)
-head(my_paths)</code></pre>
-<pre><code>## [1] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/04. Apr/lichess_db_standard_rated_2024-04.pgn.zst.torrent&quot;
-## [2] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/03. Mar/lichess_db_standard_rated_2024-03.pgn.zst.torrent&quot;
-## [3] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/02. Feb/lichess_db_standard_rated_2024-02.pgn.zst.torrent&quot;
-## [4] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/01. Jan/lichess_db_standard_rated_2024-01.pgn.zst.torrent&quot;
-## [5] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/12. Dec/lichess_db_standard_rated_2023-12.pgn.zst.torrent&quot;
-## [6] &quot;D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/11. Nov/lichess_db_standard_rated_2023-11.pgn.zst.torrent&quot;</code></pre>
+pander(head(data.frame(my_paths)))</code></pre>
+<table style="width:85%;">
+<colgroup>
+<col width="84%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">my_paths</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/04.
+Apr/lichess_db_standard_rated_2024-04.pgn.zst.torrent</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/03.
+Mar/lichess_db_standard_rated_2024-03.pgn.zst.torrent</td>
+</tr>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/02.
+Feb/lichess_db_standard_rated_2024-02.pgn.zst.torrent</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2024/01.
+Jan/lichess_db_standard_rated_2024-01.pgn.zst.torrent</td>
+</tr>
+<tr class="odd">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/12.
+Dec/lichess_db_standard_rated_2023-12.pgn.zst.torrent</td>
+</tr>
+<tr class="even">
+<td align="center">D:/moje/projekty/chess-in-the-digital-age/Dataset/2023/11.
+Nov/lichess_db_standard_rated_2023-11.pgn.zst.torrent</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>downloading = function(){
   create_folders_year()
   create_folders_month()
@@ -527,9 +882,12 @@ head(my_paths)</code></pre>
   }
 }</code></pre>
 </div>
-<div id="tworzenie-struktury-plikow-i-pobieranie-do-niej-zbiorów-danych" class="section level4">
-<h4>Tworzenie struktury plikow i pobieranie do niej zbiorów danych</h4>
+<div id="tworzenie-struktury-plikow-i-pobieranie-w-niej-zbiorów-danych" class="section level4">
+<h4>Tworzenie struktury plikow i pobieranie w niej zbiorów danych</h4>
 <pre class="r"><code>downloading()</code></pre>
+</div>
+<div id="java-script-dla-przycisku-1" class="section level4">
+<h4>Java-script dla przycisku</h4>
 <pre class="js"><code>const my_div1 = document.getElementById(&quot;tworzenie-struktury&quot;);
   my_div1.style.display = &#39;none&#39;;
   
@@ -546,9 +904,6 @@ function myFunction() {
 }</code></pre>
 </div>
 </div>
-<button id="my_button" class="my_button" onclick="myFunction()">
-Pokaż
-</button>
 <script>
 const my_div1 = document.getElementById("tworzenie-struktury");
   my_div1.style.display = 'none';
@@ -568,15 +923,14 @@ function myFunction() {
 </div>
 <div id="przygotowywanie-zbiorów-danych-do-użycia" class="section level1">
 <h1>Przygotowywanie zbiorów danych do użycia</h1>
+<button id="my_button2" class="my_button" onclick="myFunction2()">
+Pokaż
+</button>
 <div id="przygotowywanie-zbiorow">
-<pre class="r"><code>library(rvest)
-library(stringi)
-url = &quot;https://database.lichess.org&quot;
-path= &quot;/html/body/div/div[2]/div/section[1]/table&quot;
-wezel = html_node(read_html(url), xpath=path)
-
-
-choose_max_date_to_scrap_game_count = function(date = &quot;2024-04&quot;){
+<div id="pobieranie-informacji-o-liczbie-partii-poprzez-scrapowanie-oraz-ograniczenie-tego-scrapowania-względem-wybranej-daty" class="section level4">
+<h4>Pobieranie informacji o liczbie partii poprzez scrapowanie oraz
+ograniczenie tego scrapowania względem wybranej daty</h4>
+<pre class="r"><code>choose_max_date_to_scrap_game_count = function(date){
   my_games_count = html_table(wezel)[[3]]
   
   init_links_for_download = links[seq(2,nrow(links), by=2), 1]
@@ -591,10 +945,42 @@ choose_max_date_to_scrap_game_count = function(date = &quot;2024-04&quot;){
   return(games_count)
 }
 
-games_count = choose_max_date_to_scrap_game_count()
-head(games_count)</code></pre>
-<pre><code>## [1] &quot;91,383,489&quot; &quot;95,810,349&quot; &quot;91,628,934&quot; &quot;99,001,912&quot; &quot;96,909,211&quot;
-## [6] &quot;92,389,636&quot;</code></pre>
+games_count = choose_max_date_to_scrap_game_count(selected_date)
+pander(head(data.frame(games_count)))</code></pre>
+<table style="width:19%;">
+<colgroup>
+<col width="19%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">games_count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">91,383,489</td>
+</tr>
+<tr class="even">
+<td align="center">95,810,349</td>
+</tr>
+<tr class="odd">
+<td align="center">91,628,934</td>
+</tr>
+<tr class="even">
+<td align="center">99,001,912</td>
+</tr>
+<tr class="odd">
+<td align="center">96,909,211</td>
+</tr>
+<tr class="even">
+<td align="center">92,389,636</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="funkcja-do-ograniczania-danych-dla-konkretnego-zbioru-względem-miesiąca" class="section level4">
+<h4>funkcja do ograniczania danych dla konkretnego zbioru względem
+miesiąca</h4>
 <pre class="r"><code>preparing_month_dataset = function(date, data_size = 0.001){
   searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
   decreasing_game_number &lt;- round((as.numeric(stri_replace_all(games_count,&quot;&quot;,regex = &quot;\\,&quot;))*18*data_size)[searching_location])
@@ -619,29 +1005,43 @@ head(games_count)</code></pre>
   
   test_path = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/Data_&quot;,date,&quot;.pgn&quot;, sep=&quot;&quot;)[searching_location]
   
+  file_txt_for_info = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/ograniczono_dane.txt&quot;, sep=&quot;&quot;)[searching_location]
+  
+  write.table(&quot; &quot;,file_txt_for_info)
+  
   testing_last_char &lt;- read.table(test_path,
                    quote=&quot;&quot;, sep=&quot;\n&quot;, stringsAsFactors=FALSE)
   return(tail(testing_last_char))
-}
-
-removing_oryginal_dataset = function(date){
+}</code></pre>
+</div>
+<div id="funkcja-do-usuwania-oryginalnego-zbioru-danych-względem-miesiąca" class="section level4">
+<h4>funkcja do usuwania oryginalnego zbioru danych względem
+miesiąca</h4>
+<pre class="r"><code>removing_oryginal_dataset = function(date){
   searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
   
   file_pgn_zst_to_remove = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/lichess_db_standard_rated_&quot;,full_date_from_imported_links,&quot;.pgn.zst&quot;, sep=&quot;&quot;)[searching_location]
   
   file_pgn_to_remove = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/lichess_db_standard_rated_&quot;,full_date_from_imported_links,&quot;.pgn&quot;, sep=&quot;&quot;)[searching_location]
   
-  file_txt_for_info = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/usunieto_dane.txt&quot;, sep=&quot;&quot;)[searching_location]
+  file_txt_for_info = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/usunieto_oryginal.txt&quot;, sep=&quot;&quot;)[searching_location]
   
   file.remove(file_pgn_zst_to_remove)
   
-  #file.remove(file_pgn_to_remove)
+  file.remove(file_pgn_to_remove)
   
   write.table(&quot; &quot;,file_txt_for_info)
 }</code></pre>
-<pre class="r"><code>preparing_month_dataset(&quot;2024-02&quot;)
+</div>
+<div id="wywoływanie-funkcji-przygotowującej-zbiór-z-konkretnego-miesiąca-do-późniejszej-analizy" class="section level4">
+<h4>Wywoływanie funkcji przygotowującej zbiór z konkretnego miesiąca do
+późniejszej analizy</h4>
+<pre class="r"><code>preparing_month_dataset(&quot;2023-09&quot;)
 
-removing_oryginal_dataset(&quot;2024-02&quot;)</code></pre>
+removing_oryginal_dataset(&quot;2023-09&quot;)</code></pre>
+</div>
+<div id="java-script-dla-przycisku-2" class="section level4">
+<h4>Java-script dla przycisku</h4>
 <pre class="js"><code>const my_div2 = document.getElementById(&quot;przygotowywanie-zbiorow&quot;);
   my_div2.style.display = &#39;none&#39;;
   
@@ -657,9 +1057,7 @@ function myFunction2() {
   }
 }</code></pre>
 </div>
-<button id="my_button2" class="my_button" onclick="myFunction2()">
-Pokaż
-</button>
+</div>
 <script>
 const my_div2 = document.getElementById("przygotowywanie-zbiorow");
   my_div2.style.display = 'none';
@@ -676,6 +1074,35 @@ function myFunction2() {
   }
 }
 </script>
+<div id="testy" class="section level4">
+<h4>Testy</h4>
+<pre class="r"><code>pgn &lt;- read.table(&quot;D:\\moje\\projekty\\chess-in-the-digital-age\\Dataset\\2024\\03. Mar\\Data_2024-03.pgn&quot;, quote=&quot;&quot;, sep=&quot;\n&quot;, stringsAsFactors=FALSE)
+
+
+pgn.df &lt;- data.frame(matrix(sub(&quot;\\[\\w+ \\\&quot;(.+)\\\&quot;\\]&quot;, &quot;\\1&quot;, pgn[,1]),
+                            byrow=TRUE, ncol=1))
+nrow(pgn.df)
+
+library(forcats)
+zmienne = fct_count(fct_infreq(sub(&quot;\\[(\\w+).+&quot;, &quot;\\1&quot;, pgn[1:nrow(pgn.df),1])))
+
+nrow(pgn.df)
+?length
+library(stringi)
+ncol(pgn)
+tail(pgn)
+# get column names
+colnms &lt;- sub(&quot;\\[(\\w+).+&quot;, &quot;\\1&quot;, pgn[1:17,1])
+
+library(forcats)
+fct_count(sub(&quot;\\[(\\w+).+&quot;, &quot;\\1&quot;, pgn[1:36,1]))
+# give columns 11 (the moves) and 12 (redundant results column) nice names
+colnms[18] &lt;- &quot;Moves&quot;
+
+pgn.df &lt;- data.frame(matrix(sub(&quot;\\[\\w+ \\\&quot;(.+)\\\&quot;\\]&quot;, &quot;\\1&quot;, pgn[,1]),
+                            byrow=TRUE, ncol=18))
+names(pgn.df) &lt;- colnms</code></pre>
+</div>
 </div>
 
 

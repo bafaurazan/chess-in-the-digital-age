@@ -1,10 +1,19 @@
 ---
-title: "chess_in_the_digital_age"
+title: "Szachy w erze cyfrowej"
+subtitle: "Wpływ mediów społecznościowych i internetu w rozwój szachów,<br />
+jak te dane wykorzystać i jak wprowadzić nowość w szachach.<br /><br />"
 author: "Rafal Bazan"
 date: "2024-05-21"
 output: html_document
 ---
-```{css, echo=FALSE}
+
+# Css
+
+<button id="button_my_css" class="my_button" onclick="hideCss()">Pokaż</button>
+
+<div id="my_css">
+
+```{css}
 .my_button {
   background-color: #4CAF50;
   color: white;
@@ -12,58 +21,115 @@ output: html_document
   font-size: 14px;
   border: none;
   cursor: pointer;
+  width: 70px;
+}
+h1, h2, h3, h4, h5, h6 {
+      text-align: center;
+    }
+body {
+  background-color: #FFFFDF;
+}
+table {
+   margin:1em auto;
+}
+```
+#### Java-script dla przycisku
+
+```{js, eval=FALSE}
+const div_my_css = document.getElementById("my_css");
+  div_my_css.style.display = 'none';
+  
+var button_my_css = document.getElementById("button_my_css");
+  
+function hideCss() {
+  if (div_my_css.style.display === 'none') {
+    div_my_css.style.display = 'block';
+    button_my_css.innerHTML = "Ukryj";
+  } else {
+    div_my_css.style.display = 'none';
+    button_my_css.innerHTML = "Pokaż";
+  }
 }
 ```
 
-```{r setup, include=FALSE}
-project_path = "D:/moje/projekty/chess-in-the-digital-age"
+</div>
 
-knitr::opts_chunk$set(root= paste(project_path,"/presentation", sep = ""))
-setwd(paste(project_path,"/presentation", sep = ""))
-Dataset_path = paste(project_path,"/Dataset", sep = "")
+```{js, echo=FALSE}
+const div_my_css = document.getElementById("my_css");
+  div_my_css.style.display = 'none';
+  
+var button_my_css = document.getElementById("button_my_css");
+  
+function hideCss() {
+  if (div_my_css.style.display === 'none') {
+    div_my_css.style.display = 'block';
+    button_my_css.innerHTML = "Ukryj";
+  } else {
+    div_my_css.style.display = 'none';
+    button_my_css.innerHTML = "Pokaż";
+  }
+}
 ```
 
 # Tworzenie struktury zbioru danych
 
+<button id="my_button" class="my_button" onclick="myFunction()">Pokaż</button>
+
 <div id="tworzenie-struktury">
+
+#### Definiowanie ścieżek
+
+```{r setup}
+project_path = "D:/moje/projekty/chess-in-the-digital-age"
+setwd(paste(project_path,"/presentation", sep = ""))
+Dataset_path = paste(project_path,"/Dataset", sep = "")
+selected_date = "2024-04"
+
+knitr::opts_chunk$set(root= paste(project_path,"/presentation", sep = ""))
+```
+
+#### Definiowanie paczek
+
+```{r message=FALSE}
+library(pander)
+panderOptions('digits',7)
+library(knitr)
+library(rvest)
+library(stringi)
+library(dplyr)
+```
 
 #### Wybór tablicy do scrapowania
 
 ```{r}
-library(rvest)
-library(stringi)
 url = "https://database.lichess.org"
 path= "/html/body/div/div[2]/div/section[1]/table"
 wezel = html_node(read_html(url), xpath=path)
 ```
 
-#### wyodrębnianie <a></a> tagów
+#### wyodrębnianie tagów oraz hiperłączy
 
 ```{r}
 hyperlinks = html_nodes(wezel, "a")
-head(hyperlinks)
-```
-
-#### Wyodrębnianie hiperłączy
-
-```{r}
 my_href = html_attr(hyperlinks, "href")
-head(my_href)
 
+pander(head(bind_rows(lapply(html_attrs(hyperlinks), function(x) data.frame(as.list(x), stringsAsFactors=FALSE)))))
 ```
 
 #### Łączenie zmiennych w gotowy do pobrania link
 
 ```{r}
-links = data.frame(paste(url,my_href,sep="/"))
-head(links)
+links = data.frame(links = paste(url,my_href,sep="/"))
+pander(head(links))
 ```
 
-#### Definiowanie linków gotowych do pobrania
+#### Wybór wersji pobierania (.zst.torrent) w funkcji ograniczającej scrapowanie względem wybranej daty
 
 ```{r warning=FALSE}
 
-choose_max_date_to_scrap = function(date = "2024-04"){
+choose_max_date_to_scrap = function(date){
+  
+  # co drugi link to .zst.torrent wiec go wyodrebniam
   init_links_for_download = links[seq(2,nrow(links), by=2), 1]
   
   full_date_from_imported_links = data.frame(stri_match_all(data.frame(init_links_for_download),
@@ -76,9 +142,8 @@ choose_max_date_to_scrap = function(date = "2024-04"){
   return(my_links_for_download)
 }
 
-links_for_download = choose_max_date_to_scrap()
-head(links_for_download)
-
+links_for_download = choose_max_date_to_scrap(selected_date)
+pander(data.frame(prepared_links = head(links_for_download)))
 ```
 
 #### Wyodrębianie daty ze scrapowania
@@ -86,7 +151,7 @@ head(links_for_download)
 ```{r warning=FALSE}
 full_date_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = "rated_\\s*(.*?)\\s*[.]"))[,2]
-head(data.frame(full_date_from_imported_links))
+pander(head(data.frame(full_date_from_imported_links)))
 ```
 
 #### Wyodrębianie roku, miesięcy, nazw miesięcy ze scrapowania
@@ -94,21 +159,21 @@ head(data.frame(full_date_from_imported_links))
 ```{r warning=FALSE}
 year_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = "rated_\\s*(.*?)\\s*[-]"))[,2]
-head(year_from_imported_links)
+pander(head(data.frame(year_from_imported_links)))
 
 month_from_imported_links = data.frame(stri_match_all(data.frame(links_for_download),
                                      regex = "-\\s*(.*?)\\s*[.]"))[,2]
-head(month_from_imported_links)
+pander(head(data.frame(month_from_imported_links)))
 
 my_month_names = month.abb[as.integer(month_from_imported_links)]
-head(my_month_names)
+pander(head(data.frame(my_month_names)))
 ```
 
 #### Tworzenie struktury plików - lata
 
 ```{r}
 my_paths_year <- unique(paste(Dataset_path,"/",year_from_imported_links, sep=""))
-my_paths_year
+pander(data.frame(my_paths_year))
 
 create_folders_year = function(){
   for(i in 1:length(my_paths_year)){
@@ -121,8 +186,7 @@ create_folders_year = function(){
 
 ```{r}
 my_paths_month <- paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names, sep="")
-head(my_paths_month)
-tail(my_paths_month)
+pander(head(data.frame(my_paths_month)))
 
 create_folders_month = function(){
   for(i in 1:length(my_paths_month)){
@@ -132,11 +196,11 @@ create_folders_month = function(){
 
 ```
 
-#### Definiowanie plików które będą pobrane
+#### Definiowanie ścieżek do których będą pobierane pliki i definiowanie ich docelowych nazw
 
 ```{r}
 my_paths = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn.zst.torrent", sep="")
-head(my_paths)
+pander(head(data.frame(my_paths)))
 
 
 
@@ -149,12 +213,14 @@ downloading = function(){
 }
 ```
 
-#### Tworzenie struktury plikow i pobieranie do niej zbiorów danych
+#### Tworzenie struktury plikow i pobieranie w niej zbiorów danych
 
 ```{r warning=FALSE,eval=FALSE}
 downloading()
 
 ```
+
+#### Java-script dla przycisku
 
 ```{js eval=FALSE}
 const my_div1 = document.getElementById("tworzenie-struktury");
@@ -175,8 +241,6 @@ function myFunction() {
 
 </div>
 
-<button id="my_button" class="my_button" onclick="myFunction()">Pokaż</button>
-
 ```{js, echo=FALSE}
 const my_div1 = document.getElementById("tworzenie-struktury");
   my_div1.style.display = 'none';
@@ -196,17 +260,15 @@ function myFunction() {
 
 # Przygotowywanie zbiorów danych do użycia 
 
+<button id="my_button2" class="my_button" onclick="myFunction2()">Pokaż</button>
+
 <div id="przygotowywanie-zbiorow">
 
+#### Pobieranie informacji o liczbie partii poprzez scrapowanie oraz ograniczenie tego scrapowania względem wybranej daty
+
 ```{r warning=FALSE}
-library(rvest)
-library(stringi)
-url = "https://database.lichess.org"
-path= "/html/body/div/div[2]/div/section[1]/table"
-wezel = html_node(read_html(url), xpath=path)
 
-
-choose_max_date_to_scrap_game_count = function(date = "2024-04"){
+choose_max_date_to_scrap_game_count = function(date){
   my_games_count = html_table(wezel)[[3]]
   
   init_links_for_download = links[seq(2,nrow(links), by=2), 1]
@@ -221,9 +283,14 @@ choose_max_date_to_scrap_game_count = function(date = "2024-04"){
   return(games_count)
 }
 
-games_count = choose_max_date_to_scrap_game_count()
-head(games_count)
+games_count = choose_max_date_to_scrap_game_count(selected_date)
+pander(head(data.frame(games_count)))
 
+```
+
+#### funkcja do ograniczania danych dla konkretnego zbioru względem miesiąca
+
+```{r warning=FALSE}
 
 preparing_month_dataset = function(date, data_size = 0.001){
   searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
@@ -249,11 +316,19 @@ preparing_month_dataset = function(date, data_size = 0.001){
   
   test_path = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",date,".pgn", sep="")[searching_location]
   
+  file_txt_for_info = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/ograniczono_dane.txt", sep="")[searching_location]
+  
+  write.table(" ",file_txt_for_info)
+  
   testing_last_char <- read.table(test_path,
                    quote="", sep="\n", stringsAsFactors=FALSE)
   return(tail(testing_last_char))
 }
+```
 
+#### funkcja do usuwania oryginalnego zbioru danych względem miesiąca
+
+```{r}
 removing_oryginal_dataset = function(date){
   searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
   
@@ -261,21 +336,25 @@ removing_oryginal_dataset = function(date){
   
   file_pgn_to_remove = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn", sep="")[searching_location]
   
-  file_txt_for_info = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/usunieto_dane.txt", sep="")[searching_location]
+  file_txt_for_info = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/usunieto_oryginal.txt", sep="")[searching_location]
   
   file.remove(file_pgn_zst_to_remove)
   
-  #file.remove(file_pgn_to_remove)
+  file.remove(file_pgn_to_remove)
   
   write.table(" ",file_txt_for_info)
 }
 ```
 
-```{r eval=FALSE}
-preparing_month_dataset("2024-02")
+#### Wywoływanie funkcji przygotowującej zbiór z konkretnego miesiąca do późniejszej analizy
 
-removing_oryginal_dataset("2024-02")
+```{r eval=FALSE}
+preparing_month_dataset("2023-09")
+
+removing_oryginal_dataset("2023-09")
 ```
+
+#### Java-script dla przycisku
 
 ```{js eval=FALSE}
 const my_div2 = document.getElementById("przygotowywanie-zbiorow");
@@ -296,8 +375,6 @@ function myFunction2() {
 
 </div>
 
-<button id="my_button2" class="my_button" onclick="myFunction2()">Pokaż</button>
-
 ```{js, echo=FALSE}
 const my_div2 = document.getElementById("przygotowywanie-zbiorow");
   my_div2.style.display = 'none';
@@ -313,6 +390,37 @@ function myFunction2() {
     button2.innerHTML = "Pokaż";
   }
 }
+```
+
+#### Testy 
+
+```{r eval=FALSE}
+pgn <- read.table("D:\\moje\\projekty\\chess-in-the-digital-age\\Dataset\\2024\\03. Mar\\Data_2024-03.pgn", quote="", sep="\n", stringsAsFactors=FALSE)
+
+
+pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                            byrow=TRUE, ncol=1))
+nrow(pgn.df)
+
+library(forcats)
+zmienne = fct_count(fct_infreq(sub("\\[(\\w+).+", "\\1", pgn[1:nrow(pgn.df),1])))
+
+nrow(pgn.df)
+?length
+library(stringi)
+ncol(pgn)
+tail(pgn)
+# get column names
+colnms <- sub("\\[(\\w+).+", "\\1", pgn[1:17,1])
+
+library(forcats)
+fct_count(sub("\\[(\\w+).+", "\\1", pgn[1:36,1]))
+# give columns 11 (the moves) and 12 (redundant results column) nice names
+colnms[18] <- "Moves"
+
+pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                            byrow=TRUE, ncol=18))
+names(pgn.df) <- colnms
 ```
 
 
