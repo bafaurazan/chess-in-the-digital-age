@@ -2,13 +2,13 @@ Dataset/**/*.txt
 Dataset/**/*.pgn
 Dataset/**/*.zst
 
-# # History files
-# .Rhistory
-# .Rapp.history
+# History files
+.Rhistory
+.Rapp.history
 
-# # Session Data files
-# .RData
-# .RDataTmp
+# Session Data files
+.RData
+.RDataTmp
 
 # # User-specific files
 # .Ruserdata

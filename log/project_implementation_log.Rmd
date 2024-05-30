@@ -150,6 +150,52 @@ done
 
   - Rozwiązanie: funkcja download.file() przyjmuje dodatkowe argumenty, więc dodałem do niej sys.sleep(0.2)
 
+- Rozpoczęcie instalacji danych z 2024 roku i 2023 roku
+
 ### Tworzenie struktury działa, oraz pobieranie instalek do odpowiednich folderów
 
-## Rozpoczęcie instalacji danych
+#### 25 maj:
+
+- Tworzenie przycisku w java-script do ukrycia zawartości kodu odnośnie tworzenia struktury plików
+
+- Rozpoczęcie instalacji zbiorów danych z 2022 roku
+
+- Tworzenie funkcji, która generuje gotowy data.frame dla danego miesiąca
+
+- Problem: ilość ramu nie pozwala na ograniczenie zbioru dla danego miesiąca korzystając z długości wierszy...(potrafi liczyć prawie 2 miliardy linijek jeden miesiąc)
+
+- Rozwiązanie: ograniczenie zbiorów danego miesiąca na podstawie ilości zagranych partii w tym miesiącu jako 1% (ilość meczy należy pomnożyć przez 18 ponieważ około tyle linijek zawiera jeden mecz)
+
+- Problem: zbiór ilości partii dla danego miesiąca, trzeba przerobic na typ numeryczny, ale nie jest to dostępne bo liczby są dzielone separatorem ", "
+
+- Rozwiązanie: usunięcie ", " z zescrapowanych danych
+
+- Problem: stri_trans_char nie chce zmienić ", " na " "
+
+- Rozwiązanie: stri_replace_all może zmienić ", " na " "
+
+- Problem: ilosc wierszy do ucięcia nie może być w typie double tylko integer...zmiana z as.numeric na as.integer jest nie mozliwa
+
+- Rozwiązanie: zaokrąglenie wartości 
+
+- tworzenie funkcji gotowej przerobić zbiór danego miesiąca wedle kryteriów
+
+#### 26 maj:
+
+- Zmiana funkcji do generowania struktury i pobierania plików tak by użytkownik mógł stwierdzić do jakiego roku chce pobierać dane (bez tego gdyby ktoś uruchomił kod w czerwcu, cały kod mógłby nie działać)
+
+- stworzenie funkcji do ograniczania oryginalnego zbioru według podanej daty
+
+- stworzenie funkcji do usuwania oryginalnych zbiorów według podanej daty
+
+# Problem: nic nie działa
+
+![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5NMQtJz7vRV5HyLAUNdiBBr6-SfEWOCGGfInuv1EmWw&s)
+
+- Rozwiązanie: z jakiegoś powodu komenda do wyznaczania godziny z linku zaczęła wypisywać dane w jednym wierszu... trzeba było zmienić w jednym miejscu argument jako data.frame
+
+- Uwzględnienie wyboru lat do zescrapowania dla liczb partii względem miesiąca
+
+- Rozpoczęcie instalacji zbiorów danych z 2021 roku
+
+### działają funkcje do automatycznej redukcji wielkości danych... teraz tylko pobierać dane i stworzyć funkcje do tworzenia zbioru danych w postaci tabelarycznej
