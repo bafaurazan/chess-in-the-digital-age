@@ -9,12 +9,12 @@ output: html_document
 
 # Początkowe ustawienia
 
-<button id="button_init" class="my_button" onclick="hideMy_init()">Pokaż</button>
+<button id="button_my_init" class="my_button" onclick="hideMy_init()">Pokaż</button>
 
 ```{css, echo=FALSE}
 .my_button {
-  background-color: #4CAF50;
-  color: white;
+  background-color: #caa8b1;
+  color: #3c2a34;
   padding: 10px;
   font-size: 14px;
   border: none;
@@ -23,12 +23,14 @@ output: html_document
 }
 h1, h2, h3, h4, h5, h6 {
       text-align: center;
+      color: #e0cdd6;
     }
 body {
-  background-color: #FFFFDF;
+  background-color: #3c2a34;
 }
 table {
    margin:1em auto;
+   color: #e0cdd6;
 }
 ```
 <div id="my_init">
@@ -37,8 +39,8 @@ table {
 
 ```{css, eval=FALSE}
 .my_button {
-  background-color: #4CAF50;
-  color: white;
+  background-color: #caa8b1;
+  color: #3c2a34;
   padding: 10px;
   font-size: 14px;
   border: none;
@@ -47,12 +49,14 @@ table {
 }
 h1, h2, h3, h4, h5, h6 {
       text-align: center;
+      color: #e0cdd6;
     }
 body {
-  background-color: #FFFFDF;
+  background-color: #3c2a34;
 }
 table {
    margin:1em auto;
+   color: #e0cdd6;
 }
 ```
 
@@ -125,6 +129,12 @@ function hideMy_init() {
 ```
 
 # Czy szachy są coraz popularniejsze?
+
+![](../pictures/lichess_site.png)
+
+```{r}
+
+```
 
 # Tworzenie struktury zbioru danych
 

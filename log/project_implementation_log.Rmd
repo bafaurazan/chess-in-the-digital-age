@@ -12,6 +12,8 @@ knitr::opts_chunk$set(root= paste(project_path,"/log", sep = ""))
 setwd(paste(project_path,"/log", sep = ""))
 ```
 
+# Automatyzacja pracy
+
 #### Marzec: 
 
 - Wybranie dziedziny badań projektu, zapoznanie z bazą danych lichess i pierwszy import danych. Znaleziono sposób importu danych ze stackoverflow
@@ -154,6 +156,8 @@ done
 
 ### Tworzenie struktury działa, oraz pobieranie instalek do odpowiednich folderów
 
+# Tworzenie zbiorów danych
+
 #### 25 maj:
 
 - Tworzenie przycisku w java-script do ukrycia zawartości kodu odnośnie tworzenia struktury plików
@@ -188,9 +192,9 @@ done
 
 - stworzenie funkcji do usuwania oryginalnych zbiorów według podanej daty
 
-# Problem: nic nie działa
+### Problem: nic nie działa
 
-![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5NMQtJz7vRV5HyLAUNdiBBr6-SfEWOCGGfInuv1EmWw&s)
+![](../pictures/cat_war_flashback.jpg)
 
 - Rozwiązanie: z jakiegoś powodu komenda do wyznaczania godziny z linku zaczęła wypisywać dane w jednym wierszu... trzeba było zmienić w jednym miejscu argument jako data.frame
 
@@ -199,3 +203,47 @@ done
 - Rozpoczęcie instalacji zbiorów danych z 2021 roku
 
 ### działają funkcje do automatycznej redukcji wielkości danych... teraz tylko pobierać dane i stworzyć funkcje do tworzenia zbioru danych w postaci tabelarycznej
+
+# Przygotowywanie zbiorów do analizy
+
+#### 28 maj:
+
+- Pobieranie danych z 2021 i 2020 roku
+
+- pierwsze testy tworzenia gotowych zbiorów
+
+- wyodrębnianie tytułów które się zawsze powtarzają dzięki fct_count(), analizowane zbiory teraz można ograniczyć by miały w sobie tylko podane tytuły...dzięki temu zmieniając zbiory na macierze, się nie rozjeżdżają 
+
+- dane z 2024 są już zdekompresowane i ograniczone
+
+#### 29 maj:
+
+- Pobieranie danych z 2019 roku i niewielkie przygotowania danych
+
+#### 30 maj: 
+
+- Problem: kod jest mało kolorowy
+
+- Rozwiązanie: szukanie informacji o lepszym kolorowaniu kodu...lsp...rstudio nie oferuje, więc przepisałem kod do emacsa który oferuje kolorowanie kodu, 
+
+- Problem: nieprawidłowo sie wyświetla fragment kodu przy użyciu pander
+
+- Rozwiązanie: pozostanie przy rstudio
+
+- Re-factor kodu i podstawowe zmiany wizualizalne
+
+- Problem: pander ma problem z wyświetleniem linków jako zwykły tekst
+
+- Rozwiazanie: paczki malaysia nie rozwiązuje problemu, kableExtra nie może się zainstalować, cały czas mam komunikat: nie można przekształcić xml_nodeset w klasę data.frame...pominąłem więc wyświetlanie tego elementu ( w dalszej części kodu itak jest już wyświetlany link poprawnie)
+
+- zdekompresowano i ograniczono dane z 2023 roku
+
+- Skończono Pobieranie danych
+
+- pierwsze testy z porównywaniem list w innej kolejności
+
+#### 31 maj:
+
+#### Problem: kod nie chce sie wykonywać w R
+
+- Rozwiązanie: przez to ze wyswietlam mój css w html, sposobem na ukrywanie fragmentów kodu dzięki jv, musze stworzyc odrebny fragment kodu css z ustawieniem (echo=FALSE)(który będzie poza niewyswietlanym div-em) oraz odrębny kod z ustawieniem (eval=FALSE) (który będzie w niewyświetlanym div-ie)
