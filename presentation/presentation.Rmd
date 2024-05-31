@@ -1,6 +1,6 @@
 ---
 title: "Szachy w erze cyfrowej"
-subtitle: "Wpływ mediów społecznościowych i internetu w popularyzacje szachów,<br />
+subtitle: "Wpływ mediów społecznościowych i internetu na popularyzacje szachów,<br />
 jak te dane wykorzystać i jak wprowadzić nowość w szachach.<br /><br />"
 author: "Rafal Bazan"
 date: "2024-05-21"
@@ -138,7 +138,7 @@ function hideMy_init() {
 
 ![](../pictures/lichess_site.png)
 
-```{r, warning=FALSE, fig.align='center'}
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
 
 # wybor tabeli z iloscia zagranych partii wedlug miesiaca
 games_count_html = html_table(wezel)[[3]]
@@ -184,23 +184,25 @@ ggplot(Data_games_count, aes(x = rev(1:nrow(my_games_count)), y = count)) +
   scale_x_continuous(breaks = c(rev(first_index_of_years)),
                      labels = c(rev(unique(year_from_imported_links)[,]))) +
   scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6)) +
+  theme(text = element_text(size = 20),
+        axis.text.x = element_text(angle = 90, hjust = 1)) +
   
   # strzalka
-  geom_segment(aes(70, 80000000, xend = 86, yend = 75000000),
+  geom_segment(aes(70, 58000000, xend = 86, yend = 62000000),
                linewidth=1.2,
                arrow = arrow(length = unit(5, "mm"))) +
   
   # zdjecia
     inset_element(p = img, 
-                left = 0.3, 
-                bottom = 0.7, 
-                right = 0.5, 
-                top = 1) +
+                left = 0.1, 
+                bottom = 0.54, 
+                right = 0.50, 
+                top = 0.9) +
   inset_element(p = img2, 
-                left = 0.15, 
-                bottom = 0.45, 
+                left = 0.05, 
+                bottom = 0.29, 
                 right = 0.5, 
-                top = 0.7)
+                top = 0.52)
 
 ```
 
@@ -474,9 +476,9 @@ removing_oryginal_dataset = function(date){
 #### Wywoływanie funkcji przygotowującej zbiór z konkretnego miesiąca do późniejszej analizy
 
 ```{r eval=FALSE}
-preparing_month_dataset("2023-01")
+preparing_month_dataset("2021-10")
 
-removing_oryginal_dataset("2023-01")
+removing_oryginal_dataset("2021-10")
 ```
 
 #### Java-script dla przycisku

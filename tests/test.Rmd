@@ -183,6 +183,8 @@ pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
                             byrow=TRUE, ncol=1))
 nrow(pgn.df)
 
+pgn.df[1:5,][-4]
+
 library(forcats)
 zmienne = fct_count(fct_infreq(sub("\\[(\\w+).+", "\\1", pgn[1:nrow(pgn.df),1])))
 
