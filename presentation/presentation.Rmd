@@ -349,9 +349,9 @@ removing_oryginal_dataset = function(date){
 #### Wywoływanie funkcji przygotowującej zbiór z konkretnego miesiąca do późniejszej analizy
 
 ```{r eval=FALSE}
-preparing_month_dataset("2023-09")
+preparing_month_dataset("2023-01")
 
-removing_oryginal_dataset("2023-09")
+removing_oryginal_dataset("2023-01")
 ```
 
 #### Java-script dla przycisku
@@ -421,6 +421,34 @@ colnms[18] <- "Moves"
 pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
                             byrow=TRUE, ncol=18))
 names(pgn.df) <- colnms
+```
+
+```{r}
+list1 <- list("Joe","Hanna","Alice")
+list2 <- list("Alice","Hanna","Joe")
+list3 <- list("Hanna","Alice","Joe")
+list <- list(list1=list1, list2=list2, list3=list3)
+
+result <- matrix(NA, length(list), length(list))
+colnames(result) <- rownames(result) <- names(list)
+
+for(i in 1:length(list)){
+    for(j in i:length(list)){
+        result[i, j] <- length(intersect(list[[i]], list[[j]]))    
+        result[j, i] <- result[i, j]     
+    }
+}
+result
+image(result)
+
+
+crossprod(table(stack(list)))
+
+
+
+mat <- sapply(list, function(x) sapply(list, function(y) length(intersect(x,y))))
+
+print(mat)
 ```
 
 
