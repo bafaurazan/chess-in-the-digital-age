@@ -351,39 +351,20 @@ display: none;
 
 
 <h1 class="title toc-ignore">Szachy w erze cyfrowej</h1>
-<h3 class="subtitle">Wpływ mediów społecznościowych i internetu w rozwój
-szachów,<br /> jak te dane wykorzystać i jak wprowadzić nowość w
-szachach.<br /><br /></h3>
+<h3 class="subtitle">Wpływ mediów społecznościowych i internetu w
+popularyzacje szachów,<br /> jak te dane wykorzystać i jak wprowadzić
+nowość w szachach.<br /><br /></h3>
 <h4 class="author">Rafal Bazan</h4>
 <h4 class="date">2024-05-21</h4>
 
 </div>
 
 
-<div id="css" class="section level1">
-<h1>Css</h1>
-<button id="button_my_css" class="my_button" onclick="hideCss()">
+<div id="początkowe-ustawienia" class="section level1">
+<h1>Początkowe ustawienia</h1>
+<button id="button_init" class="my_button" onclick="hideMy_init()">
 Pokaż
 </button>
-<div id="my_css">
-<pre class="css"><code>.my_button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px;
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
-  width: 70px;
-}
-h1, h2, h3, h4, h5, h6 {
-      text-align: center;
-    }
-body {
-  background-color: #FFFFDF;
-}
-table {
-   margin:1em auto;
-}</code></pre>
 <style type="text/css">
 .my_button {
 background-color: #4CAF50;
@@ -404,47 +385,28 @@ table {
 margin:1em auto;
 }
 </style>
-<div id="java-script-dla-przycisku" class="section level4">
-<h4>Java-script dla przycisku</h4>
-<pre class="js"><code>const div_my_css = document.getElementById(&quot;my_css&quot;);
-  div_my_css.style.display = &#39;none&#39;;
-  
-var button_my_css = document.getElementById(&quot;button_my_css&quot;);
-  
-function hideCss() {
-  if (div_my_css.style.display === &#39;none&#39;) {
-    div_my_css.style.display = &#39;block&#39;;
-    button_my_css.innerHTML = &quot;Ukryj&quot;;
-  } else {
-    div_my_css.style.display = &#39;none&#39;;
-    button_my_css.innerHTML = &quot;Pokaż&quot;;
-  }
+<div id="my_init">
+<div id="css" class="section level4">
+<h4>Css</h4>
+<pre class="css"><code>.my_button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  width: 70px;
+}
+h1, h2, h3, h4, h5, h6 {
+      text-align: center;
+    }
+body {
+  background-color: #FFFFDF;
+}
+table {
+   margin:1em auto;
 }</code></pre>
 </div>
-</div>
-<script>
-const div_my_css = document.getElementById("my_css");
-  div_my_css.style.display = 'none';
-  
-var button_my_css = document.getElementById("button_my_css");
-  
-function hideCss() {
-  if (div_my_css.style.display === 'none') {
-    div_my_css.style.display = 'block';
-    button_my_css.innerHTML = "Ukryj";
-  } else {
-    div_my_css.style.display = 'none';
-    button_my_css.innerHTML = "Pokaż";
-  }
-}
-</script>
-</div>
-<div id="tworzenie-struktury-zbioru-danych" class="section level1">
-<h1>Tworzenie struktury zbioru danych</h1>
-<button id="my_button" class="my_button" onclick="myFunction()">
-Pokaż
-</button>
-<div id="tworzenie-struktury">
 <div id="definiowanie-ścieżek" class="section level4">
 <h4>Definiowanie ścieżek</h4>
 <pre class="r"><code>project_path = &quot;D:/moje/projekty/chess-in-the-digital-age&quot;
@@ -469,6 +431,50 @@ library(dplyr)</code></pre>
 path= &quot;/html/body/div/div[2]/div/section[1]/table&quot;
 wezel = html_node(read_html(url), xpath=path)</code></pre>
 </div>
+<div id="java-script-dla-przycisku" class="section level4">
+<h4>Java-script dla przycisku</h4>
+<pre class="js"><code>const div_my_init = document.getElementById(&quot;my_init&quot;);
+  div_init.style.display = &#39;none&#39;;
+  
+var button_my_init = document.getElementById(&quot;button_my_init&quot;);
+  
+function hideMy_init() {
+  if (div_my_init.style.display === &#39;none&#39;) {
+    div_my_init.style.display = &#39;block&#39;;
+    button_my_init.innerHTML = &quot;Ukryj&quot;;
+  } else {
+    div_my_init.style.display = &#39;none&#39;;
+    button_my_init.innerHTML = &quot;Pokaż&quot;;
+  }
+}</code></pre>
+</div>
+</div>
+<script>
+const div_my_init = document.getElementById("my_init");
+  div_my_init.style.display = 'none';
+  
+var button_my_init = document.getElementById("button_my_init");
+  
+function hideMy_init() {
+  if (div_my_init.style.display === 'none') {
+    div_my_init.style.display = 'block';
+    button_my_init.innerHTML = "Ukryj";
+  } else {
+    div_my_init.style.display = 'none';
+    button_my_init.innerHTML = "Pokaż";
+  }
+}
+</script>
+</div>
+<div id="czy-szachy-są-coraz-popularniejsze" class="section level1">
+<h1>Czy szachy są coraz popularniejsze?</h1>
+</div>
+<div id="tworzenie-struktury-zbioru-danych" class="section level1">
+<h1>Tworzenie struktury zbioru danych</h1>
+<button id="my_button" class="my_button" onclick="myFunction()">
+Pokaż
+</button>
+<div id="tworzenie-struktury">
 <div id="wyodrębnianie-tagów-oraz-hiperłączy" class="section level4">
 <h4>wyodrębnianie tagów oraz hiperłączy</h4>
 <pre class="r"><code>hyperlinks = html_nodes(wezel, &quot;a&quot;)
@@ -931,15 +937,20 @@ Pokaż
 <h4>Pobieranie informacji o liczbie partii poprzez scrapowanie oraz
 ograniczenie tego scrapowania względem wybranej daty</h4>
 <pre class="r"><code>choose_max_date_to_scrap_game_count = function(date){
+  # wybor tabeli do analizy
   my_games_count = html_table(wezel)[[3]]
   
+  # wybor lat do analizy na podstawie linkow .zst.torrent
   init_links_for_download = links[seq(2,nrow(links), by=2), 1]
   
+  # wyodrebnianie dat z linkow
   full_date_from_imported_links = data.frame(stri_match_all(data.frame(init_links_for_download),
                                      regex = &quot;rated_\\s*(.*?)\\s*[.]&quot;))[,2]
   
+  # szukanie indeksow z datami odpowiadajacymi wybranej dacie
   date_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
   
+  # wyswietlanie liczb gier dla wybranych dat
   games_count = my_games_count[c(date_location:length(init_links_for_download))]
   
   return(games_count)
@@ -982,29 +993,37 @@ pander(head(data.frame(games_count)))</code></pre>
 <h4>funkcja do ograniczania danych dla konkretnego zbioru względem
 miesiąca</h4>
 <pre class="r"><code>preparing_month_dataset = function(date, data_size = 0.001){
+  
+  # szukanie indeksu wybranej daty
   searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
+  
+  # szukanie liczby meczy dla wybranej daty i ograniczanie jej wzgledem wyszukanych wartosci
   decreasing_game_number &lt;- round((as.numeric(stri_replace_all(games_count,&quot;&quot;,regex = &quot;\\,&quot;))*18*data_size)[searching_location])
   
+  # definiowanie pliku do przerobki na podstawie wybranej daty
   pgn_file_to_read = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/lichess_db_standard_rated_&quot;,full_date_from_imported_links,&quot;.pgn&quot;, sep=&quot;&quot;)[searching_location]
   
+  # wczytanie pliku do zdefiniowanej dlugosci
   my_pgn &lt;- read.table(pgn_file_to_read,
                    quote=&quot;&quot;, sep=&quot;\n&quot;, stringsAsFactors=FALSE, nrows = decreasing_game_number)
   
-  
+  # szukanie ostatnich 22 nazw kolumn
   colnms &lt;- sub(&quot;\\[(\\w+).+&quot;, &quot;\\1&quot;, my_pgn[(decreasing_game_number-22):decreasing_game_number,1])
   
+  # szukanie indeksow rozpoczynajacych nowe partie
   Event_location = which(stri_detect(colnms, regex = &quot;Event&quot;) == TRUE) 
   
+  # usuwanie danych pod wyszukanym indeksie
   my_pgn2 = my_pgn[1:(decreasing_game_number-22+Event_location-2),]
   
-  tail(my_pgn2)
-  
+  # zapis przetworzonego zbioru do pliku
   pgn_file_to_write = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/Data_&quot;,date,&quot;.pgn&quot;, sep=&quot;&quot;)[searching_location]
   
   write.table(my_pgn2,pgn_file_to_write,col.names = FALSE,row.names = FALSE,quote = FALSE)
   
   test_path = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/Data_&quot;,date,&quot;.pgn&quot;, sep=&quot;&quot;)[searching_location]
   
+  # tworzenie pliku dla statusu pracy
   file_txt_for_info = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/ograniczono_dane.txt&quot;, sep=&quot;&quot;)[searching_location]
   
   write.table(&quot; &quot;,file_txt_for_info)
@@ -1018,12 +1037,15 @@ miesiąca</h4>
 <h4>funkcja do usuwania oryginalnego zbioru danych względem
 miesiąca</h4>
 <pre class="r"><code>removing_oryginal_dataset = function(date){
+  # szukanie indeksu wybranej daty
   searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
   
+  # definiowanie plikow do usuniecia
   file_pgn_zst_to_remove = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/lichess_db_standard_rated_&quot;,full_date_from_imported_links,&quot;.pgn.zst&quot;, sep=&quot;&quot;)[searching_location]
   
   file_pgn_to_remove = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/lichess_db_standard_rated_&quot;,full_date_from_imported_links,&quot;.pgn&quot;, sep=&quot;&quot;)[searching_location]
   
+  # tworzenie pliku dla statusu pracy
   file_txt_for_info = paste(Dataset_path,&quot;/&quot;,year_from_imported_links,&quot;/&quot;,month_from_imported_links,&quot;. &quot;,my_month_names,&quot;/usunieto_oryginal.txt&quot;, sep=&quot;&quot;)[searching_location]
   
   file.remove(file_pgn_zst_to_remove)
@@ -1116,26 +1138,17 @@ for(i in 1:length(list)){
         result[j, i] &lt;- result[i, j]     
     }
 }
-result</code></pre>
-<pre><code>##       list1 list2 list3
-## list1     3     3     3
-## list2     3     3     3
-## list3     3     3     3</code></pre>
-<pre class="r"><code>image(result)</code></pre>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAAAwFBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZrY6AAA6OgA6Ojo6OmY6ZmY6ZpA6ZrY6kLY6kNtmAABmOgBmOjpmZjpmZmZmZpBmkLZmkNtmtttmtv+QOgCQZjqQZmaQkDqQkLaQtraQttuQtv+Q2/+2ZgC2Zjq2kDq2kGa2tpC2tra2ttu227a229u22/+2///bkDrbkGbbtmbbtpDbtrbb25Db27bb29vb2//b///1oQD/tmb/25D/27b/29v//7b//9v///9YSIVaAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3dbXvT6L2vYZkFZGjpBqYu5aG7zCKU8RQmAywCKwTs7/+ttuQkxOTBiX7clXSzz/NN4jjx/A9ZXCPZktysAIg0Yw8AUCsBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBIQAFCAgoQElCAkIAChAQUICSgACEBBQgJKEBo2gFtAIopn6jij7hh+fLnO3/+58evt7/cb2783uPvm/8FKKZ47/6TAf1j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6dQIB8Jc46kb+sTJy0c6ffIGf7VxdVlAx1vDLx5p+BW8zoCe/SzA48W3+T/pAftw8TAX3TWcSS2gbSOdGiGg22b6/PKn9q4/vZrQSO9/Xt81+EidSwI65qdyXjDS8Ct4pQEFGJ+AAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICfLZY1IAAACrSURBVChASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShA6P8BOMZPnoSeG1YAAAAASUVORK5CYII=" width="672" /></p>
-<pre class="r"><code>crossprod(table(stack(list)))</code></pre>
-<pre><code>##        ind
-## ind     list1 list2 list3
-##   list1     3     3     3
-##   list2     3     3     3
-##   list3     3     3     3</code></pre>
-<pre class="r"><code>mat &lt;- sapply(list, function(x) sapply(list, function(y) length(intersect(x,y))))
+result
+image(result)
+
+
+crossprod(table(stack(list)))
+
+
+
+mat &lt;- sapply(list, function(x) sapply(list, function(y) length(intersect(x,y))))
 
 print(mat)</code></pre>
-<pre><code>##       list1 list2 list3
-## list1     3     3     3
-## list2     3     3     3
-## list3     3     3     3</code></pre>
 </div>
 </div>
 

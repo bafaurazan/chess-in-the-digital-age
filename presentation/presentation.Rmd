@@ -1,19 +1,17 @@
 ---
 title: "Szachy w erze cyfrowej"
-subtitle: "Wpływ mediów społecznościowych i internetu w rozwój szachów,<br />
+subtitle: "Wpływ mediów społecznościowych i internetu w popularyzacje szachów,<br />
 jak te dane wykorzystać i jak wprowadzić nowość w szachach.<br /><br />"
 author: "Rafal Bazan"
 date: "2024-05-21"
 output: html_document
 ---
 
-# Css
+# Początkowe ustawienia
 
-<button id="button_my_css" class="my_button" onclick="hideCss()">Pokaż</button>
+<button id="button_init" class="my_button" onclick="hideMy_init()">Pokaż</button>
 
-<div id="my_css">
-
-```{css}
+```{css, echo=FALSE}
 .my_button {
   background-color: #4CAF50;
   color: white;
@@ -33,49 +31,30 @@ table {
    margin:1em auto;
 }
 ```
-#### Java-script dla przycisku
+<div id="my_init">
 
-```{js, eval=FALSE}
-const div_my_css = document.getElementById("my_css");
-  div_my_css.style.display = 'none';
-  
-var button_my_css = document.getElementById("button_my_css");
-  
-function hideCss() {
-  if (div_my_css.style.display === 'none') {
-    div_my_css.style.display = 'block';
-    button_my_css.innerHTML = "Ukryj";
-  } else {
-    div_my_css.style.display = 'none';
-    button_my_css.innerHTML = "Pokaż";
-  }
+#### Css
+
+```{css, eval=FALSE}
+.my_button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  width: 70px;
+}
+h1, h2, h3, h4, h5, h6 {
+      text-align: center;
+    }
+body {
+  background-color: #FFFFDF;
+}
+table {
+   margin:1em auto;
 }
 ```
-
-</div>
-
-```{js, echo=FALSE}
-const div_my_css = document.getElementById("my_css");
-  div_my_css.style.display = 'none';
-  
-var button_my_css = document.getElementById("button_my_css");
-  
-function hideCss() {
-  if (div_my_css.style.display === 'none') {
-    div_my_css.style.display = 'block';
-    button_my_css.innerHTML = "Ukryj";
-  } else {
-    div_my_css.style.display = 'none';
-    button_my_css.innerHTML = "Pokaż";
-  }
-}
-```
-
-# Tworzenie struktury zbioru danych
-
-<button id="my_button" class="my_button" onclick="myFunction()">Pokaż</button>
-
-<div id="tworzenie-struktury">
 
 #### Definiowanie ścieżek
 
@@ -106,6 +85,52 @@ url = "https://database.lichess.org"
 path= "/html/body/div/div[2]/div/section[1]/table"
 wezel = html_node(read_html(url), xpath=path)
 ```
+
+#### Java-script dla przycisku
+
+```{js, eval=FALSE}
+const div_my_init = document.getElementById("my_init");
+  div_init.style.display = 'none';
+  
+var button_my_init = document.getElementById("button_my_init");
+  
+function hideMy_init() {
+  if (div_my_init.style.display === 'none') {
+    div_my_init.style.display = 'block';
+    button_my_init.innerHTML = "Ukryj";
+  } else {
+    div_my_init.style.display = 'none';
+    button_my_init.innerHTML = "Pokaż";
+  }
+}
+```
+
+</div>
+
+```{js, echo=FALSE}
+const div_my_init = document.getElementById("my_init");
+  div_my_init.style.display = 'none';
+  
+var button_my_init = document.getElementById("button_my_init");
+  
+function hideMy_init() {
+  if (div_my_init.style.display === 'none') {
+    div_my_init.style.display = 'block';
+    button_my_init.innerHTML = "Ukryj";
+  } else {
+    div_my_init.style.display = 'none';
+    button_my_init.innerHTML = "Pokaż";
+  }
+}
+```
+
+# Czy szachy są coraz popularniejsze?
+
+# Tworzenie struktury zbioru danych
+
+<button id="my_button" class="my_button" onclick="myFunction()">Pokaż</button>
+
+<div id="tworzenie-struktury">
 
 #### wyodrębnianie tagów oraz hiperłączy
 
@@ -269,15 +294,20 @@ function myFunction() {
 ```{r warning=FALSE}
 
 choose_max_date_to_scrap_game_count = function(date){
+  # wybor tabeli do analizy
   my_games_count = html_table(wezel)[[3]]
   
+  # wybor lat do analizy na podstawie linkow .zst.torrent
   init_links_for_download = links[seq(2,nrow(links), by=2), 1]
   
+  # wyodrebnianie dat z linkow
   full_date_from_imported_links = data.frame(stri_match_all(data.frame(init_links_for_download),
                                      regex = "rated_\\s*(.*?)\\s*[.]"))[,2]
   
+  # szukanie indeksow z datami odpowiadajacymi wybranej dacie
   date_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
   
+  # wyswietlanie liczb gier dla wybranych dat
   games_count = my_games_count[c(date_location:length(init_links_for_download))]
   
   return(games_count)
@@ -293,29 +323,37 @@ pander(head(data.frame(games_count)))
 ```{r warning=FALSE}
 
 preparing_month_dataset = function(date, data_size = 0.001){
+  
+  # szukanie indeksu wybranej daty
   searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
+  
+  # szukanie liczby meczy dla wybranej daty i ograniczanie jej wzgledem wyszukanych wartosci
   decreasing_game_number <- round((as.numeric(stri_replace_all(games_count,"",regex = "\\,"))*18*data_size)[searching_location])
   
+  # definiowanie pliku do przerobki na podstawie wybranej daty
   pgn_file_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn", sep="")[searching_location]
   
+  # wczytanie pliku do zdefiniowanej dlugosci
   my_pgn <- read.table(pgn_file_to_read,
                    quote="", sep="\n", stringsAsFactors=FALSE, nrows = decreasing_game_number)
   
-  
+  # szukanie ostatnich 22 nazw kolumn
   colnms <- sub("\\[(\\w+).+", "\\1", my_pgn[(decreasing_game_number-22):decreasing_game_number,1])
   
+  # szukanie indeksow rozpoczynajacych nowe partie
   Event_location = which(stri_detect(colnms, regex = "Event") == TRUE) 
   
+  # usuwanie danych pod wyszukanym indeksie
   my_pgn2 = my_pgn[1:(decreasing_game_number-22+Event_location-2),]
   
-  tail(my_pgn2)
-  
+  # zapis przetworzonego zbioru do pliku
   pgn_file_to_write = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",date,".pgn", sep="")[searching_location]
   
   write.table(my_pgn2,pgn_file_to_write,col.names = FALSE,row.names = FALSE,quote = FALSE)
   
   test_path = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",date,".pgn", sep="")[searching_location]
   
+  # tworzenie pliku dla statusu pracy
   file_txt_for_info = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/ograniczono_dane.txt", sep="")[searching_location]
   
   write.table(" ",file_txt_for_info)
@@ -330,12 +368,15 @@ preparing_month_dataset = function(date, data_size = 0.001){
 
 ```{r}
 removing_oryginal_dataset = function(date){
+  # szukanie indeksu wybranej daty
   searching_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
   
+  # definiowanie plikow do usuniecia
   file_pgn_zst_to_remove = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn.zst", sep="")[searching_location]
   
   file_pgn_to_remove = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/lichess_db_standard_rated_",full_date_from_imported_links,".pgn", sep="")[searching_location]
   
+  # tworzenie pliku dla statusu pracy
   file_txt_for_info = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/usunieto_oryginal.txt", sep="")[searching_location]
   
   file.remove(file_pgn_zst_to_remove)
