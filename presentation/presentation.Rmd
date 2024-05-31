@@ -80,6 +80,10 @@ library(knitr)
 library(rvest)
 library(stringi)
 library(dplyr)
+library(scales)
+library(ggplot2)
+library(png)
+library("patchwork") 
 ```
 
 #### Wybór tablicy do scrapowania
@@ -109,6 +113,8 @@ function hideMy_init() {
 }
 ```
 
+<button id="button_my_init" class="my_button" onclick="hideMy_init()">Ukryj</button>
+
 </div>
 
 ```{js, echo=FALSE}
@@ -132,9 +138,75 @@ function hideMy_init() {
 
 ![](../pictures/lichess_site.png)
 
-```{r}
+```{r, warning=FALSE, fig.align='center'}
+
+# wybor tabeli z iloscia zagranych partii wedlug miesiaca
+games_count_html = html_table(wezel)[[3]]
+
+my_games_count <- data.frame(count=as.numeric(stri_replace_all(games_count_html,"",regex = "\\,"))[-length(games_count_html)])
+
+# wybor lat do analizy na podstawie linkow .zst.torrent
+hyperlinks = html_nodes(wezel, "a")
+my_href = html_attr(hyperlinks, "href")
+links = data.frame(links = paste(url,my_href,sep="/"))
+
+init_links_for_download = links[seq(2,nrow(links), by=2), 1]
+
+# wyodrebnianie lat z linkow
+
+year_from_imported_links = data.frame(year=data.frame(stri_match_all(data.frame(init_links_for_download),
+                                   regex = "rated_\\s*(.*?)\\s*[-]"))[,2])
+
+
+Data_games_count = cbind(year_from_imported_links,my_games_count)
+
+# szukanie indeksow rozpoczynajacych nowy rok w zbiorze
+first_index_of_years=c()
+
+for(i in unique(year_from_imported_links)[,]){
+first_index_of_years = append(first_index_of_years,which(rev(Data_games_count$year)==i)[1])
+}
+
+img <- readPNG("../pictures/queens_gambit.png", native = TRUE)
+img2 = readPNG("../pictures/candidates_tournament.png", native = TRUE)
+
+ggplot(Data_games_count, aes(x = rev(1:nrow(my_games_count)), y = count)) +
+
+  # typ wykresu
+  geom_bar(stat = "identity",aes(fill = year)) +
+  
+  # opis
+  labs(x = "Years", y = "Number of chess games", title = "Number of chess games played on the lichess website") +
+
+  # legenda
+  scale_fill_manual(name = "Years", values = unique(Data_games_count$year)) +
+  expand_limits(x = c(0, NA), y = c(0,NA)) +
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(year_from_imported_links)[,]))) +
+  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6)) +
+  
+  # strzalka
+  geom_segment(aes(70, 80000000, xend = 86, yend = 75000000),
+               linewidth=1.2,
+               arrow = arrow(length = unit(5, "mm"))) +
+  
+  # zdjecia
+    inset_element(p = img, 
+                left = 0.3, 
+                bottom = 0.7, 
+                right = 0.5, 
+                top = 1) +
+  inset_element(p = img2, 
+                left = 0.15, 
+                bottom = 0.45, 
+                right = 0.5, 
+                top = 0.7)
 
 ```
+
+#### Wnioski:
+
+### Szachy zyskują na popularności, ale czy na pewno dzięki internetowi i cyfryzacji?
 
 # Tworzenie struktury zbioru danych
 
@@ -273,6 +345,8 @@ function myFunction() {
   }
 }
 ```
+
+<button id="my_button" class="my_button" onclick="myFunction()">Ukryj</button>
 
 </div>
 
@@ -424,6 +498,8 @@ function myFunction2() {
 }
 ```
 
+<button id="my_button2" class="my_button" onclick="myFunction2()">Ukryj</button>
+
 </div>
 
 ```{js, echo=FALSE}
@@ -443,64 +519,7 @@ function myFunction2() {
 }
 ```
 
-#### Testy 
 
-```{r eval=FALSE}
-pgn <- read.table("D:\\moje\\projekty\\chess-in-the-digital-age\\Dataset\\2024\\03. Mar\\Data_2024-03.pgn", quote="", sep="\n", stringsAsFactors=FALSE)
-
-
-pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
-                            byrow=TRUE, ncol=1))
-nrow(pgn.df)
-
-library(forcats)
-zmienne = fct_count(fct_infreq(sub("\\[(\\w+).+", "\\1", pgn[1:nrow(pgn.df),1])))
-
-nrow(pgn.df)
-?length
-library(stringi)
-ncol(pgn)
-tail(pgn)
-# get column names
-colnms <- sub("\\[(\\w+).+", "\\1", pgn[1:17,1])
-
-library(forcats)
-fct_count(sub("\\[(\\w+).+", "\\1", pgn[1:36,1]))
-# give columns 11 (the moves) and 12 (redundant results column) nice names
-colnms[18] <- "Moves"
-
-pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
-                            byrow=TRUE, ncol=18))
-names(pgn.df) <- colnms
-```
-
-```{r}
-list1 <- list("Joe","Hanna","Alice")
-list2 <- list("Alice","Hanna","Joe")
-list3 <- list("Hanna","Alice","Joe")
-list <- list(list1=list1, list2=list2, list3=list3)
-
-result <- matrix(NA, length(list), length(list))
-colnames(result) <- rownames(result) <- names(list)
-
-for(i in 1:length(list)){
-    for(j in i:length(list)){
-        result[i, j] <- length(intersect(list[[i]], list[[j]]))    
-        result[j, i] <- result[i, j]     
-    }
-}
-result
-image(result)
-
-
-crossprod(table(stack(list)))
-
-
-
-mat <- sapply(list, function(x) sapply(list, function(y) length(intersect(x,y))))
-
-print(mat)
-```
 
 
 

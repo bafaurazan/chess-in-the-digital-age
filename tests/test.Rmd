@@ -1,0 +1,233 @@
+---
+title: "Test"
+author: "Rafal Bazan"
+date: "2024-05-31"
+output: html_document
+---
+
+```{r setup}
+project_path = "D:/moje/projekty/chess-in-the-digital-age"
+setwd(paste(project_path,"/presentation", sep = ""))
+Dataset_path = paste(project_path,"/Dataset", sep = "")
+selected_date = "2024-04"
+
+knitr::opts_chunk$set(root= paste(project_path,"/presentation", sep = ""))
+```
+
+```{r}
+ggplot(Data_games_count, aes(x=my_counter, y=count)) +
+  coord_flip()+
+  geom_bar(stat = "identity",position_fill(reverse = TRUE)) 
+
+                  
+                  
++
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(year_from_imported_links)[,])))
+
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(year_from_imported_links)[,])))
+  
+  +
+   scale_x_reverse()
+
+
++
+ 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+```{r}
+
+
+unique(year_from_imported_links)[,]
+# Create a ggplot object
+ggplot(Data_games_count, aes(x = rev(my_counter), y = count)) +
+
+  # Add a geom_point layer for each group
+  geom_bar(stat = "identity",aes(fill = year)) +
+
+  # Set labels and title
+  labs(x = "Wartość x", y = "Wartość y", title = "Wizualizacja danych") +
+
+  # Add legend
+  scale_fill_manual(name = "Grupa", values = unique(Data_games_count$year)) +
+  
+  scale_x_continuous(breaks = c(1:10),
+                     )
+
+ggplot(Data_games_count, aes(x=date, y=count)) +
+  geom_point() +
+  scale_x_continuous(limits = c(0, 10), breaks = c(0, 2, 4, 6, 8, 10))
+
+daty = head(Data_games_count$date)
+lata = head(Data_games_count$year)
+liczby = head(Data_games_count$count)
+
+df <- data.frame(x=daty,
+                 y=as.integer(lata),
+                 z=as.integer(liczby))
+
+df <- data.frame(x=c(1, 2, 4, 5, 7, 8, 9, 10),
+                 y=c(12, 17, 27, 39, 50, 57, 66, 80))
+
+
+ggplot(df, aes(x=z, y=y)) +
+  geom_bar(stat = "identity") +
+  scale_x_continuous(breaks = c(0, 7),
+                     labels = c(0, 2))
+```
+```{r}
+ggplot(df, aes(x=x, y=y)) +
+  geom_point() +
+  scale_x_continuous(limits = c(0, 10), breaks = c(0, 2, 4, 6, 8, 10))
+
+ggplot(Data_games_count, aes(x=date, y=count)) + 
+  geom_bar(stat = "identity")+ 
+  labs(x = "Miesiąc", y = "Liczba gier") +
+  theme_ipsum()
+
+
+barplot(Data_games_count$count ~ Data_games_count$date,
+        las = 2, 
+        cex.names = 1) 
+
+```
+
+```{r}
+sample_df <- data.frame(
+  group = factor(rep(letters[1:3], each = 10)),
+  value = rnorm(30)
+)
+
+group_means_df <- setNames(
+  aggregate(value ~ group, sample_df, mean),
+  c("group", "group_mean")
+)
+
+ggplot(data = sample_df, mapping = aes(x = group, y = value)) +
+  geom_point() +
+  geom_point(
+    mapping = aes(y = group_mean), data = group_means_df,
+    colour = 'red', size = 3
+  )
+
+library(colorspace)
+kolory=choose_palette()
+kolory(35)
+  
+barplot(my_games_count, names.arg = full_date_from_imported_links,
+        ylim = c(0,110000000), cex.axis = 0.8, ylab="Ilosc meczy na przestrzeni lat",
+        cex.lab=0.8,  las=2, cex.names=0.8,
+        col = kolory(35))
+
+data <- data.frame(
+  name=c("A","B","C","D","E") ,  
+  value=c(3,12,5,18,45)
+  )
+ggplot(data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity")
+
+library(dplyr)
+library(ggplot2)
+
+# Create a scatter plot
+i <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
+
+# Add arrow
+i + geom_segment(aes(5, 30, xend = 3.5, yend = 25),
+                  arrow = arrow(length = unit(0.5, "cm")))
+```
+
+```{r}
+library(png)
+library(grid)
+library("patchwork") 
+my_path = "D:\\moje\\projekty\\chess-in-the-digital-age\\pictures"
+setwd("D:\\moje\\projekty\\chess-in-the-digital-age")
+img <- readPNG("D:\\moje\\projekty\\chess-in-the-digital-age\\pictures\\queens_gambit.png", native = TRUE)
+
+
+ggplot(Data_games_count, aes(x = rev(1:nrow(my_games_count)), y = count)) +
+
+  # typ wykresu
+  geom_bar(stat = "identity",aes(fill = year)) +
+  
+  # opis
+  labs(x = "Years", y = "Number of chess games", title = "Number of chess games played on the lichess website") +
+
+  # legenda
+  scale_fill_manual(name = "Years", values = unique(Data_games_count$year)) +
+  expand_limits(x = c(0, NA), y = c(0,NA)) +
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(year_from_imported_links)[,]))) +
+  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6)) +
+  geom_segment(aes(83, 95000000, xend = 93, yend = 77000000),
+               linewidth=1.2,
+               arrow = arrow(length = unit(5, "mm"))) +
+    inset_element(p = img, 
+                left = 0.4, 
+                bottom = 0.65, 
+                right = 0.6, 
+                top = 0.95)
+
+```
+
+#### Testy 
+
+```{r eval=FALSE}
+pgn <- read.table("D:\\moje\\projekty\\chess-in-the-digital-age\\Dataset\\2024\\03. Mar\\Data_2024-03.pgn", quote="", sep="\n", stringsAsFactors=FALSE)
+
+
+pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                            byrow=TRUE, ncol=1))
+nrow(pgn.df)
+
+library(forcats)
+zmienne = fct_count(fct_infreq(sub("\\[(\\w+).+", "\\1", pgn[1:nrow(pgn.df),1])))
+
+nrow(pgn.df)
+?length
+library(stringi)
+ncol(pgn)
+tail(pgn)
+# get column names
+colnms <- sub("\\[(\\w+).+", "\\1", pgn[1:17,1])
+
+library(forcats)
+fct_count(sub("\\[(\\w+).+", "\\1", pgn[1:36,1]))
+# give columns 11 (the moves) and 12 (redundant results column) nice names
+colnms[18] <- "Moves"
+
+pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                            byrow=TRUE, ncol=18))
+names(pgn.df) <- colnms
+```
+
+```{r}
+list1 <- list("Joe","Hanna","Alice")
+list2 <- list("Alice","Hanna","Joe")
+list3 <- list("Hanna","Alice","Joe")
+list <- list(list1=list1, list2=list2, list3=list3)
+
+result <- matrix(NA, length(list), length(list))
+colnames(result) <- rownames(result) <- names(list)
+
+for(i in 1:length(list)){
+    for(j in i:length(list)){
+        result[i, j] <- length(intersect(list[[i]], list[[j]]))    
+        result[j, i] <- result[i, j]     
+    }
+}
+result
+image(result)
+
+
+crossprod(table(stack(list)))
+
+
+
+mat <- sapply(list, function(x) sapply(list, function(y) length(intersect(x,y))))
+
+print(mat)
+```
