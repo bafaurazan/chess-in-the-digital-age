@@ -84,6 +84,7 @@ library(scales)
 library(ggplot2)
 library(png)
 library("patchwork") 
+library(forcats)
 ```
 
 #### Wybór tablicy do scrapowania
@@ -138,7 +139,9 @@ function hideMy_init() {
 
 ![](../pictures/lichess_site.png)
 
-```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
+#### Scrapowanie danych z lichess
+
+```{r, warning=FALSE}
 
 # wybor tabeli z iloscia zagranych partii wedlug miesiaca
 games_count_html = html_table(wezel)[[3]]
@@ -154,18 +157,23 @@ init_links_for_download = links[seq(2,nrow(links), by=2), 1]
 
 # wyodrebnianie lat z linkow
 
-year_from_imported_links = data.frame(year=data.frame(stri_match_all(data.frame(init_links_for_download),
+my_year_from_imported_links = data.frame(year=data.frame(stri_match_all(data.frame(init_links_for_download),
                                    regex = "rated_\\s*(.*?)\\s*[-]"))[,2])
 
 
-Data_games_count = cbind(year_from_imported_links,my_games_count)
+Data_games_count = cbind(my_year_from_imported_links,my_games_count)
 
 # szukanie indeksow rozpoczynajacych nowy rok w zbiorze
 first_index_of_years=c()
 
-for(i in unique(year_from_imported_links)[,]){
+for(i in unique(my_year_from_imported_links)[,]){
 first_index_of_years = append(first_index_of_years,which(rev(Data_games_count$year)==i)[1])
 }
+```
+
+#### Wizualizacja
+
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
 
 img <- readPNG("../pictures/queens_gambit.png", native = TRUE)
 img2 = readPNG("../pictures/candidates_tournament.png", native = TRUE)
@@ -182,7 +190,7 @@ ggplot(Data_games_count, aes(x = rev(1:nrow(my_games_count)), y = count)) +
   scale_fill_manual(name = "Years", values = unique(Data_games_count$year)) +
   expand_limits(x = c(0, NA), y = c(0,NA)) +
   scale_x_continuous(breaks = c(rev(first_index_of_years)),
-                     labels = c(rev(unique(year_from_imported_links)[,]))) +
+                     labels = c(rev(unique(my_year_from_imported_links)[,]))) +
   scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6)) +
   theme(text = element_text(size = 20),
         axis.text.x = element_text(angle = 90, hjust = 1)) +
@@ -476,9 +484,9 @@ removing_oryginal_dataset = function(date){
 #### Wywoływanie funkcji przygotowującej zbiór z konkretnego miesiąca do późniejszej analizy
 
 ```{r eval=FALSE}
-preparing_month_dataset("2021-10")
+preparing_month_dataset("2013-01")
 
-removing_oryginal_dataset("2021-10")
+removing_oryginal_dataset("2013-01")
 ```
 
 #### Java-script dla przycisku
@@ -521,7 +529,173 @@ function myFunction2() {
 }
 ```
 
+# Wpływ serialu "Gambit królowej" na świat szachów
 
+#### Wyszukiwanie Ilości zagranych partii z debiutem "Gambit królowej"
 
+```{r eval=FALSE}
+# komenda szukajaca powtarzalnosc danej kolumny
+# zmienne = fct_count(fct_infreq(sub("\\[(\\w+).+", "\\1", pgn[1:nrow(pgn.df),1])))
 
+files_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",full_date_from_imported_links,".pgn", sep="")
 
+Percent_games_count=c()
+
+for(i in 1:length(files_to_read)){
+  pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+  
+  pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                              byrow=TRUE, ncol=1))
+  
+  opening_index = which(sub("\\[(\\w+).+", "\\1", pgn[1:nrow(pgn.df),1]) == "Opening")
+  
+  All_games_count = length(pgn.df[opening_index,])
+  
+  Queens_Gambit_games_count = length(which(stri_detect(pgn.df[opening_index,], regex = "Queen's Gambit") == TRUE))
+
+  Percent_games_count = append(Percent_games_count,(Queens_Gambit_games_count/All_games_count)*100)
+}
+
+```
+
+```{r echo=FALSE}
+ Percent_games_count = c(3.555789, 3.648949, 3.570493, 3.821276, 3.636026, 3.761956, 3.568643, 3.762852, 3.811248, 3.704170, 3.826924, 3.728556, 3.733171, 3.874278, 3.791296, 3.897061, 3.932163, 3.990679, 3.894168, 3.704410, 3.910138, 3.740654, 3.836014, 3.831074, 3.944379, 3.734768, 4.100811, 4.001528, 3.923190, 3.852162, 3.812260, 3.862222, 3.741322, 3.910651, 4.068367, 3.799525, 3.843903, 4.138276, 4.188563, 4.293530, 4.237440, 4.159315, 3.753013, 3.959507, 4.073788, 4.237877, 4.408564, 4.328597, 4.197038, 4.549876, 4.596107, 4.527963, 4.383176, 4.326375, 4.389134, 4.297731, 4.494321, 4.270512, 4.215305, 4.583014, 4.476366, 4.642621, 4.546481, 4.213044, 4.594603, 4.405404, 4.480504, 4.459736, 4.672030, 4.601140, 4.460453, 4.885446, 4.653620, 4.283625, 4.748503, 4.638715, 4.286106, 3.798334, 4.236134, 4.805379, 4.410191, 4.439700, 4.317269, 4.539234, 4.043887, 3.942006, 4.545455, 4.015328, 4.167059, 4.658902, 4.353423, 4.620204, 4.471879, 3.755137, 4.391304, 4.200600, 4.519520, 4.448535, 4.028394, 4.985063, 4.776183, 4.582611, 5.210788, 4.666458, 3.975535, 3.119333, 6.493506, 5.742821, 3.079980, 4.823848, 3.976261, 3.325416, 6.114398, 4.267844, 4.807692, 4.099822, 5.179982, 3.480475, 3.792784, 3.631011, 6.476400, 5.022321, 4.241645, 3.694268, 6.615385, 4.021938, 3.896104, 5.205479, 3.835616, 7.598784, 2.380952, 6.965174, 3.389831, 6.179775, 6.521739, 5.147059)
+```
+
+#### Wizualizacja
+
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
+
+my_Percent_games_count <- data.frame(count=Percent_games_count)
+
+Data_Queens_gambit_games_count = cbind(data.frame(year=year_from_imported_links),my_Percent_games_count)
+
+ggplot(Data_Queens_gambit_games_count, aes(x = rev(1:nrow(my_games_count)), y = count)) +
+
+  # typ wykresu
+  geom_bar(stat = "identity",aes(fill = year)) +
+  
+  # opis
+  labs(x = "Years", y = "Number of chess games", title = "Number of 'Queen's Gambit' openings played") +
+
+  # legenda
+  scale_fill_manual(name = "Years", values = unique(Data_Queens_gambit_games_count$year)) +
+  expand_limits(x = c(0, NA), y = c(0,NA)) +
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(year_from_imported_links)))) +
+  scale_y_continuous(labels = unit_format(unit = "%", scale = 1)) +
+  theme(text = element_text(size = 20),
+        axis.text.x = element_text(angle = 90, hjust = 1)) 
+```
+
+#### Wyszukiwanie Ilości zagranych partii przez nowicjuszy (ranga < 1200)
+
+```{r eval=FALSE}
+
+novice_games_count=c()
+
+for(i in 1:length(files_to_read)){
+  pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+  
+  pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                              byrow=TRUE, ncol=1))
+  
+  elo_index = which(sub("\\[(\\w+).+", "\\1", pgn[1:nrow(pgn.df),1]) == "WhiteElo")
+  
+  All_games_count = length(pgn.df[elo_index,])
+  
+  my_novice_games_count = length(which(as.numeric(pgn.df[elo_index,]) < 1200) == TRUE)
+
+  novice_games_count = append(novice_games_count,(my_novice_games_count/All_games_count)*100)
+}
+
+```
+
+```{r echo=FALSE}
+Percent_novice_games_count = c(12.857987, 13.357555, 14.015549, 12.922200, 14.467707, 13.384027, 13.837187, 14.234658, 14.232338, 14.788341, 14.934010, 15.014064, 16.897613, 17.026115, 16.269454, 14.236539, 14.869463, 13.552847, 13.865011, 13.463545, 12.501214, 13.284646, 12.647089, 12.379299, 13.009109, 13.156219, 13.002317, 11.689088, 11.780033, 11.733358,
+12.335052, 13.061396, 11.917121, 12.768498, 13.461747, 14.802892, 14.781213, 15.105308, 14.372718, 13.829721, 13.277386,  9.479606,  9.801503,  9.196180,  8.945781,  9.250145,  8.852692,  8.368533,  8.232704,  9.245650, 9.742563 ,  9.900376, 10.526435, 10.628750, 11.628482, 12.295459, 13.466619, 13.956875, 15.711591, 16.341540, 16.761042, 15.867550, 16.370554, 14.602462, 14.755992, 12.741608, 12.044886, 12.451548, 11.412659, 11.158594, 11.841910, 10.937427, 10.494541, 10.449592, 10.402702,  8.965210,  8.133735,  7.652617,  6.759650,  6.036801, 6.386926 ,  6.118392,  6.858202,  5.383212,  6.536050,  6.708464,  5.287035,  3.765412,  3.884227,  2.384914,  2.106495,  2.505873,  2.167353,  1.799632,  2.289855,  2.714674,  2.927928,  2.853198,  3.389530,  3.080657,  2.998501,  2.700025,  3.770621,  4.040088,  5.062861,  4.969169,  5.614973,  4.119850,  4.421262,  4.336043,  4.747774,  3.919240,  3.090072,  2.796174,  2.804487,  4.010695,  3.863038,  4.668930,  2.960222,  3.042198,  2.854007,  4.575893,  2.570694,  5.095541,  5.230769,  3.656307,  1.298701,  2.465753,  4.383562,  2.127660,  5.555556,  2.487562,  3.389831,  1.685393,  1.449275,  2.205882)
+```
+
+#### Wizualizacja
+
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
+
+my_Percent_novice_games_count <- data.frame(count=Percent_novice_games_count)
+
+Data_novice_games_count = cbind(data.frame(year=year_from_imported_links),my_Percent_novice_games_count)
+
+ggplot(Data_novice_games_count, aes(x = rev(1:nrow(my_games_count)), y = count)) +
+
+  # typ wykresu
+  geom_bar(stat = "identity",aes(fill = year)) +
+  
+  # opis
+  labs(x = "Years", y = "Number of chess games", title = "Number of novice games (rank < 1200) ") +
+
+  # legenda
+  scale_fill_manual(name = "Years", values = unique(Data_novice_games_count$year)) +
+  expand_limits(x = c(0, NA), y = c(0,NA)) +
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(year_from_imported_links)))) +
+  scale_y_continuous(labels = unit_format(unit = "%", scale = 1)) +
+  theme(text = element_text(size = 20),
+        axis.text.x = element_text(angle = 90, hjust = 1)) 
+```
+
+```{r eval=FALSE}
+
+novice_games_count_v2=c()
+
+for(i in 136:length(files_to_read)){
+  pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+  
+  pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                              byrow=TRUE, ncol=1))
+  
+  moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn.df),1]) != "")
+  
+  cow_moves = stri_match_all(pgn.df[moves,], regex = "1. \\s*(.*?)\\s*7. ")[[1]]
+  
+  cow_moves = sub("\\[(\\b+).+", "\\1", pgn.df[moves,]) 
+  
+  
+  All_games_count_v2 = length(pgn.df[elo_index_v2,])
+  
+  my_novice_games_count_v2 = length(which(as.numeric(pgn.df[elo_index_v2,]) < 1100) == TRUE)
+
+  novice_games_count_v2 = append(novice_games_count_v2,(my_novice_games_count_v2/All_games_count_v2)*100)
+}
+
+```
+
+```{r echo=FALSE, eval=FALSE}
+Percent_novice_games_count = c(12.857987, 13.357555, 14.015549, 12.922200, 14.467707, 13.384027, 13.837187, 14.234658, 14.232338, 14.788341, 14.934010, 15.014064, 16.897613, 17.026115, 16.269454, 14.236539, 14.869463, 13.552847, 13.865011, 13.463545, 12.501214, 13.284646, 12.647089, 12.379299, 13.009109, 13.156219, 13.002317, 11.689088, 11.780033, 11.733358,
+12.335052, 13.061396, 11.917121, 12.768498, 13.461747, 14.802892, 14.781213, 15.105308, 14.372718, 13.829721, 13.277386,  9.479606,  9.801503,  9.196180,  8.945781,  9.250145,  8.852692,  8.368533,  8.232704,  9.245650, 9.742563 ,  9.900376, 10.526435, 10.628750, 11.628482, 12.295459, 13.466619, 13.956875, 15.711591, 16.341540, 16.761042, 15.867550, 16.370554, 14.602462, 14.755992, 12.741608, 12.044886, 12.451548, 11.412659, 11.158594, 11.841910, 10.937427, 10.494541, 10.449592, 10.402702,  8.965210,  8.133735,  7.652617,  6.759650,  6.036801, 6.386926 ,  6.118392,  6.858202,  5.383212,  6.536050,  6.708464,  5.287035,  3.765412,  3.884227,  2.384914,  2.106495,  2.505873,  2.167353,  1.799632,  2.289855,  2.714674,  2.927928,  2.853198,  3.389530,  3.080657,  2.998501,  2.700025,  3.770621,  4.040088,  5.062861,  4.969169,  5.614973,  4.119850,  4.421262,  4.336043,  4.747774,  3.919240,  3.090072,  2.796174,  2.804487,  4.010695,  3.863038,  4.668930,  2.960222,  3.042198,  2.854007,  4.575893,  2.570694,  5.095541,  5.230769,  3.656307,  1.298701,  2.465753,  4.383562,  2.127660,  5.555556,  2.487562,  3.389831,  1.685393,  1.449275,  2.205882)
+```
+
+#### Wizualizacja
+
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10, echo=FALSE, eval=FALSE}
+Percent_novice_games_count = novice_games_count_v2
+Percent_novice_games_count = 
+my_Percent_novice_games_count <- data.frame(count=Percent_novice_games_count)
+
+Data_novice_games_count = cbind(data.frame(year=year_from_imported_links),my_Percent_novice_games_count)
+
+ggplot(Data_novice_games_count, aes(x = rev(1:nrow(my_games_count)), y = count)) +
+
+  # typ wykresu
+  geom_bar(stat = "identity",aes(fill = year)) +
+  
+  # opis
+  labs(x = "Years", y = "Number of chess games", title = "Number of novice games (rank < 1200) ") +
+
+  # legenda
+  scale_fill_manual(name = "Years", values = unique(Data_novice_games_count$year)) +
+  expand_limits(x = c(0, NA), y = c(0,NA)) +
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(year_from_imported_links)))) +
+  scale_y_continuous(labels = unit_format(unit = "%", scale = 1)) +
+  theme(text = element_text(size = 20),
+        axis.text.x = element_text(angle = 90, hjust = 1)) 
+```
