@@ -316,16 +316,19 @@ print(mat)
 novice_games_count_v2=c()
 
 for(i in 136:length(files_to_read)){
-  pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+  pgn <- read.table(files_to_read[1], quote="", sep="\n", stringsAsFactors=FALSE)
   
   pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
                               byrow=TRUE, ncol=1))
   
   moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn.df),1]) != "")
+  which(moves == 58176)
   
-  cow_moves = stri_match_all(pgn.df[moves,], regex = "1. \\s*(.*?)\\s*7. ")[[1]]
+  cow_moves = stri_match_all(pgn.df[moves,], regex = "1. \\s*(.*?)\\s* 5. ")[[3231]][,1]
   
-  cow_moves = sub("\\[(\\b+).+", "\\1", pgn.df[moves,]) 
+  cow_moves_v2 = stri_match_all(cow_moves, regex = "4. \\s*(.*?)\\s* 5. ")[[1]][,2]
+  
+  cow_moves_v3 = sub("(\\w+).+", "\\1", cow_moves_v2) 
   
   
   All_games_count_v2 = length(pgn.df[elo_index_v2,])
