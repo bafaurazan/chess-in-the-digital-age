@@ -21,7 +21,7 @@ output: html_document
   cursor: pointer;
   width: 70px;
 }
-h1, h2, h3, h4, h5, h6, p {
+h1, h2, h3, h4, h5, h6, p, li {
       text-align: center;
       color: #e0cdd6;
     }
@@ -196,6 +196,8 @@ my_plot = ggplot(Data_games_count, aes(x = rev(1:nrow(my_games_count)), y = coun
 my_plot
 ```
 
+#### Szukanie powodów znacznego wzrostu popularności szachów w 2020 roku
+
 ```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
 # strzalka
 
@@ -225,6 +227,18 @@ my_plot + geom_segment(aes(70, 68000000, xend = 86, yend = 62000000),
 ### Wnioski:
 
 Szachy zyskują na popularności, ale czy na pewno dzięki internetowi i cyfryzacji?
+
+# Jak wpłynął serial "Gambit królowej" na szachy?
+
+#### Ciekawostka:
+
+Gambit królowej w szachach to nazwa debiutu szachowego. Debiut szachowy z kolei to początkowe posunięcia w szachach.
+
+![](../pictures/gambit_krolowej.png)
+
+*Gambit Królowej*
+
+### Ile było granych debiutów "Gambit królowej"?
 
 # Tworzenie struktury zbioru danych
 
@@ -532,12 +546,7 @@ function myFunction2() {
   }
 }
 ```
-
-# Wpływ serialu "Gambit królowej" na szachy
-
-### Wyszukiwanie 
-
-Ilości zagranych partii względem debiutu "Gambit królowej"
+### Liczenie zagranych debiutów "Gambit królowej" na przestrzeni lat
 
 ```{r eval=FALSE}
 # komenda szukajaca powtarzalnosc danej kolumny
@@ -570,7 +579,7 @@ for(i in 1:length(files_to_read)){
 
 ### Przewidywania: 
 
-Skoro termin "Gambit królowej" zyskał rozgłos dzięki serialowi, to powinien występować częściej po 2020 roku w skali procentowej.
+Skoro termin "Gambit królowej" zyskał rozgłos dzięki serialowi, to debiut o tej nazwie powinien występować częściej po 2020 roku procentowo w stosunku do całości.
 
 ### Wizualizacja
 
@@ -598,9 +607,15 @@ ggplot(Data_Queens_gambit_games_count, aes(x = rev(1:length(games_count)), y = c
         axis.text.x = element_text(angle = 90, hjust = 1)) 
 ```
 
+### Obserwacje:
+
+Widać wyraźnie malejący stosunek granych debiutów "Gambit królowej", po dacie premiery serialu.
+
 ### Wnioski:
 
-d
+Serial znacząco wpłynął na osoby, które nie wiedzą co znaczy termin "Gambit królowej".
+
+# Czy serial wpłynął tylko na nowicjuszy szachowych?
 
 ### Wyszukiwanie Ilości zagranych partii przez nowicjuszy (ranga < 1200)
 
@@ -669,6 +684,12 @@ ggplot(Data_novice_games_count, aes(x = rev(1:length(games_count)), y = count)) 
                 top = 0.9)
 ```
 
+### Obserwacje:
+
+- Widać znaczny napływ nowicjuszy po dacie premiery serialu
+
+- Po oglądnięciu serialu, osoby nie znające się na szachach, chcą poprostu zagrać w tą gre i nie interesują się debiutami. Z tego powodu mogą zagrać na stronie lichess jako nowicjusze.
+
 ### Wyszukiwanie Ilości zagranych partii przez zaawansowanych graczy (ranga > 1800)
 
 ```{r eval=FALSE}
@@ -732,6 +753,20 @@ ggplot(Data_pro_games_count, aes(x = rev(1:length(games_count)), y = count)) +
                 right = 0.6, 
                 top = 0.97)
 ```
+
+### Obserwacje:
+
+- Widać spadek ilości zaawansowanych graczy po 2020 roku w stosunku do całości
+
+### Wnioski:
+
+- Serial wpłynął na szachy, głównie zachęcając do gry nowicjuszy. 
+
+# Dla czego serial nie wpłynął na zaawansowanych graczy?
+
+- Czy człowiek szuka nowości i dla tego tylu nowicjuszy zdecydowało się zagrać w szachy? 
+
+- Czy przez to, że "gambit królowej" jest starym debiutem, zauważono spadek popularności wśród zawodowców?
 
 ![](../pictures/yt_opening.png)
 
