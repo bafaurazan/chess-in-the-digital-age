@@ -309,36 +309,6 @@ print(mat)
 ```
 
 
-# Testy
-
-```{r eval=FALSE}
-
-novice_games_count_v2=c()
-
-for(i in 136:length(files_to_read)){
-  pgn <- read.table(files_to_read[1], quote="", sep="\n", stringsAsFactors=FALSE)
-  
-  pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
-                              byrow=TRUE, ncol=1))
-  
-  moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn.df),1]) != "")
-  which(moves == 58176)
-  
-  cow_moves = stri_match_all(pgn.df[moves,], regex = "1. \\s*(.*?)\\s* 5. ")[[3231]][,1]
-  
-  cow_moves_v2 = stri_match_all(cow_moves, regex = "4. \\s*(.*?)\\s* 5. ")[[1]][,2]
-  
-  cow_moves_v3 = sub("(\\w+).+", "\\1", cow_moves_v2) 
-  
-  
-  All_games_count_v2 = length(pgn.df[elo_index_v2,])
-  
-  my_novice_games_count_v2 = length(which(as.numeric(pgn.df[elo_index_v2,]) > 1800) == TRUE)
-
-  novice_games_count_v2 = append(novice_games_count_v2,(my_novice_games_count_v2/All_games_count_v2)*100)
-}
-
-```
 
 ```{r echo=FALSE, eval=FALSE}
 Percent_novice_games_count = c(12.857987, 13.357555, 14.015549, 12.922200, 14.467707, 13.384027, 13.837187, 14.234658, 14.232338, 14.788341, 14.934010, 15.014064, 16.897613, 17.026115, 16.269454, 14.236539, 14.869463, 13.552847, 13.865011, 13.463545, 12.501214, 13.284646, 12.647089, 12.379299, 13.009109, 13.156219, 13.002317, 11.689088, 11.780033, 11.733358,
@@ -370,4 +340,173 @@ ggplot(Data_novice_games_count, aes(x = rev(1:nrow(my_games_count)), y = count))
   scale_y_continuous(labels = unit_format(unit = "%", scale = 1)) +
   theme(text = element_text(size = 20),
         axis.text.x = element_text(angle = 90, hjust = 1)) 
+```
+
+```{r}
+c("tak","nie") == c("tak","nie")
+```
+
+
+# Testy cow opening
+
+```{r eval=FALSE}
+
+novice_games_count_v2=c()
+
+for(i in 136:length(files_to_read)){
+  pgn <- read.table(files_to_read[1], quote="", sep="\n", stringsAsFactors=FALSE)
+  
+  pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                              byrow=TRUE, ncol=1))
+  
+  moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn.df),1]) != "")
+  which(moves == 58176)
+  
+  cow_moves = stri_match_all(pgn.df[moves,], regex = "1. \\s*(.*?)\\s* 6. ")[[3231]][,1]
+  
+  cow_moves_v2 = stri_match_all(cow_moves, regex = "2. \\s*(.*?)\\s* 3. ")[[1]][,2]
+  
+  cow_moves_v3 = sub("(\\w+).+", "\\1", cow_moves_v2) 
+  
+  
+  All_games_count_v2 = length(pgn.df[elo_index_v2,])
+  
+  my_novice_games_count_v2 = length(which(as.numeric(pgn.df[elo_index_v2,]) > 1800) == TRUE)
+
+  novice_games_count_v2 = append(novice_games_count_v2,(my_novice_games_count_v2/All_games_count_v2)*100)
+}
+
+```
+
+
+
+# Testy mój opening
+
+```{r eval=FALSE}
+filtred_two_moves_to_compare = two_moves_to_compare[c(5,6) + rep(seq(0, length(two_moves_to_compare), 6), each = 2)]
+
+files_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",full_date_from_imported_links,".pgn", sep="")
+
+my_opening=c()
+
+for(i in 1:1){
+  pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+  
+  moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn),1]) != "")
+  head(moves)
+  my_five_moves = unlist(stri_match_all(pgn[moves,], regex = "1. \\s*(.*?)\\s* 6. "))
+  head(my_five_moves)
+  filtred_five_moves = my_five_moves[seq(1,length(my_five_moves), by=2)]
+  head(filtred_five_moves)
+ 
+  my_opening_index=c()
+  
+  for(i in 1:length(filtred_five_moves)){
+  five_moves_to_compare = stri_match_all(filtred_five_moves, regex = "(\\d. (\\w+))")[[i]][,3]
+  ifelse(setequal(five_moves_to_compare,c("e3","d3","Ne2","Nd2","Ng3"))== TRUE,
+         (my_opening_index = append(my_opening_index,i)),
+         next)
+  }
+```
+```{r}
+ my_opening_index
+ [1]   226  3231  7121 13422 14866 18153 20314 21462 22846 23403 26048 34478 35766 36553 38539 40440
+
+```
+
+# Testy mój opening V2
+
+```{r eval=FALSE}
+
+files_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",full_date_from_imported_links,".pgn", sep="")
+
+search_by_moves = function(searching_moves){
+  opening_count=c()
+  
+  for(i in 1:length(files_to_read)){
+    pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+    
+    moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn),1]) != "")
+    
+    for(j in 1:length(searching_moves)){
+      my_regex = paste("(.*?)\\s*",j,". (\\w+).+", sep = "")
+      moves_to_compare = sub(my_regex, "\\2", pgn[moves,])
+      moves = moves[which(moves_to_compare == searching_moves[j])]
+    }
+    
+    opening_count = append(opening_count,length(moves))
+  }
+  return(opening_count)
+}
+
+search_by_moves(c("e3","d3","Ne2","Nd2","Ng3"))
+```
+```{r}
+[1] 9 4 3 3 3 2 2 0 9 6 8 0 2 0 0 0 0 0 0 0 0 2 0 0 0 0 4 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0
+ [55] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 2 0 0 1 0 0 0 0 1 1 0 2 7 0 0 0 0 0 0 0 0 0 0 0 0 3 1 0 0 0 0 0 0 0 0 0 0 0
+[109] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+opening_count= c(0.009852864, 0.004176194, 0.003275681, 0.003031957, 0.003097126, 0.002166401, 0.002107881, 0.000000000, 0.009366804, 0.006297824, 0.008281145, 0.000000000, 0.001966897, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.002173535, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.004634994, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.001135280, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.001417836, 0.000000000, 0.001402820, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.004420085, 0.000000000, 0.009868259, 0.000000000, 0.000000000, 0.004717649, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.006487188, 0.007077141, 0.000000000, 0.014725372, 0.054062403, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.042863266, 0.015015015, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000)
+```
+
+```{r}
+setequal(five_moves_to_compare,c("e3","d3","Ne2","Nd2","Ng3"))
+
+  two_moves = unlist(stri_match_all(pgn[moves,], regex = "1. \\s*(.*?)\\s* 4. "))
+  head(pgn[moves,])
+  head(two_moves)
+  filtred_two_moves = two_moves[seq(1,length(two_moves), by=2)]
+  head(filtred_two_moves)
+ 
+  moves_to_compare = sub("1. (\\w+).+", "\\1", pgn[moves,])
+  head(moves_to_compare)
+  head(which(moves_to_compare == "e4"))
+  
+  my_opening_index=c()
+  
+  for(i in 1:length(filtred_two_moves)){
+  two_moves_to_compare = stri_match_all(filtred_two_moves, regex = "(\\d. (\\w+))")[[i]][,3]
+  ifelse(setequal(two_moves_to_compare,c("e3","d3","Ne2","Nd2","Ng3"))== TRUE,
+         (my_opening_index = append(my_opening_index,i)),
+         next)
+  }
+```
+
+
+```{r}
+
+  which(moves == 58176)
+  
+  pgn[moves,]
+
+  
+  my_moves = unlist(stri_match_all(pgn[moves,], regex = "1. \\s*(.*?)\\s* 3. "))
+  
+  head(my_moves)
+  my_test_moves = my_moves[1]
+
+  # my_test_moves_v2 = stri_match_all(my_test_moves, regex = "(\\w+) \\s*(.*?)\\s* \\d. (\\w+) \\s*(.*?)\\s* 4. (\\w+)")
+  
+  my_test_moves_v2 = stri_match_all(my_test_moves, regex = "(\\d. (\\w+))")[[1]][,1]
+  
+  my_new_moves = my_moves[seq(1,length(my_moves), by=2)]
+  
+  head(my_new_moves)
+  
+  maly_test = head(my_new_moves)
+  
+  cow_moves = stri_match_all(pgn[moves,], regex = "1. \\s*(.*?)\\s* 5. ")[[3231]][,1]
+  
+  cow_moves_v2 = stri_match_all(cow_moves, regex = "2. \\s*(.*?)\\s* 3. ")[[1]][,2]
+  
+  cow_moves_v3 = sub("(\\w+).+", "\\1", cow_moves_v2) 
+  
+  
+  All_games_count_v2 = length(pgn.df[elo_index_v2,])
+  
+  my_novice_games_count_v2 = length(which(as.numeric(pgn.df[elo_index_v2,]) > 1800) == TRUE)
+
+  novice_games_count_v2 = append(novice_games_count_v2,(my_novice_games_count_v2/All_games_count_v2)*100)
+
+
 ```
