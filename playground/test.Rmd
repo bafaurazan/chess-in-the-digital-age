@@ -1,0 +1,553 @@
+---
+title: "Test"
+author: "Rafal Bazan"
+date: "2024-05-31"
+output: html_document
+---
+
+```{r setup}
+project_path = "D:/moje/projekty/chess-in-the-digital-age"
+setwd(paste(project_path,"/presentation", sep = ""))
+Dataset_path = paste(project_path,"/Dataset", sep = "")
+selected_date = "2024-04"
+
+knitr::opts_chunk$set(root= paste(project_path,"/presentation", sep = ""))
+```
+
+```{r}
+ggplot(Data_games_count, aes(x=my_counter, y=count)) +
+  coord_flip()+
+  geom_bar(stat = "identity",position_fill(reverse = TRUE)) 
+
+                  
+                  
++
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(year_from_imported_links)[,])))
+
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(year_from_imported_links)[,])))
+  
+  +
+   scale_x_reverse()
+
+
++
+ 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+```{r}
+
+
+unique(year_from_imported_links)[,]
+# Create a ggplot object
+ggplot(Data_games_count, aes(x = rev(my_counter), y = count)) +
+
+  # Add a geom_point layer for each group
+  geom_bar(stat = "identity",aes(fill = year)) +
+
+  # Set labels and title
+  labs(x = "Wartość x", y = "Wartość y", title = "Wizualizacja danych") +
+
+  # Add legend
+  scale_fill_manual(name = "Grupa", values = unique(Data_games_count$year)) +
+  
+  scale_x_continuous(breaks = c(1:10),
+                     )
+
+ggplot(Data_games_count, aes(x=date, y=count)) +
+  geom_point() +
+  scale_x_continuous(limits = c(0, 10), breaks = c(0, 2, 4, 6, 8, 10))
+
+daty = head(Data_games_count$date)
+lata = head(Data_games_count$year)
+liczby = head(Data_games_count$count)
+
+df <- data.frame(x=daty,
+                 y=as.integer(lata),
+                 z=as.integer(liczby))
+
+df <- data.frame(x=c(1, 2, 4, 5, 7, 8, 9, 10),
+                 y=c(12, 17, 27, 39, 50, 57, 66, 80))
+
+
+ggplot(df, aes(x=z, y=y)) +
+  geom_bar(stat = "identity") +
+  scale_x_continuous(breaks = c(0, 7),
+                     labels = c(0, 2))
+```
+```{r}
+ggplot(df, aes(x=x, y=y)) +
+  geom_point() +
+  scale_x_continuous(limits = c(0, 10), breaks = c(0, 2, 4, 6, 8, 10))
+
+ggplot(Data_games_count, aes(x=date, y=count)) + 
+  geom_bar(stat = "identity")+ 
+  labs(x = "Miesiąc", y = "Liczba gier") +
+  theme_ipsum()
+
+
+barplot(Data_games_count$count ~ Data_games_count$date,
+        las = 2, 
+        cex.names = 1) 
+
+```
+
+```{r}
+sample_df <- data.frame(
+  group = factor(rep(letters[1:3], each = 10)),
+  value = rnorm(30)
+)
+
+group_means_df <- setNames(
+  aggregate(value ~ group, sample_df, mean),
+  c("group", "group_mean")
+)
+
+ggplot(data = sample_df, mapping = aes(x = group, y = value)) +
+  geom_point() +
+  geom_point(
+    mapping = aes(y = group_mean), data = group_means_df,
+    colour = 'red', size = 3
+  )
+
+library(colorspace)
+kolory=choose_palette()
+kolory(35)
+  
+barplot(my_games_count, names.arg = full_date_from_imported_links,
+        ylim = c(0,110000000), cex.axis = 0.8, ylab="Ilosc meczy na przestrzeni lat",
+        cex.lab=0.8,  las=2, cex.names=0.8,
+        col = kolory(35))
+
+data <- data.frame(
+  name=c("A","B","C","D","E") ,  
+  value=c(3,12,5,18,45)
+  )
+ggplot(data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity")
+
+library(dplyr)
+library(ggplot2)
+
+# Create a scatter plot
+i <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
+
+# Add arrow
+i + geom_segment(aes(5, 30, xend = 3.5, yend = 25),
+                  arrow = arrow(length = unit(0.5, "cm")))
+```
+
+```{r}
+library(png)
+library(grid)
+library("patchwork") 
+my_path = "D:\\moje\\projekty\\chess-in-the-digital-age\\pictures"
+setwd("D:\\moje\\projekty\\chess-in-the-digital-age")
+img <- readPNG("D:\\moje\\projekty\\chess-in-the-digital-age\\pictures\\queens_gambit.png", native = TRUE)
+
+
+ggplot(Data_games_count, aes(x = rev(1:nrow(my_games_count)), y = count)) +
+
+  # typ wykresu
+  geom_bar(stat = "identity",aes(fill = year)) +
+  
+  # opis
+  labs(x = "Years", y = "Number of chess games", title = "Number of chess games played on the lichess website") +
+
+  # legenda
+  scale_fill_manual(name = "Years", values = unique(Data_games_count$year)) +
+  expand_limits(x = c(0, NA), y = c(0,NA)) +
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(year_from_imported_links)[,]))) +
+  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6)) +
+  geom_segment(aes(83, 95000000, xend = 93, yend = 77000000),
+               linewidth=1.2,
+               arrow = arrow(length = unit(5, "mm"))) +
+    inset_element(p = img, 
+                left = 0.4, 
+                bottom = 0.65, 
+                right = 0.6, 
+                top = 0.95)
+
+```
+
+#### Testy 
+
+```{r eval=FALSE}
+pgn <- read.table("D:\\moje\\projekty\\chess-in-the-digital-age\\Dataset\\2024\\03. Mar\\Data_2024-03.pgn", quote="", sep="\n", stringsAsFactors=FALSE)
+
+
+pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                            byrow=TRUE, ncol=1))
+nrow(pgn.df)
+
+pgn.df[1:5,][-4]
+
+library(forcats)
+zmienne = fct_count(fct_infreq(sub("\\[(\\w+).+", "\\1", pgn[1:nrow(pgn.df),1])))
+
+nrow(pgn.df)
+?length
+library(stringi)
+ncol(pgn)
+tail(pgn)
+# get column names
+colnms <- sub("\\[(\\w+).+", "\\1", pgn[1:17,1])
+
+library(forcats)
+fct_count(sub("\\[(\\w+).+", "\\1", pgn[1:36,1]))
+# give columns 11 (the moves) and 12 (redundant results column) nice names
+colnms[18] <- "Moves"
+
+pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                            byrow=TRUE, ncol=18))
+names(pgn.df) <- colnms
+```
+
+```{r}
+list1 <- list("Joe","Hanna","Alice")
+list2 <- list("Alice","Hanna","Joe")
+list3 <- list("Hanna","Alice","Joe")
+list <- list(list1=list1, list2=list2, list3=list3)
+
+result <- matrix(NA, length(list), length(list))
+colnames(result) <- rownames(result) <- names(list)
+
+for(i in 1:length(list)){
+    for(j in i:length(list)){
+        result[i, j] <- length(intersect(list[[i]], list[[j]]))    
+        result[j, i] <- result[i, j]     
+    }
+}
+result
+image(result)
+
+
+crossprod(table(stack(list)))
+
+
+
+mat <- sapply(list, function(x) sapply(list, function(y) length(intersect(x,y))))
+
+print(mat)
+```
+
+```{r}
+  [1] 3.555789 3.648949 3.570493 3.821276 3.636026 3.761956 3.568643 3.762852 3.811248 3.704170 3.826924 3.728556
+ [13] 3.733171 3.874278 3.791296 3.897061 3.932163 3.990679 3.894168 3.704410 3.910138 3.740654 3.836014 3.831074
+ [25] 3.944379 3.734768 4.100811 4.001528 3.923190 3.852162 3.812260 3.862222 3.741322 3.910651 4.068367 3.799525
+ [37] 3.843903 4.138276 4.188563 4.293530 4.237440 4.159315 3.753013 3.959507 4.073788 4.237877 4.408564 4.328597
+ [49] 4.197038 4.549876 4.596107 4.527963 4.383176 4.326375 4.389134 4.297731 4.494321 4.270512 4.215305 4.583014
+ [61] 4.476366 4.642621 4.546481 4.213044 4.594603 4.405404 4.480504 4.459736 4.672030 4.601140 4.460453 4.885446
+ [73] 4.653620 4.283625 4.748503 4.638715 4.286106 3.798334 4.236134 4.805379 4.410191 4.439700 4.317269 4.539234
+ [85] 4.043887 3.942006 4.545455 4.015328 4.167059 4.658902 4.353423 4.620204 4.471879 3.755137 4.391304 4.200600
+ [97] 4.519520 4.448535 4.028394 4.985063 4.776183 4.582611 5.210788 4.666458 3.975535 3.119333 6.493506 5.742821
+[109] 3.079980 4.823848 3.976261 3.325416 6.114398 4.267844 4.807692 4.099822 5.179982 3.480475 3.792784 3.631011
+[121] 6.476400 5.022321 4.241645 3.694268 6.615385 4.021938 3.896104 5.205479 3.835616 7.598784 2.380952 6.965174
+[133] 3.389831 6.179775 6.521739 5.147059
+
+```
+
+```{r}
+[1] 12.857987 13.357555 14.015549 12.922200 14.467707 13.384027 13.837187 14.234658 14.232338 14.788341
+ [11] 14.934010 15.014064 16.897613 17.026115 16.269454 14.236539 14.869463 13.552847 13.865011 13.463545
+ [21] 12.501214 13.284646 12.647089 12.379299 13.009109 13.156219 13.002317 11.689088 11.780033 11.733358
+ [31] 12.335052 13.061396 11.917121 12.768498 13.461747 14.802892 14.781213 15.105308 14.372718 13.829721
+ [41] 13.277386  9.479606  9.801503  9.196180  8.945781  9.250145  8.852692  8.368533  8.232704  9.245650
+ [51]  9.742563  9.900376 10.526435 10.628750 11.628482 12.295459 13.466619 13.956875 15.711591 16.341540
+ [61] 16.761042 15.867550 16.370554 14.602462 14.755992 12.741608 12.044886 12.451548 11.412659 11.158594
+ [71] 11.841910 10.937427 10.494541 10.449592 10.402702  8.965210  8.133735  7.652617  6.759650  6.036801
+ [81]  6.386926  6.118392  6.858202  5.383212  6.536050  6.708464  5.287035  3.765412  3.884227  2.384914
+ [91]  2.106495  2.505873  2.167353  1.799632  2.289855  2.714674  2.927928  2.853198  3.389530  3.080657
+[101]  2.998501  2.700025  3.770621  4.040088  5.062861  4.969169  5.614973  4.119850  4.421262  4.336043
+[111]  4.747774  3.919240  3.090072  2.796174  2.804487  4.010695  3.863038  4.668930  2.960222  3.042198
+[121]  2.854007  4.575893  2.570694  5.095541  5.230769  3.656307  1.298701  2.465753  4.383562  2.127660
+[131]  5.555556  2.487562  3.389831  1.685393  1.449275  2.205882
+```
+
+
+```{r}
+  [1] 11745 12794 12836 12786 14014 12356 13129 13263 13675 14089 14427 15640 17182 18418 16015 14682 13897 12097
+ [19] 12839 12001 11580 12224 11081 11051 11339 11984 11221 11930 11257 10216 10862 11505 11158 11764 12405 14945
+ [37] 14647 15097 12909 13245 11866  7414  6913  6250  6377  6522  6223  6320  6020  5133  4284  4631  4635  4287
+ [55]  4700  4546  4944  4984  5330  5755  5624  5530  5077  4946  4599  3329  2984  2859  2582  2350  2400  2344
+ [73]  2086  2215  2033  1809  1484  1231  1042   853   895   831   888   708   834   856   606   452   412   215
+ [91]   180   192   158   127   158   190   195   186   191   165   140   109   144   129   149   137   147    99
+[109]    89    80    80    66    47    38    35    45    44    55    32    31    26    41    20    40    34    20
+[127]     6     9    16     7    14     5     6     3     2     3
+```
+
+```{r}
+  [1] 79556 82938 78708 86108 82803 79913 81693 79860 82357 81130 82127 88468 84442 89701 82382 88389 79500 77110
+ [19] 79721 77110 81003 79734 76495 78178 75773 79059 75020 90082 84259 76805 77139 76528 82431 80311 79700 85944
+ [37] 84386 84774 76853 82476 77452 70755 63583 61670 64876 63961 64037 69166 67077 50366 39650 42118 39374 36023
+ [55] 35691 32407 31741 30706 28569 29438 27910 29289 25910 28897 26543 22787 21765 20091 20026 18696 17858 19070
+ [73] 17781 18977 17496 18359 16745 14838 14366 13266 13112 12746 12052 12437 11923 11894 10853 11549 10194  8798
+ [91]  8363  7469  7132  6929  6742  6806  6464  6332  5444  5189  4528  3928  3671  3063  2792  2618  2470  2304
+[109]  1924  1761  1605  1618  1474  1321  1213  1077  1095  1123  1049   988   884   851   758   745   616   527
+[127]   455   356   349   322   238   196   171   174   136   133
+```
+
+## Data for rank > 1800
+
+```{r}
+  [1] 37.40147 36.87683 36.60574 38.37548 35.97002 36.33163 36.39784 35.59684 35.33367 34.72095 34.12763 34.67730
+ [13] 31.71130 31.89369 32.38043 35.26457 33.66681 35.29768 34.61231 35.68552 36.63676 35.92310 36.41645 36.75703
+ [25] 36.69145 36.86464 36.51448 38.99629 38.19485 39.03156 37.93636 37.18610 38.88070 37.59239 35.81443 33.23792
+ [37] 34.37311 32.78103 34.30681 33.27068 32.28600 37.09628 34.91706 35.26478 39.45290 36.79776 37.93584 40.49999
+ [49] 41.11839 36.73043 36.05931 36.54866 34.53625 33.16309 30.71899 30.19501 27.58696 26.35116 23.28145 22.44087
+ [61] 21.38344 23.07251 21.94241 23.95264 22.80938 24.74834 24.59433 24.74195 25.39781 24.67711 25.09992 26.04638
+ [73] 25.42134 28.50875 26.50054 29.07127 27.17457 28.03059 28.18683 27.86270 29.07300 28.33898 28.18196 29.37956
+ [85] 29.19279 30.28997 31.17257 36.32123 31.23409 39.13478 36.79345 37.32707 42.48285 39.84696 40.28986 43.90627
+ [97] 39.36937 42.13836 38.29636 39.95519 36.04626 36.63612 31.18617 28.68775 28.20251 23.46754 25.13369 21.38993
+[109] 21.31148 21.68022 23.32344 26.60333 20.05260 19.72038 23.31731 24.50980 25.28534 16.46859 22.10916 30.52012
+[121] 21.40505 16.29464 20.56555 24.33121 18.92308 20.10969 18.39827 29.31507 25.20548 15.50152 11.90476 12.43781
+[133] 24.29379 22.47191 13.04348 22.79412
+
+```
+
+
+
+```{r echo=FALSE, eval=FALSE}
+Percent_novice_games_count = c(12.857987, 13.357555, 14.015549, 12.922200, 14.467707, 13.384027, 13.837187, 14.234658, 14.232338, 14.788341, 14.934010, 15.014064, 16.897613, 17.026115, 16.269454, 14.236539, 14.869463, 13.552847, 13.865011, 13.463545, 12.501214, 13.284646, 12.647089, 12.379299, 13.009109, 13.156219, 13.002317, 11.689088, 11.780033, 11.733358,
+12.335052, 13.061396, 11.917121, 12.768498, 13.461747, 14.802892, 14.781213, 15.105308, 14.372718, 13.829721, 13.277386,  9.479606,  9.801503,  9.196180,  8.945781,  9.250145,  8.852692,  8.368533,  8.232704,  9.245650, 9.742563 ,  9.900376, 10.526435, 10.628750, 11.628482, 12.295459, 13.466619, 13.956875, 15.711591, 16.341540, 16.761042, 15.867550, 16.370554, 14.602462, 14.755992, 12.741608, 12.044886, 12.451548, 11.412659, 11.158594, 11.841910, 10.937427, 10.494541, 10.449592, 10.402702,  8.965210,  8.133735,  7.652617,  6.759650,  6.036801, 6.386926 ,  6.118392,  6.858202,  5.383212,  6.536050,  6.708464,  5.287035,  3.765412,  3.884227,  2.384914,  2.106495,  2.505873,  2.167353,  1.799632,  2.289855,  2.714674,  2.927928,  2.853198,  3.389530,  3.080657,  2.998501,  2.700025,  3.770621,  4.040088,  5.062861,  4.969169,  5.614973,  4.119850,  4.421262,  4.336043,  4.747774,  3.919240,  3.090072,  2.796174,  2.804487,  4.010695,  3.863038,  4.668930,  2.960222,  3.042198,  2.854007,  4.575893,  2.570694,  5.095541,  5.230769,  3.656307,  1.298701,  2.465753,  4.383562,  2.127660,  5.555556,  2.487562,  3.389831,  1.685393,  1.449275,  2.205882)
+```
+
+#### Wizualizacja
+
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10, echo=FALSE, eval=FALSE}
+Percent_novice_games_count = novice_games_count_v2
+Percent_novice_games_count = 
+my_Percent_novice_games_count <- data.frame(count=Percent_novice_games_count)
+
+Data_novice_games_count = cbind(data.frame(year=year_from_imported_links),my_Percent_novice_games_count)
+
+ggplot(Data_novice_games_count, aes(x = rev(1:nrow(my_games_count)), y = count)) +
+
+  # typ wykresu
+  geom_bar(stat = "identity",aes(fill = year)) +
+  
+  # opis
+  labs(x = "Years", y = "Number of chess games", title = "Number of novice games (rank < 1200) ") +
+
+  # legenda
+  scale_fill_manual(name = "Years", values = unique(Data_novice_games_count$year)) +
+  expand_limits(x = c(0, NA), y = c(0,NA)) +
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(year_from_imported_links)))) +
+  scale_y_continuous(labels = unit_format(unit = "%", scale = 1)) +
+  theme(text = element_text(size = 20),
+        axis.text.x = element_text(angle = 90, hjust = 1)) 
+```
+
+```{r}
+c("tak","nie") == c("tak","nie")
+```
+
+
+# Testy cow opening
+
+```{r eval=FALSE}
+
+novice_games_count_v2=c()
+
+for(i in 136:length(files_to_read)){
+  pgn <- read.table(files_to_read[1], quote="", sep="\n", stringsAsFactors=FALSE)
+  
+  pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                              byrow=TRUE, ncol=1))
+  
+  moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn.df),1]) != "")
+  which(moves == 58176)
+  
+  cow_moves = stri_match_all(pgn.df[moves,], regex = "1. \\s*(.*?)\\s* 6. ")[[3231]][,1]
+  
+  cow_moves_v2 = stri_match_all(cow_moves, regex = "2. \\s*(.*?)\\s* 3. ")[[1]][,2]
+  
+  cow_moves_v3 = sub("(\\w+).+", "\\1", cow_moves_v2) 
+  
+  
+  All_games_count_v2 = length(pgn.df[elo_index_v2,])
+  
+  my_novice_games_count_v2 = length(which(as.numeric(pgn.df[elo_index_v2,]) > 1800) == TRUE)
+
+  novice_games_count_v2 = append(novice_games_count_v2,(my_novice_games_count_v2/All_games_count_v2)*100)
+}
+
+```
+
+
+
+# Testy mój opening
+
+```{r eval=FALSE}
+filtred_two_moves_to_compare = two_moves_to_compare[c(5,6) + rep(seq(0, length(two_moves_to_compare), 6), each = 2)]
+
+files_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",full_date_from_imported_links,".pgn", sep="")
+
+my_opening=c()
+
+for(i in 1:1){
+  pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+  
+  moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn),1]) != "")
+  head(moves)
+  my_five_moves = unlist(stri_match_all(pgn[moves,], regex = "1. \\s*(.*?)\\s* 6. "))
+  head(my_five_moves)
+  filtred_five_moves = my_five_moves[seq(1,length(my_five_moves), by=2)]
+  head(filtred_five_moves)
+ 
+  my_opening_index=c()
+  
+  for(i in 1:length(filtred_five_moves)){
+  five_moves_to_compare = stri_match_all(filtred_five_moves, regex = "(\\d. (\\w+))")[[i]][,3]
+  ifelse(setequal(five_moves_to_compare,c("e3","d3","Ne2","Nd2","Ng3"))== TRUE,
+         (my_opening_index = append(my_opening_index,i)),
+         next)
+  }
+```
+```{r}
+ my_opening_index
+ [1]   226  3231  7121 13422 14866 18153 20314 21462 22846 23403 26048 34478 35766 36553 38539 40440
+
+```
+
+# Testy mój opening V2
+
+```{r eval=FALSE}
+
+files_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",full_date_from_imported_links,".pgn", sep="")
+
+search_by_moves = function(searching_moves){
+  opening_count=c()
+  
+  for(i in 1:length(files_to_read)){
+    pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+    
+    moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn),1]) != "")
+    
+    for(j in 1:length(searching_moves)){
+      my_regex = paste("(.*?)\\s*",j,". (\\w+).+", sep = "")
+      moves_to_compare = sub(my_regex, "\\2", pgn[moves,])
+      moves = moves[which(moves_to_compare == searching_moves[j])]
+    }
+    
+    opening_count = append(opening_count,length(moves))
+  }
+  return(opening_count)
+}
+
+search_by_moves(c("e3","d3","Ne2","Nd2","Ng3"))
+```
+```{r}
+[1] 9 4 3 3 3 2 2 0 9 6 8 0 2 0 0 0 0 0 0 0 0 2 0 0 0 0 4 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0
+ [55] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 2 0 0 1 0 0 0 0 1 1 0 2 7 0 0 0 0 0 0 0 0 0 0 0 0 3 1 0 0 0 0 0 0 0 0 0 0 0
+[109] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+opening_count= c(0.009852864, 0.004176194, 0.003275681, 0.003031957, 0.003097126, 0.002166401, 0.002107881, 0.000000000, 0.009366804, 0.006297824, 0.008281145, 0.000000000, 0.001966897, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.002173535, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.004634994, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.001135280, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.001417836, 0.000000000, 0.001402820, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.004420085, 0.000000000, 0.009868259, 0.000000000, 0.000000000, 0.004717649, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.006487188, 0.007077141, 0.000000000, 0.014725372, 0.054062403, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.042863266, 0.015015015, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 0.000000000)
+```
+
+```{r}
+setequal(five_moves_to_compare,c("e3","d3","Ne2","Nd2","Ng3"))
+
+  two_moves = unlist(stri_match_all(pgn[moves,], regex = "1. \\s*(.*?)\\s* 4. "))
+  head(pgn[moves,])
+  head(two_moves)
+  filtred_two_moves = two_moves[seq(1,length(two_moves), by=2)]
+  head(filtred_two_moves)
+ 
+  moves_to_compare = sub("1. (\\w+).+", "\\1", pgn[moves,])
+  head(moves_to_compare)
+  head(which(moves_to_compare == "e4"))
+  
+  my_opening_index=c()
+  
+  for(i in 1:length(filtred_two_moves)){
+  two_moves_to_compare = stri_match_all(filtred_two_moves, regex = "(\\d. (\\w+))")[[i]][,3]
+  ifelse(setequal(two_moves_to_compare,c("e3","d3","Ne2","Nd2","Ng3"))== TRUE,
+         (my_opening_index = append(my_opening_index,i)),
+         next)
+  }
+```
+
+
+```{r}
+
+  which(moves == 58176)
+  
+  pgn[moves,]
+
+  
+  my_moves = unlist(stri_match_all(pgn[moves,], regex = "1. \\s*(.*?)\\s* 3. "))
+  
+  head(my_moves)
+  my_test_moves = my_moves[1]
+
+  # my_test_moves_v2 = stri_match_all(my_test_moves, regex = "(\\w+) \\s*(.*?)\\s* \\d. (\\w+) \\s*(.*?)\\s* 4. (\\w+)")
+  
+  my_test_moves_v2 = stri_match_all(my_test_moves, regex = "(\\d. (\\w+))")[[1]][,1]
+  
+  my_new_moves = my_moves[seq(1,length(my_moves), by=2)]
+  
+  head(my_new_moves)
+  
+  maly_test = head(my_new_moves)
+  
+  cow_moves = stri_match_all(pgn[moves,], regex = "1. \\s*(.*?)\\s* 5. ")[[3231]][,1]
+  
+  cow_moves_v2 = stri_match_all(cow_moves, regex = "2. \\s*(.*?)\\s* 3. ")[[1]][,2]
+  
+  cow_moves_v3 = sub("(\\w+).+", "\\1", cow_moves_v2) 
+  
+  
+  All_games_count_v2 = length(pgn.df[elo_index_v2,])
+  
+  my_novice_games_count_v2 = length(which(as.numeric(pgn.df[elo_index_v2,]) > 1800) == TRUE)
+
+  novice_games_count_v2 = append(novice_games_count_v2,(my_novice_games_count_v2/All_games_count_v2)*100)
+
+
+```
+
+```{r}
+# files_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",full_date_from_imported_links,".pgn", sep="")
+
+search_games_by_moves = function(searching_moves, months_to_search){
+  openings=data.frame()
+  
+  for(i in 1:months_to_search){
+    pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+    
+    moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn),1]) != "")
+    
+    for(j in 1:length(searching_moves)){
+      my_regex = paste("(.*?)\\s*",j,". (\\w+).+", sep = "")
+      moves_to_compare = sub(my_regex, "\\2", pgn[moves,])
+      moves = moves[which(moves_to_compare == searching_moves[j])]
+    }
+  
+    for(z in 1:length(pgn[moves,])){
+      moves_detect_whiteV1 = stri_match_all(pgn[moves,], regex = "(\\d. (\\w+))")[[z]][,3]
+      moves_detect_white = paste(1:length(moves_detect_whiteV1),". ",moves_detect_whiteV1, sep = "")
+      
+      moves_detect_blackV1 = stri_match_all(pgn[moves,], regex = "(\\d.\\.. (\\w+))")[[z]][,3]
+      moves_detect_black = paste(1:length(moves_detect_blackV1),"... ",moves_detect_blackV1, sep = "")
+      
+      opening_moves = numeric(length(moves_detect_white)+length(moves_detect_black))
+      
+      opening_moves[seq(1, length(opening_moves), by=2)] <- moves_detect_white
+      opening_moves[seq(2, length(opening_moves), by=2)] <- moves_detect_black
+      
+      openings = rbind(openings,moves=paste(opening_moves, collapse = " "))
+    }
+    colnames(openings) = "moves"
+        
+  }
+  return(openings)
+}
+
+search_games_by_moves(c("e3","d3","Ne2","Nd2","Ng3"),2)
+
+```

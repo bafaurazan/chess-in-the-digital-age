@@ -1,6 +1,7 @@
 Dataset/**/*.txt
 Dataset/**/*.pgn
 Dataset/**/*.zst
+*.rar 
 
 # History files
 .Rhistory
