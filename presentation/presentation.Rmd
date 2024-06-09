@@ -32,6 +32,10 @@ table {
    margin:1em auto;
    color: #e0cdd6;
 }
+ul {
+    text-align: center;
+    list-style-position: inside;
+}
 ```
 <div id="my_init">
 
@@ -226,13 +230,13 @@ my_plot + geom_segment(aes(70, 68000000, xend = 86, yend = 62000000),
 
 ### Wnioski:
 
-Szachy zyskują na popularności, ale czy na pewno dzięki internetowi i cyfryzacji?
+- Szachy zyskują na popularności, ale czy na pewno dzięki internetowi i cyfryzacji?
 
 # Jak wpłynął serial "Gambit królowej" na szachy?
 
 #### Ciekawostka:
 
-Gambit królowej w szachach to nazwa debiutu szachowego. Debiut szachowy z kolei to początkowe posunięcia w szachach.
+- Gambit królowej w szachach to nazwa debiutu szachowego. Debiut szachowy z kolei to początkowe posunięcia w szachach.
 
 ![](../pictures/gambit_krolowej.png)
 
@@ -579,7 +583,7 @@ for(i in 1:length(files_to_read)){
 
 ### Przewidywania: 
 
-Skoro termin "Gambit królowej" zyskał rozgłos dzięki serialowi, to debiut o tej nazwie powinien występować częściej po 2020 roku procentowo w stosunku do całości.
+- Skoro termin "Gambit królowej" zyskał rozgłos dzięki serialowi, to debiut o tej nazwie powinien występować częściej po 2020 roku procentowo w stosunku do całości.
 
 ### Wizualizacja
 
@@ -609,11 +613,11 @@ ggplot(Data_Queens_gambit_games_count, aes(x = rev(1:length(games_count)), y = c
 
 ### Obserwacje:
 
-Widać wyraźnie malejący stosunek granych debiutów "Gambit królowej", po dacie premiery serialu.
+- Widać wyraźnie malejący stosunek granych debiutów "Gambit królowej", po dacie premiery serialu.
 
 ### Wnioski:
 
-Serial znacząco wpłynął na osoby, które nie wiedzą co znaczy termin "Gambit królowej".
+- Serial znacząco wpłynął na osoby, które nie wiedzą co znaczy termin "Gambit królowej".
 
 # Czy serial wpłynął tylko na nowicjuszy szachowych?
 
@@ -688,7 +692,9 @@ ggplot(Data_novice_games_count, aes(x = rev(1:length(games_count)), y = count)) 
 
 - Widać znaczny napływ nowicjuszy po dacie premiery serialu
 
-- Po oglądnięciu serialu, osoby nie znające się na szachach, chcą poprostu zagrać w tą gre i nie interesują się debiutami. Z tego powodu mogą zagrać na stronie lichess jako nowicjusze.
+#  
+
+- Po oglądnięciu serialu, osoby nie znające się na szachach, chcą poprostu zagrać w tą gre i nie interesują się debiutami. To powoduje chęć zagrania na stronie lichess jako nowicjusz.
 
 ### Wyszukiwanie Ilości zagranych partii przez zaawansowanych graczy (ranga > 1800)
 
@@ -760,15 +766,25 @@ ggplot(Data_pro_games_count, aes(x = rev(1:length(games_count)), y = count)) +
 
 ### Wnioski:
 
-- Serial wpłynął na szachy, głównie zachęcając do gry nowicjuszy. 
+- Serial wpłynął na popularyzacje szachów, głównie zachęcając do gry nowicjuszy. 
 
 # Dla czego serial nie wpłynął na zaawansowanych graczy?
 
-- Czy człowiek szuka nowości i dla tego tylu nowicjuszy zdecydowało się zagrać w szachy? 
+- Nie zawierał dla nich nic nowego
 
-- Czy przez to, że "gambit królowej" jest starym debiutem, zauważono spadek popularności wśród zawodowców?
+# Czy dodanie do szachów nowości zwiększy popularność wśród zaawansowanych graczy?
+
+#### Tworzenie nowego debiutu
 
 ![](../pictures/yt_opening.png)
+
+#### Statystyki popularności Anny Cramling na twitch
+
+![](../pictures/AC-stats.png)
+
+![](../pictures/chess_com_opening.png)
+
+#### Wyszukiwanie debiutów po sekwencji posunięć, zamiast po nazwie
 
 ```{r eval=FALSE}
 
@@ -816,7 +832,7 @@ ggplot(Data_opening_count, aes(x = rev(1:length(games_count)), y = count)) +
   geom_bar(stat = "identity",aes(fill = year)) +
   
   # opis
-  labs(x = "Years", y = "Number of chess games", title = "Number of pro games (rank > 1800) ") +
+  labs(x = "Years", y = "Number of chess games", title = "Number of 'Cow' move sequences played") +
 
   # legenda
   scale_fill_manual(name = "Years", values = unique(Data_opening_count$year)) +
@@ -827,12 +843,32 @@ ggplot(Data_opening_count, aes(x = rev(1:length(games_count)), y = count)) +
         axis.text.x = element_text(angle = 90, hjust = 1))  +
   
   # strzalka
-  geom_segment(aes(65, 0, xend = 86, yend = 0),
+  geom_segment(aes(80, 3.2, xend = 123, yend = 2.2),
                linewidth=1.2,
                arrow = arrow(length = unit(5, "mm"))) +
   inset_element(p = img4, 
-                left = 0.39, 
-                bottom = 0.24, 
-                right = 0.6, 
-                top = 0.37)
+                left = 0.42, 
+                bottom = 0.34, 
+                right = 0.75, 
+                top = 0.51)
 ```
+
+### Obserwacje:
+
+- Widać wzrost popularności streamerki po opublikowaniu nowego debiutu oraz widać wzrost zainteresowania jej stworzoną sekwencją szachową
+
+### Wnioski:
+
+- Ciężko wpłynąć na zaawansowanych graczy. Rolą internetu jest to zmienić.
+
+# Podsumowanie
+
+- Internet i media społecznościowe znacząco wpływają na popularyzacje szachów. Na graczy
+
+<!-- Są jednak gracze na któych można wpływa -->
+
+<!-- Są jednak grupy i każda wymaga innych środków, by na nie wpłynąć. -->
+
+<!-- # -->
+
+<!-- - Są jednak poszczególne grupy, na które można wpłynąć tylko konkretnymi działaniami. -->
