@@ -179,7 +179,7 @@ first_index_of_years = append(first_index_of_years,which(rev(Data_games_count$ye
 
 ### Wizualizacja
 
-```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10, message=FALSE}
 
 my_plot = ggplot(Data_games_count, aes(x = rev(1:nrow(my_games_count)), y = count)) +
 
@@ -198,11 +198,12 @@ my_plot = ggplot(Data_games_count, aes(x = rev(1:nrow(my_games_count)), y = coun
   theme(text = element_text(size = 20),
         axis.text.x = element_text(angle = 90, hjust = 1))
 my_plot
+ggsave("../poster/Data_games_countv1.png")
 ```
 
 #### Szukanie powodów znacznego wzrostu popularności szachów w 2020 roku
 
-```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10, message=FALSE}
 # strzalka
 
 my_plot + geom_segment(aes(70, 68000000, xend = 86, yend = 62000000),
@@ -225,7 +226,7 @@ my_plot + geom_segment(aes(70, 68000000, xend = 86, yend = 62000000),
                 bottom = 0.69, 
                 right = 0.65, 
                 top = 0.82)
-ggsave("Data_games_count.png")
+ggsave("../poster/Data_games_count.png")
 ```
 
 ### Wnioski:
@@ -508,7 +509,7 @@ removing_oryginal_dataset = function(date){
 #### Wywoływanie funkcji przygotowującej zbiór z konkretnego miesiąca do późniejszej analizy
 
 ```{r eval=FALSE}
-preparing_month_dataset("2013-01")
+preparing_month_dataset("2021-12")
 
 removing_oryginal_dataset("2013-01")
 ```
@@ -587,7 +588,7 @@ for(i in 1:length(files_to_read)){
 
 ### Wizualizacja
 
-```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10, message=FALSE}
 
 my_Percent_games_count <- data.frame(count=Percent_games_count)
 
@@ -609,7 +610,7 @@ ggplot(Data_Queens_gambit_games_count, aes(x = rev(1:length(games_count)), y = c
   scale_y_continuous(labels = unit_format(unit = "%", scale = 1)) +
   theme(text = element_text(size = 20),
         axis.text.x = element_text(angle = 90, hjust = 1)) 
-ggsave("Data_Queens_gambit_games_count.png")
+ggsave("../poster/Data_Queens_gambit_games_count.png")
 ```
 
 ### Obserwacje:
@@ -653,7 +654,7 @@ Percent_novice_games_count = c(12.857987, 13.357555, 14.015549, 12.922200, 14.46
 
 ### Wizualizacja
 
-```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10, message=FALSE}
 
 my_Percent_novice_games_count <- data.frame(count=Percent_novice_games_count)
 
@@ -687,7 +688,7 @@ ggplot(Data_novice_games_count, aes(x = rev(1:length(games_count)), y = count)) 
                 bottom = 0.54, 
                 right = 0.42, 
                 top = 0.9)
-ggsave("Data_novice_games_count.png")
+ggsave("../poster/Data_novice_games_count.png")
 ```
 
 ### Obserwacje:
@@ -728,7 +729,7 @@ Percent_pro_games_count = c(37.40147, 36.87683, 36.60574, 38.37548, 35.97002, 36
 
 ### Wizualizacja
 
-```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10, message=FALSE}
 
 my_Percent_pro_games_count <- data.frame(count=Percent_pro_games_count)
 
@@ -760,7 +761,7 @@ ggplot(Data_pro_games_count, aes(x = rev(1:length(games_count)), y = count)) +
                 bottom = 0.84, 
                 right = 0.6, 
                 top = 0.97)
-ggsave("Data_pro_games_count.png")
+ggsave("../poster/Data_pro_games_count.png")
 ```
 
 ### Obserwacje:
@@ -896,7 +897,7 @@ opening_count= c(9, 4, 3, 3, 3, 2, 2, 0, 9, 6, 8, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 
 
 ### Wizualizacja
 
-```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10}
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10, message=FALSE}
 
 my_opening_count <- data.frame(count=opening_count)
 
@@ -927,7 +928,8 @@ ggplot(Data_opening_count, aes(x = rev(1:length(games_count)), y = count)) +
                 bottom = 0.34, 
                 right = 0.75, 
                 top = 0.51)
-ggsave("Data_opening_count.png")
+
+ggsave("../poster/Data_opening_count.png")
 ```
 
 ### Obserwacje:
@@ -936,11 +938,11 @@ ggsave("Data_opening_count.png")
 
 ### Wnioski:
 
-- Dodawanie do gry nowości wpływa na zaawansowanych graczy
+- Dodawanie do szachów nowości wpływa na aktywizacje zaawansowanych graczy
 
 # Podsumowanie
 
-##### Internet i media społecznościowe znacząco wpływają na popularyzacje szachów. Są jednak różne grupy i by do nich dotrzeć trzeba innego podejścia.
+### Internet i media społecznościowe znacząco wpływają na popularyzacje szachów, jednak z różnym natężeniem w zależności od tego, na jak zaawansowaną grupe oddziałowuje
 
 ## Jak zwiększyć popularność gry wśród nowicjuszy?
 

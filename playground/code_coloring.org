@@ -1,0 +1,47 @@
+#+title: Code coloring testing
+
+#+begin_src R :results output :exports both
+project_path = "D:/moje/projekty/chess-in-the-digital-age"
+setwd(paste(project_path,"/presentation", sep = ""))
+Dataset_path = paste(project_path,"/Dataset", sep = "")
+selected_date = "2024-04"
+
+knitr::opts_chunk$set(root= paste(project_path,"/presentation", sep = ""))
+
+library(pander)
+panderOptions('digits',7)
+library(knitr)
+library(rvest)
+library(stringi)
+library(dplyr)
+
+url = "https://database.lichess.org"
+path= "/html/body/div/div[2]/div/section[1]/table"
+wezel = html_node(read_html(url), xpath=path)
+
+hyperlinks = html_nodes(wezel, "a")
+my_href = html_attr(hyperlinks, "href")
+
+pander(head(bind_rows(lapply(html_attrs(hyperlinks), function(x) data.frame(as.list(x), stringsAsFactors=FALSE)))))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+------------------------------------------------------------
+                            href
+------------------------------------------------------------
+     standard/lichess_db_standard_rated_2024-04.pgn.zst
+
+ standard/lichess_db_standard_rated_2024-04.pgn.zst.torrent
+
+     standard/lichess_db_standard_rated_2024-03.pgn.zst
+
+ standard/lichess_db_standard_rated_2024-03.pgn.zst.torrent
+
+     standard/lichess_db_standard_rated_2024-02.pgn.zst
+
+ standard/lichess_db_standard_rated_2024-02.pgn.zst.torrent
+------------------------------------------------------------
+
+#+end_example

@@ -194,8 +194,6 @@ done
 
 ### Problem: nic nie działa
 
-![](../pictures/cat_war_flashback.jpg)
-
 - Rozwiązanie: z jakiegoś powodu komenda do wyznaczania godziny z linku zaczęła wypisywać dane w jednym wierszu... trzeba było zmienić w jednym miejscu argument jako data.frame
 
 - Uwzględnienie wyboru lat do zescrapowania dla liczb partii względem miesiąca
@@ -242,8 +240,87 @@ done
 
 - pierwsze testy z porównywaniem list w innej kolejności
 
+# Analiza danych
+
 #### 31 maj:
 
 #### Problem: kod nie chce sie wykonywać w R
 
 - Rozwiązanie: przez to ze wyswietlam mój css w html, sposobem na ukrywanie fragmentów kodu dzięki jv, musze stworzyc odrebny fragment kodu css z ustawieniem (echo=FALSE)(który będzie poza niewyswietlanym div-em) oraz odrębny kod z ustawieniem (eval=FALSE) (który będzie w niewyświetlanym div-ie)
+
+- Tworzenie wykresu ze scrapowania
+
+- problem: nie mogę wyświetlać każdego miesiąca jako nazwy argumentów
+
+- wyodrębnianie ze scrapowania tylko unikalnych lat
+
+- Problem: nic to nie daje, nadal nie da się zmienić wartości dla x, wykres przyjmując argumenty x jako tekst sprawia że nie można zmienić jego zawartości, wartości y nie akceptują dużych liczb
+
+- Rozwiązanie: zawartość zbioru x zmieniłem na zakres 1: 136 i potem w wyszukane indexy gdzie się znajduje początek danego roku pojawią się label z unikalna nazwą roku, wartości y sformatowano dla skali M "milion"
+
+- dodano zdjęcia i strzałkę do wykresu
+
+- zdekompresowano dane do 2021 roku
+
+#### 1 czerwiec
+
+- zdekompresowano wszystkie dane
+
+- rozpoczęto przetwarzanie zbiorów
+
+- By szybko wyszukać ilość zagranych debiutów gambit królowej najlepiej to trzeba ze zbioru danych wyodrębnić tylko tą kolumnę
+
+- Problem: zbiór danych ma braki lub ich jest za dużo, przez co cały zbiór się rozjeżdża
+
+- rozwiazanie: wyszukać dane które występują rzadziej niż reszta i je potem usunąć po indeksach jesli nie są  potrzebne dla analizy, następnie zmienić równe dane na macierz 
+
+- problem: dane z 2024 roku mają 17 kolumn w nie zmiennych ilosciach, a dane z 2013 mają 13, więc albo zrobić funkcje która będzie brać tylko 13 konkretnych kolumn do analizy (inne lata mogą mieć inne kolumny nie zmienne)
+Lub funkcje która będzie brać tylko indeksy ze zmienną opening i wśród nich gambit królowej
+
+- Rozwiązanie: druga opcja
+
+ - Problem: ze statystyk wynika że popularność grania gambitem królowej maleje
+
+- Rozwiazanie: prawdopodobnie wynik powoduje wzrost nowicjuszy grających w szachy
+
+- liczby w stosunku do maksymalnej liczby partii w miesiącu są mało czytelne, zmiana na zwykły wynik
+
+- zwykły wynik jest tym bardziej nie czytelny
+
+#### 2 czerwiec
+
+- stworzono wykresy dzielące nowicjuszy i zaawansowanych graczy
+
+- wyodrębnianie 5 ruchów szachowych w wybranej partii w poszukiwaniu sekwencji 
+
+#### 3 czerwiec
+
+- zautomatyzowano wyodrębnianie wszystkich ruchów szachowych gracza w partii
+
+#### 4 czerwiec
+
+- wyodrębnianie 2 pierwszych posunięć w partii
+
+- Problem: metoda unlist i wyodrębnianie dwóch wektorów co 6 wektorów nie uwzględnia braków danych i się wszystko rozjeżdża 
+
+#### 6 czerwiec
+
+- Rozwiązanie: stworzenie funkcji która porównuję wzorzec pięciu ruchów z każdą partią, używając zapętlania for()
+
+- Problem: kod do wyszukiwania partii względem posunięć wykonuje się zbyt długo (pół miesiąca w 7 godzin)
+
+#### 7 czerwiec
+
+- Rozwiązanie: zamiast porównywać każdą partie ze wzorcem, porównuję tylko pierwsze posunięcia partii ze wzorcem, zyskując index pierwszych posunięć które się zgadzają ze wzorcem. W następnych krokach wyszukiwanie odbywa się tylko na wzorcach z wcześniejszego kroku, i tak sie powtarza tyle razy ile ma ruchów wzorzec (to Rozwiązanie uzywa tylko 5 pętelek dla miesiąca zamiast 90 000 i przy każdym kroku ma coraz mniej do wyszukiwania)
+
+- Efekt: Zamiast analizować pół miesiąca w 7 godzin, wszystkie 140 miesięcy wykonuje się w 8 minut
+
+#### 8 czerwiec
+
+- kończenie prezentacji
+
+#### 9 czerwiec
+
+- zrobienie funkcji do generowania posunięć szachowych względem wzorca
+
+- zrobienie plakatu
