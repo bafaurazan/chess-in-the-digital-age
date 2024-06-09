@@ -225,18 +225,18 @@ my_plot + geom_segment(aes(70, 68000000, xend = 86, yend = 62000000),
                 bottom = 0.69, 
                 right = 0.65, 
                 top = 0.82)
-
+ggsave("Data_games_count.png")
 ```
 
 ### Wnioski:
 
 - Szachy zyskują na popularności, ale czy na pewno dzięki internetowi i cyfryzacji?
 
-# Jak wpłynął serial "Gambit królowej" na szachy?
+# Jak wpłynął serial "Gambit królowej" na popularyzacje szachów?
 
 #### Ciekawostka:
 
-- Gambit królowej w szachach to nazwa debiutu szachowego. Debiut szachowy z kolei to początkowe posunięcia w szachach.
+- "Gambit królowej" to również nazwa debiutu szachowego. Debiut szachowy z kolei to początkowe posunięcia w szachach.
 
 ![](../pictures/gambit_krolowej.png)
 
@@ -609,6 +609,7 @@ ggplot(Data_Queens_gambit_games_count, aes(x = rev(1:length(games_count)), y = c
   scale_y_continuous(labels = unit_format(unit = "%", scale = 1)) +
   theme(text = element_text(size = 20),
         axis.text.x = element_text(angle = 90, hjust = 1)) 
+ggsave("Data_Queens_gambit_games_count.png")
 ```
 
 ### Obserwacje:
@@ -617,7 +618,7 @@ ggplot(Data_Queens_gambit_games_count, aes(x = rev(1:length(games_count)), y = c
 
 ### Wnioski:
 
-- Serial znacząco wpłynął na osoby, które nie wiedzą co znaczy termin "Gambit królowej".
+- Serial znacząco zwiększył popularność szachów, wśród osób, które nie wiedzą co znaczy termin "Gambit królowej".
 
 # Czy serial wpłynął tylko na nowicjuszy szachowych?
 
@@ -686,15 +687,16 @@ ggplot(Data_novice_games_count, aes(x = rev(1:length(games_count)), y = count)) 
                 bottom = 0.54, 
                 right = 0.42, 
                 top = 0.9)
+ggsave("Data_novice_games_count.png")
 ```
 
 ### Obserwacje:
 
 - Widać znaczny napływ nowicjuszy po dacie premiery serialu
 
-#  
+### Wniosek:
 
-- Po oglądnięciu serialu, osoby nie znające się na szachach, chcą poprostu zagrać w tą gre i nie interesują się debiutami. To powoduje chęć zagrania na stronie lichess jako nowicjusz.
+- Po oglądnięciu serialu, osoby, które nie znają się na szachach, chcą po prostu zagrać w tę grę i nie interesują się debiutami. To powoduje chęć zagrania na stronie lichess jako nowicjusz.
 
 ### Wyszukiwanie Ilości zagranych partii przez zaawansowanych graczy (ranga > 1800)
 
@@ -758,6 +760,7 @@ ggplot(Data_pro_games_count, aes(x = rev(1:length(games_count)), y = count)) +
                 bottom = 0.84, 
                 right = 0.6, 
                 top = 0.97)
+ggsave("Data_pro_games_count.png")
 ```
 
 ### Obserwacje:
@@ -772,7 +775,7 @@ ggplot(Data_pro_games_count, aes(x = rev(1:length(games_count)), y = count)) +
 
 - Nie zawierał dla nich nic nowego
 
-# Czy dodanie do szachów nowości zwiększy popularność wśród zaawansowanych graczy?
+# Czy dodanie do szachów nowości wpłynie na zaawansowanych graczy?
 
 #### Tworzenie nowego debiutu
 
@@ -785,6 +788,79 @@ ggplot(Data_pro_games_count, aes(x = rev(1:length(games_count)), y = count)) +
 ![](../pictures/chess_com_opening.png)
 
 #### Wyszukiwanie debiutów po sekwencji posunięć, zamiast po nazwie
+
+### Wcześniejsza wersja kodu
+
+<button id="searching_v1" class="my_button" onclick="searching()">Pokaż</button>
+
+<div id="searching_v1_div">
+
+```{r eval=FALSE}
+# filtred_two_moves_to_compare = two_moves_to_compare[c(5,6) + rep(seq(0, length(two_moves_to_compare), 6), each = 2)]
+
+# files_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",full_date_from_imported_links,".pgn", sep="")
+
+my_opening=c()
+
+for(i in 1:1){
+  pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+  
+  moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn),1]) != "")
+  head(moves)
+  my_five_moves = unlist(stri_match_all(pgn[moves,], regex = "1. \\s*(.*?)\\s* 6. "))
+  head(my_five_moves)
+  filtred_five_moves = my_five_moves[seq(1,length(my_five_moves), by=2)]
+  head(filtred_five_moves)
+ 
+  my_opening_index=c()
+  
+  for(i in 1:length(filtred_five_moves)){
+  five_moves_to_compare = stri_match_all(filtred_five_moves, regex = "(\\d. (\\w+))")[[i]][,3]
+  ifelse(setequal(five_moves_to_compare,c("e3","d3","Ne2","Nd2","Ng3"))== TRUE,
+         (my_opening_index = append(my_opening_index,i)),
+         next)
+  }
+```
+
+#### Java-script dla przycisku
+
+```{js eval=FALSE}
+const searching_v1_div = document.getElementById("searching_v1_div");
+  searching_v1_div.style.display = 'none';
+  
+var searching_v1 = document.getElementById("searching_v1");
+  
+function searching() {
+  if (searching_v1_div.style.display === 'none') {
+    searching_v1_div.style.display = 'block';
+    searching_v1.innerHTML = "Ukryj kod";
+  } else {
+    searching_v1_div.style.display = 'none';
+    searching_v1.innerHTML = "Pokaż kod";
+  }
+}
+```
+
+</div>
+
+```{js, echo=FALSE}
+const searching_v1_div = document.getElementById("searching_v1_div");
+  searching_v1_div.style.display = 'none';
+  
+var searching_v1 = document.getElementById("searching_v1");
+  
+function searching() {
+  if (searching_v1_div.style.display === 'none') {
+    searching_v1_div.style.display = 'block';
+    searching_v1.innerHTML = "Ukryj";
+  } else {
+    searching_v1_div.style.display = 'none';
+    searching_v1.innerHTML = "Pokaż";
+  }
+}
+```
+
+### Nowsza wersja kodu
 
 ```{r eval=FALSE}
 
@@ -851,6 +927,7 @@ ggplot(Data_opening_count, aes(x = rev(1:length(games_count)), y = count)) +
                 bottom = 0.34, 
                 right = 0.75, 
                 top = 0.51)
+ggsave("Data_opening_count.png")
 ```
 
 ### Obserwacje:
@@ -859,16 +936,97 @@ ggplot(Data_opening_count, aes(x = rev(1:length(games_count)), y = count)) +
 
 ### Wnioski:
 
-- Ciężko wpłynąć na zaawansowanych graczy. Rolą internetu jest to zmienić.
+- Dodawanie do gry nowości wpływa na zaawansowanych graczy
 
 # Podsumowanie
 
-- Internet i media społecznościowe znacząco wpływają na popularyzacje szachów. Na graczy
+##### Internet i media społecznościowe znacząco wpływają na popularyzacje szachów. Są jednak różne grupy i by do nich dotrzeć trzeba innego podejścia.
 
-<!-- Są jednak gracze na któych można wpływa -->
+## Jak zwiększyć popularność gry wśród nowicjuszy?
 
-<!-- Są jednak grupy i każda wymaga innych środków, by na nie wpłynąć. -->
+- Warsztaty Szachowe
 
-<!-- # -->
+#  
 
-<!-- - Są jednak poszczególne grupy, na które można wpłynąć tylko konkretnymi działaniami. -->
+- Turnieje i Wydarzenia Szachowe
+
+#
+
+- Media i Technologia
+
+#
+
+- Wsparcie dla Początkujących
+
+#
+
+- Gry Symulacyjne i Szachy na Żywo
+
+## Jak zwiększyć popularność gry wśród zaawansowanych graczy?
+
+- Organizowanie Turniejów z Wysokimi Nagrodami
+
+#  
+
+- Profesjonalne Ligi i Rozgrywki Drużynowe
+
+# 
+
+- Szkolenia i Warsztaty zaawansowane
+
+# 
+
+- Rozwój aplikacji szachowych, z możliwością analizy partii
+
+# 
+
+- Promowanie Analiz i Komentarzy Ekspertów
+
+#
+
+- Promowanie nowych formatów gry, takich jak szachy 960 (Fischer Random Chess)
+
+# Zastosowanie
+
+Wyszukiwanie partii względem wybranej sekwencji
+
+```{r}
+files_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",full_date_from_imported_links,".pgn", sep="")
+
+search_games_by_moves = function(searching_moves, months_to_search){
+  openings=data.frame()
+  
+  for(i in 1:months_to_search){
+    pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+    
+    moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn),1]) != "")
+    
+    for(j in 1:length(searching_moves)){
+      my_regex = paste("(.*?)\\s*",j,". (\\w+).+", sep = "")
+      moves_to_compare = sub(my_regex, "\\2", pgn[moves,])
+      moves = moves[which(moves_to_compare == searching_moves[j])]
+    }
+  
+    for(z in 1:length(pgn[moves,])){
+      moves_detect_whiteV1 = stri_match_all(pgn[moves,], regex = "(\\d. (\\w+))")[[z]][,3]
+      moves_detect_white = paste(1:length(moves_detect_whiteV1),". ",moves_detect_whiteV1, sep = "")
+      
+      moves_detect_blackV1 = stri_match_all(pgn[moves,], regex = "(\\d.\\.. (\\w+))")[[z]][,3]
+      moves_detect_black = paste(1:length(moves_detect_blackV1),"... ",moves_detect_blackV1, sep = "")
+      
+      opening_moves = numeric(length(moves_detect_white)+length(moves_detect_black))
+      
+      opening_moves[seq(1, length(opening_moves), by=2)] <- moves_detect_white
+      opening_moves[seq(2, length(opening_moves), by=2)] <- moves_detect_black
+      
+      openings = rbind(openings,moves=paste(opening_moves, collapse = " "))
+    }
+    colnames(openings) = "moves"
+        
+  }
+  return(openings)
+}
+
+pander(head(search_games_by_moves(c("Nf3","Ng1"),1)))
+
+```

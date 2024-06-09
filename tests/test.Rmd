@@ -510,3 +510,44 @@ setequal(five_moves_to_compare,c("e3","d3","Ne2","Nd2","Ng3"))
 
 
 ```
+
+```{r}
+# files_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",full_date_from_imported_links,".pgn", sep="")
+
+search_games_by_moves = function(searching_moves, months_to_search){
+  openings=data.frame()
+  
+  for(i in 1:months_to_search){
+    pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+    
+    moves = which(sub("\\[(\\b+).+", "\\1", pgn[1:nrow(pgn),1]) != "")
+    
+    for(j in 1:length(searching_moves)){
+      my_regex = paste("(.*?)\\s*",j,". (\\w+).+", sep = "")
+      moves_to_compare = sub(my_regex, "\\2", pgn[moves,])
+      moves = moves[which(moves_to_compare == searching_moves[j])]
+    }
+  
+    for(z in 1:length(pgn[moves,])){
+      moves_detect_whiteV1 = stri_match_all(pgn[moves,], regex = "(\\d. (\\w+))")[[z]][,3]
+      moves_detect_white = paste(1:length(moves_detect_whiteV1),". ",moves_detect_whiteV1, sep = "")
+      
+      moves_detect_blackV1 = stri_match_all(pgn[moves,], regex = "(\\d.\\.. (\\w+))")[[z]][,3]
+      moves_detect_black = paste(1:length(moves_detect_blackV1),"... ",moves_detect_blackV1, sep = "")
+      
+      opening_moves = numeric(length(moves_detect_white)+length(moves_detect_black))
+      
+      opening_moves[seq(1, length(opening_moves), by=2)] <- moves_detect_white
+      opening_moves[seq(2, length(opening_moves), by=2)] <- moves_detect_black
+      
+      openings = rbind(openings,moves=paste(opening_moves, collapse = " "))
+    }
+    colnames(openings) = "moves"
+        
+  }
+  return(openings)
+}
+
+search_games_by_moves(c("e3","d3","Ne2","Nd2","Ng3"),2)
+
+```
