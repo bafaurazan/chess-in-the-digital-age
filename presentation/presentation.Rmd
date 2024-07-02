@@ -788,9 +788,19 @@ ggsave("../poster/Data_pro_games_count.png")
 
 ![](../pictures/chess_com_opening.png)
 
-#### Wyszukiwanie debiutów po sekwencji posunięć, zamiast po nazwie
+### Obserwacje:
 
-### Wcześniejsza wersja kodu
+##### Widać wyraźny wzrost popularności streamerki:
+
+- kiedy opublikowała swój debiut szachowy na youtube
+
+#  
+
+- kiedy na stronie chess.com dodano jej debiut do bazy danych
+
+### Wyszukiwanie debiutów po sekwencji posunięć, zamiast po nazwie
+
+#### Wcześniejsza wersja kodu
 
 <button id="searching_v1" class="my_button" onclick="searching()">Pokaż</button>
 
@@ -861,7 +871,7 @@ function searching() {
 }
 ```
 
-### Nowsza wersja kodu
+#### Nowsza wersja kodu
 
 ```{r eval=FALSE}
 
@@ -944,53 +954,21 @@ ggsave("../poster/Data_opening_count.png")
 
 ### Internet i media społecznościowe znacząco wpływają na popularyzacje szachów, jednak z różnym natężeniem w zależności od tego, na jak zaawansowaną grupe oddziałowuje
 
-## Jak zwiększyć popularność gry wśród nowicjuszy?
+# Zastosowanie prezentacji
 
-- Warsztaty Szachowe
+### Tworzenie treści w internecie
 
-#  
+- Podczas publikowania treści w internecie, należy być świadomym, że zawsze istnieją grupy, które są zaznajomione z tematyką treści oraz grupy, dla których tworzona treść jest całkowicie nowa. 
 
-- Turnieje i Wydarzenia Szachowe
+#   
 
-#
-
-- Media i Technologia
-
-#
-
-- Wsparcie dla Początkujących
-
-#
-
-- Gry Symulacyjne i Szachy na Żywo
-
-## Jak zwiększyć popularność gry wśród zaawansowanych graczy?
-
-- Organizowanie Turniejów z Wysokimi Nagrodami
+- Należy więc w miarę możliwości dostosować tworzone treści dla obu tych grup.
 
 #  
 
-- Profesjonalne Ligi i Rozgrywki Drużynowe
+- Przykładem mogą być tworzone poradniki na youtube o tematyce programowania. Nie cieszą się wielką popularnością, ponieważ są skierowane tylko dla osób zaznajomionych z tematyką programowania.
 
-# 
-
-- Szkolenia i Warsztaty zaawansowane
-
-# 
-
-- Rozwój aplikacji szachowych, z możliwością analizy partii
-
-# 
-
-- Promowanie Analiz i Komentarzy Ekspertów
-
-#
-
-- Promowanie nowych formatów gry, takich jak szachy 960 (Fischer Random Chess)
-
-# Zastosowanie
-
-Wyszukiwanie partii względem wybranej sekwencji
+### Wyszukiwanie partii względem wybranej sekwencji
 
 ```{r}
 files_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_imported_links,". ",my_month_names,"/Data_",full_date_from_imported_links,".pgn", sep="")
