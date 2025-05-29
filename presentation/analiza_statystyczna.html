@@ -1722,77 +1722,7 @@ search_games_by_moves = function(searching_moves, months_to_search){
   return(openings)
 }
 
-pander(head(search_games_by_moves(c(&quot;Nf3&quot;,&quot;Ng1&quot;),1)))</code></pre>
-<table style="width:46%;">
-<colgroup>
-<col width="45%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center">moves</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">1. Nf3 1… d5 2. Ng1 2… Nf6 3. Nf3 3… Bf5 4. Ng1 4… e6
-5. e3 5… Be7 6. d4 6… O 7. Nf3 7… c5 8. Bd3 8… Nc6 9. Bxf5 9… exf5 10. O
-10… Ne4 11. c3 11… Re8 12. Nbd2 12… a5 13. Nb3 13… Qb6 14. dxc5 14… Nxc5
-15. Nxc5 15… Qxc5 16. Nd4 16… Rad8 17. Nxf5 17… Bf8 18. Nd4 18… g6 19.
-Nxc6 19… bxc6 20. Qf3 20… Bg7 21. Re1 21… a4 22. a3 22… Rb8 23. g3 23…
-h5 24. e4 24… Rxe4 25. Rxe4 25… dxe4 26. Qxe4 26… Rd8 27. Be3 27… Qb5
-28. Qb4 28… Qd5 29. Qxa4 29… Be5 30. Bd4 30… Bxd4 31. cxd4 31… Qxd4 32.
-Qxd4 32… Rxd4 33. Rc1 33… Rd2 34. b4 34… Ra2 35. Rxc6 35… Rxa3 36. b5
-36… Rb3 37. b6 37… Kg7 38. Kg2 38… Rb1 39. Kf3 39… Rb3 40. Ke4 40… Rb4
-41. Kd5 41… Rb1 42. Kd6 42… Rd1 43. Kc7 43… Rb1</td>
-</tr>
-<tr class="even">
-<td align="center">1. Nf3 1… c5 2. Ng1 2… g6 3. Nf3 3… Bg7 4. Ng1 4… Nc6
-5. Nf3 5… d5 6. Ng1 6… Nf6 7. Nf3 7… O 8. d3 8… e5 9. g3 9… Qe7 10. Bg2
-10… Be6 11. Nbd2 11… a5 12. c4 12… d4 13. b3 13… Rab8 14. O 14… b5 15.
-Re1 15… bxc4 16. Nxc4 16… Rb4 17. Ba3 17… Rb5 18. e3 18… Bxc4 19. dxc4
-19… Rb6 20. exd4 20… cxd4 21. Bxe7 21… Nxe7 22. Nxe5 22… Ne4 23.
-Rxe4</td>
-</tr>
-<tr class="odd">
-<td align="center">1. Nf3 1… e6 2. Ng1 2… Bc5 3. Nf3 3… d6 4. e3 4… Nf6
-5. d4 5… Bb6 6. Bd2 6… c5 7. Nc3 7… cxd4 8. exd4 8… Ng4 9. h3 9… Nf6 10.
-Qe2 10… Ba5 11. O 11… Qc7 12. Qe3 12… d5 13. Ne5 13… Ne4 14. Nb5 14…
-Bxd2 15. Rxd2 15… Qa5 16. Nd6 16… Nxd6 17. Rd3 17… Nc4 18. Qe1 18… Qb5
-19. Rb3 19… Qa4 20. Bxc4 20… dxc4 21. Rb4 21… Qxa2 22. Kd2 22… O 23. Qe3
-23… Rd8 24. h4 24… Qa5 25. c3 25… Nc6 26. f4 26… Nxb4 27. cxb4 27…
-Qxb4</td>
-</tr>
-<tr class="even">
-<td align="center">1. Nf3 1… d5 2. Ng1 2… e5 3. g3 3… e4 4. Bg2 4… f5 5.
-e3 5… f4 6. d3 6… f3 7. Bf1 7… c6 8. dxe4 8… dxe4 9. Qxd8 9… Kxd8 10.
-Nc3 10… Nf6 11. Bd2 11… Bf5 12. Bc4 12… Nbd7 13. O 13… b5 14. Bb3 14…
-Kc7 15. a3 15… Nc5 16. Be1 16… Nxb3 17. cxb3 17… a6 18. Kb1 18… a5 19.
-Na2 19… b4 20. a4 20… Be7 21. Bd2 21… Rhd8 22. Bc1 22… Rxd1 23. h3 23…
-h5 24. h4 24… Bg4 25. Kc2 25… Rf1 26. Kd2 26… Rxf2 27. Ke1 27… Rg2 28.
-Nh3 28… Nd5 29. Nf4 29… Nxf4 30. gxf4 30… Bc5</td>
-</tr>
-<tr class="odd">
-<td align="center">1. Nf3 1… c5 2. Ng1 2… d5 3. g3 3… d4 4. Bg2 4… Bg4
-5. d3 5… Bxe2 6. Qxe2 6… Nc6 7. Nf3 7… Nb4 8. O 8… Nf6 9. a3 9… Nc6 10.
-Qd2 10… e6 11. Qd1 11… Bd6 12. Bg5 12… O 13. h4 13… h6 14. Bxf6 14… Qxf6
-15. Nbd2 15… Qg6 16. Ne4 16… Bc7 17. c4 17… dxc3 18. bxc3 18… Rad8 19.
-Qe2 19… f5 20. Nxc5 20… Bxg3 21. fxg3 21… Qxg3 22. Qxe6 22… Kh7 23. d4
-23… Rfe8 24. Qc4 24… Rf8 25. Ne6 25… g5 26. Nxf8 26… Rxf8 27. Ne5 27…
-gxh4 28. Nxc6 28… bxc6 29. Rae1 29… h3 30. Re7 30… Kg6 31. Qe6 31… Kh5
-32. Kh1 32… Qxg2</td>
-</tr>
-<tr class="even">
-<td align="center">1. Nf3 1… e6 2. Ng1 2… Be7 3. f4 3… d6 4. Nf3 4… c6
-5. e3 5… b6 6. d4 6… Bb7 7. Bd3 7… Nd7 8. O 8… Ngf6 9. c3 9… O 10. Bc2
-10… c5 11. Nbd2 11… cxd4 12. exd4 12… e5 13. Nb1 13… exf4 14. Bxf4 14…
-Nd5 15. Nbd2 15… Nxf4 16. Ne4 16… Nd5 17. Qd3 17… N5f6 18. Nxf6 18… Nxf6
-19. Ng5 19… g6 20. Rxf6 20… Bxf6 21. Nf3 21… Re8 22. Rf1 22… Be4 23. Qd1
-23… Bxc2 24. Qxc2 24… d5 25. Qf2 25… b5 26. Qg3 26… Bg7 27. Qh3 27… Qb6
-28. Ng5 28… Bxd4 29. Kh1 29… h6 30. Qf3 30… Bg7 31. Qxf7 31… Kh8 32. Ne6
-32… Rxe6 33. Qf8 33… Rxf8 34. Rxf8 34… Bxf8 35. h4</td>
-</tr>
-</tbody>
-</table>
+#pander(head(search_games_by_moves(c(&quot;Nf3&quot;,&quot;Ng1&quot;),1)))</code></pre>
 </div>
 </div>
 
