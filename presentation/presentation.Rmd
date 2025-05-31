@@ -1046,6 +1046,6 @@ search_games_by_moves = function(searching_moves, months_to_search){
   return(openings)
 }
 
-pander(head(search_games_by_moves(c("Nf3","Ng1"),1)))
+#pander(head(search_games_by_moves(c("Nf3","Ng1"),1)))
 
 ```

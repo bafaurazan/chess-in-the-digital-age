@@ -1,0 +1,371 @@
+---
+title: "analiza_statystyczna_rafal_bazan"
+author: "Rafal Bazan"
+date: "2025-05-30"
+output: html_document
+---
+
+
+# Początkowe ustawienia
+
+<button id="button_my_init" class="my_button" onclick="hideMy_init()">Pokaż</button>
+
+```{css, echo=FALSE}
+.my_button {
+  background-color: #caa8b1;
+  color: #3c2a34;
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  width: 70px;
+}
+h1, h2, h3, h4, h5, h6, p, li {
+      text-align: center;
+      color: #e0cdd6;
+    }
+body {
+  background-color: #3c2a34;
+}
+table {
+   margin:1em auto;
+   color: #e0cdd6;
+}
+ul {
+    text-align: center;
+    list-style-position: inside;
+}
+```
+<div id="my_init">
+
+#### Css
+
+```{css, eval=FALSE}
+.my_button {
+  background-color: #caa8b1;
+  color: #3c2a34;
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  width: 70px;
+}
+h1, h2, h3, h4, h5, h6 {
+      text-align: center;
+      color: #e0cdd6;
+    }
+body {
+  background-color: #3c2a34;
+}
+table {
+   margin:1em auto;
+   color: #e0cdd6;
+}
+```
+
+#### Definiowanie ścieżek
+
+```{r setup}
+project_path = "C:/Users/rafal/moje_2024-07-02/moje/projekty/chess-in-the-digital-age"
+setwd(paste(project_path,"/presentation", sep = ""))
+Dataset_path = paste(project_path,"/Dataset", sep = "")
+selected_date = "2024-04"
+
+knitr::opts_chunk$set(root= paste(project_path,"/presentation", sep = ""))
+```
+
+```{r}
+library(moments)
+```
+
+```{r}
+# Dane: liczba zagranych partii w danym miesiącu
+my_games_count <- c(91377787, 95804114, 91567975, 98994760, 96909211, 92389636, 94922297, 93218629, 96118124, 95300285, 96641906, 104193153, 101706224, 108201825, 98471537, 103178407, 93501009, 89319297, 92629656, 89174810, 92670440, 92055571, 87649571, 89300578, 87200457, 91140030, 86339501, 102110423, 95600810, 87113345, 88092721, 88133339, 93679328, 92193352, 92190803, 101011629, 99184138, 100023791, 89892001, 95853038, 89422803, 78268317, 70572373, 68027862, 71405167, 70592022, 70374749, 75628855, 73224608, 55544817, 44004185, 46800709, 44055757, 40357832, 40440254, 36996010, 36745427, 35728182, 33935786, 35236588, 33565536, 34869171, 31023718, 33886899, 31179146, 26136657, 24784600, 22971939, 22635642, 21070917, 20273737, 21442600, 19881929, 20059178, 17383410, 17945784, 16232215, 14306375, 13703878, 12564109, 12458761, 12080314, 11512600, 11693919, 11348506, 11346745, 10194939, 10680708, 9433412, 8021509, 7599868, 6813113, 6483257, 6275933, 6136419, 6225957, 5922667, 5801234, 5015361, 4770357, 4161162, 3595776, 3400418, 2844677, 2621861, 2455141, 2324106, 2137557, 1785418, 1742733, 1495553, 1497237, 1350176, 1209291, 1111302, 1000056, 1013294, 1048440, 961868, 905374, 810463, 795173, 692394, 697600, 578262, 487012, 411039, 325098, 325525, 293459, 224679, 179550, 157871, 158635, 123961, 121332)
+
+# Obliczanie parametrów
+
+# Obliczanie parametrów statystycznych i drukowanie ich z komentarzami
+cat("Średnia arytmetyczna (wartość centralna danych, średnia liczba partii w miesiącu): ", mean(my_games_count), "\n")
+cat("Odchylenie standardowe (miara rozproszenia danych wokół średniej): ", sd(my_games_count), "\n")
+cat("Współczynnik zmienności (relatywna miara zmienności w procentach): ", (sd(my_games_count) / mean(my_games_count)) * 100, "\n")
+cat("Kwartyl 1 (wartość, poniżej której znajduje się 25% danych): ", quantile(my_games_count, probs = 0.25), "\n")
+cat("Mediana (wartość środkowa po posortowaniu danych): ", median(my_games_count), "\n")
+cat("Kwartyl 3 (wartość, poniżej której znajduje się 75% danych): ", quantile(my_games_count, probs = 0.75), "\n")
+cat("Odchylenie przeciętne (miara rozproszenia oparta na medianie odchyleń od średniej): ", mad(my_games_count, center = mean(my_games_count)), "\n")
+cat("Wariancja (kwadrat odchylenia standardowego, miara całkowitej zmienności): ", var(my_games_count), "\n")
+cat("Maksimum (najwyższa wartość w zbiorze danych): ", max(my_games_count), "\n")
+cat("Minimum (najniższa wartość w zbiorze danych): ", min(my_games_count), "\n")
+cat("Rozstęp (różnica między maksymalną a minimalną wartością): ", max(my_games_count) - min(my_games_count), "\n")
+cat("Kurtoza (miara spiczastości rozkładu danych): ", kurtosis(my_games_count), "\n")
+cat("Skośność (miara asymetrii rozkładu danych): ", skewness(my_games_count), "\n")
+dens <- density(my_games_count)
+cat("Estymowana moda (na podstawie gęstości): ", dens$x[which.max(dens$y)], "\n")
+```
+
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10, message=FALSE}
+
+my_plot = ggplot(Data_games_count, aes(x = rev(1:nrow(data.frame(my_games_count))), y = count)) +
+
+  # typ wykresu
+  geom_bar(stat = "identity",aes(fill = year)) +
+  
+  # opis
+  labs(x = "Years", y = "Liczba partii szachowych", title = "Liczba partii szachowych granych na stronie lichess") +
+
+  # legenda
+  scale_fill_manual(name = "Years", values = unique(Data_games_count$year)) +
+  expand_limits(x = c(0, NA), y = c(0,NA)) +
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(my_year_from_imported_links)[,]))) +
+  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6)) +
+  theme(text = element_text(size = 20),
+        axis.text.x = element_text(angle = 90, hjust = 1))
+my_plot
+ggsave("../poster/Data_games_countv1.png")
+```
+
+```{r}
+#pierwsza hipoteza
+shapiro_total <- shapiro.test(my_games_count)
+shapiro_gambit <- shapiro.test(games_count_gambit)
+shapiro_gambit <- shapiro.test(games_count_italian)
+pander(shapiro_total, caption = "Test Shapiro-Wilk dla liczby wszystkich partii")
+pander(shapiro_gambit, caption = "Test Shapiro-Wilk dla liczby zagranych debiutów 'Gambit Królowej'")
+pander(shapiro_gambit, caption = "Test Shapiro-Wilk dla liczby zagranych debiutów 'Partia Włoska'")
+pander(correlation_gambit <- cor.test(my_games_count, games_count_gambit), caption = "Test korelacji spearmana między liczbą wszystkich partii a gambitem królowej",method = "spearman")
+pander(correlation_italian <- cor.test(my_games_count, games_count_italian), caption = "Test korelacji spearmana między liczbą wszystkich partii a partią włoską",method = "spearman")
+#?cor.test
+```
+
+```{r}
+#reszta danych
+# ilość zagranych partii italian game w stosunku do całości 
+Percent_games_count_italian <- c(4.035295, 3.956943, 4.169942, 3.766701, 4.019037, 3.509570, 3.422145, 3.775731, 3.670746, 3.736709, 3.632317, 3.759276, 4.028205, 3.982436, 3.775042, 3.469441, 3.579071, 3.674741, 3.669546, 3.723482, 3.483715, 3.520040, 3.361220, 3.586871, 3.638053, 3.582171, 3.581692, 3.621364, 3.429259, 3.388156, 3.522678, 3.777076, 3.415572, 3.647987, 3.937059, 3.929279, 3.783353, 3.760068, 3.653024, 3.499979, 3.655589, 3.060990, 3.319155, 3.816783, 3.345725, 3.568440, 3.394267, 3.408324, 3.216498, 3.080082, 3.129264, 2.939542, 3.149982, 3.220608, 3.204018, 2.999486, 2.879089, 2.766732, 3.274968, 3.279666, 3.519700, 3.440360, 3.230903, 3.161997, 3.044887, 3.115551, 3.011221, 3.205435, 2.868635, 3.338082, 3.261460, 3.158975, 3.270111, 3.160825, 3.029218, 3.241154, 3.310496, 3.070993, 3.133312, 2.993631, 2.940127, 2.827271, 3.436824, 3.048966, 3.228840, 3.048589, 3.140813, 3.307231, 3.290280, 3.017194, 2.773552, 3.054033, 3.004115, 3.131642, 3.028986, 2.728961, 2.687688, 2.975917, 2.448980, 2.333831, 2.098951, 2.600941, 2.068604, 2.442844, 2.548420, 3.010519, 2.482811, 2.621723, 2.732240, 3.089431, 3.620178, 3.147268, 2.301118, 2.575423, 2.964744, 2.584670, 1.755926, 2.122241, 1.942646, 2.158979, 2.414929, 4.241071, 3.727506, 2.802548, 2.307692, 4.570384, 3.246753, 2.465753, 2.465753, 2.127660, 4.761905, 5.472637, 1.129944, 4.494382, 4.347826, 5.882353)
+
+# ilość zagranych partii gambit królowej w stosunku do całości 
+Percent_games_count_gambit = c(3.555789, 3.648949, 3.570493, 3.821276, 3.636026, 3.761956, 3.568643, 3.762852, 3.811248, 3.704170, 3.826924, 3.728556, 3.733171, 3.874278, 3.791296, 3.897061, 3.932163, 3.990679, 3.894168, 3.704410, 3.910138, 3.740654, 3.836014, 3.831074, 3.944379, 3.734768, 4.100811, 4.001528, 3.923190, 3.852162, 3.812260, 3.862222, 3.741322, 3.910651, 4.068367, 3.799525, 3.843903, 4.138276, 4.188563, 4.293530, 4.237440, 4.159315, 3.753013, 3.959507, 4.073788, 4.237877, 4.408564, 4.328597, 4.197038, 4.549876, 4.596107, 4.527963, 4.383176, 4.326375, 4.389134, 4.297731, 4.494321, 4.270512, 4.215305, 4.583014, 4.476366, 4.642621, 4.546481, 4.213044, 4.594603, 4.405404, 4.480504, 4.459736, 4.672030, 4.601140, 4.460453, 4.885446, 4.653620, 4.283625, 4.748503, 4.638715, 4.286106, 3.798334, 4.236134, 4.805379, 4.410191, 4.439700, 4.317269, 4.539234, 4.043887, 3.942006, 4.545455, 4.015328, 4.167059, 4.658902, 4.353423, 4.620204, 4.471879, 3.755137, 4.391304, 4.200600, 4.519520, 4.448535, 4.028394, 4.985063, 4.776183, 4.582611, 5.210788, 4.666458, 3.975535, 3.119333, 6.493506, 5.742821, 3.079980, 4.823848, 3.976261, 3.325416, 6.114398, 4.267844, 4.807692, 4.099822, 5.179982, 3.480475, 3.792784, 3.631011, 6.476400, 5.022321, 4.241645, 3.694268, 6.615385, 4.021938, 3.896104, 5.205479, 3.835616, 7.598784, 2.380952, 6.965174, 3.389831, 6.179775, 6.521739, 5.147059)
+
+games_count_italian <- c(3686, 3790, 3819, 3727, 3893, 3240, 3247, 3518, 3527, 3560, 3509, 3916, 4096, 4308, 3716, 3578, 3345, 3280, 3398, 3319, 3227, 3239, 2945, 3202, 3171, 3263, 3091, 3696, 3277, 2950, 3102, 3327, 3198, 3361, 3628, 3967, 3749, 3758, 3281, 3352, 3267, 2394, 2341, 2594, 2385, 2516, 2386, 2574, 2352, 1710, 1376, 1375, 1387, 1299, 1295, 1109, 1057, 988, 1111, 1155, 1181, 1199, 1002, 1071, 949, 814, 746, 736, 649, 703, 661, 677, 650, 670, 592, 654, 604, 494, 483, 423, 412, 384, 445, 401, 412, 389, 360, 397, 349, 272, 237, 234, 219, 221, 209, 191, 179, 194, 138, 125, 98, 105, 79, 78, 75, 83, 65, 63, 55, 57, 61, 53, 35, 35, 37, 29, 20, 25, 21, 22, 22, 38, 29, 22, 15, 25, 15, 9, 9, 7, 12, 11, 2, 8, 6, 8)
+
+games_count_gambit <- c(3248, 3495, 3270, 3781, 3522, 3473, 3386, 3506, 3662, 3529, 3697, 3884, 3796, 4191, 3732, 4019, 3675, 3562, 3606, 3302, 3622, 3442, 3361, 3420, 3438, 3402, 3539, 4084, 3749, 3354, 3357, 3402, 3503, 3603, 3749, 3836, 3809, 4136, 3762, 4112, 3787, 3253, 2647, 2691, 2904, 2988, 3099, 3269, 3069, 2526, 2021, 2118, 1930, 1745, 1774, 1589, 1650, 1525, 1430, 1614, 1502, 1618, 1410, 1427, 1432, 1151, 1110, 1024, 1057, 969, 904, 1047, 925, 908, 928, 936, 782, 611, 653, 679, 618, 603, 559, 597, 516, 503, 521, 482, 442, 420, 372, 354, 326, 265, 303, 294, 301, 290, 227, 267, 223, 185, 199, 149, 117, 86, 170, 138, 62, 89, 67, 56, 93, 58, 60, 46, 59, 41, 41, 37, 59, 45, 33, 29, 43, 22, 18, 19, 14, 25, 6, 14, 6, 11, 9, 7)
+
+games_count_cow = c(9, 4, 3, 3, 3, 2, 2, 0, 9, 6, 8, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 2, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+```
+
+```{r}
+plot(my_games_count, games_count_gambit, pch = 19, col = "green",  cex.lab=0.8, cex.main=0.9,
+     xlab = "Liczba rozegranych partii (w mln)", 
+     ylab = "Liczba partii (Gambit Królowej i Partia Włoska)", 
+     main = "Korelacja liczby partii Gambit Królowej i Partia Włoska względem wszystkich partii",
+     xaxt = "n")  # wyłącz domyślne etykiety osi x
+
+# Stworzenie własnych etykiet osi x (np. co 20 mln)
+at_values <- pretty(my_games_count)  # ładne wartości na osi x
+labels <- paste0(round(at_values / 1e6, 1), " mln")
+
+axis(side = 1, at = at_values, labels = labels)
+
+abline(lm(games_count_gambit ~ my_games_count), col = "red")
+points(my_games_count, games_count_italian, pch = 19, col = "red")
+abline(lm(games_count_italian ~ my_games_count), col = "blue")
+legend("topleft", legend = c("Gambit Królowej", "Partia Włoska"), col = c("green", "red"), pch = 19)
+
+```
+
+```{r}
+# Odwróć dane do chronologii
+games_count_chrono <- rev(games_count_gambit)
+
+# Podział
+games_count_chrono_przed <- games_count_chrono[1:94]     # przed czerwiec 2023
+games_count_chrono_po    <- games_count_chrono[95:136]   # czerwiec 2023 – kwiecień 2024
+
+# Czas
+time_przed <- 1:94
+time_po <- 95:136
+
+# Regresje
+reg_przed <- lm(games_count_chrono_przed ~ time_przed)
+summary(reg_przed)
+reg_po <- lm(games_count_chrono_po ~ time_po)
+summary(reg_po)
+
+# Wyciągnięcie współczynników regresji (nachylenia)
+beta1_przed <- coef(reg_przed)[2]
+beta1_po <- coef(reg_po)[2]
+delta_beta <- beta1_po - beta1_przed
+cat("Różnica między współczynnikami regresji (po - przed):", delta_beta, "\n")
+
+# Standardowe błędy nachyleń
+se_beta1_przed <- summary(reg_przed)$coefficients[2, 2]
+se_beta1_po <- summary(reg_po)$coefficients[2, 2]
+
+# Standardowy błąd różnicy
+se_diff <- sqrt(se_beta1_przed^2 + se_beta1_po^2)
+
+# Wartość delta (np. o ile oczekujesz, że nachylenie jest większe po premierze)
+delta <- 0  # Możesz ustawić np. delta = 50, jeśli chcesz sprawdzić konkretną różnicę
+
+# Statystyka t dla różnicy nachyleń
+t_stat <- (delta_beta - delta) / se_diff
+
+# Stopnie swobody (przybliżenie)
+df <- min(length(games_count_chrono_przed) - 2, length(games_count_chrono_po) - 2)
+
+# Wartość p dla testu jednostronnego (H1: beta1_po < beta1_przed + delta)
+# Poprawiony kierunek: lower.tail = TRUE, bo testujemy mniejsze nachylenie
+p_value <- pt(t_stat, df, lower.tail = TRUE)
+?pt
+# Wyświetlenie wyników
+cat("Statystyka t:", t_stat, "\n")
+cat("Stopnie swobody:", df, "\n")
+cat("Wartość p:", p_value, "\n")
+
+plot(time, games_count_chrono, type = "l", xlab = "Miesiąc (1 = styczeń 2013, 136 = kwiecień 2024)", 
+     ylab = "Liczba gier z debiutem Gambit Królowej")
+abline(reg_przed, col = "blue")  # Linia regresji przed premierą
+abline(reg_po, col = "red")      # Linia regresji po premierze
+abline(v = 94, lty = 2, col = "green")  # Linia oznaczająca październik 2020 (data wydania serialu)
+legend("topleft", legend = c("Linia regresji przed premierą", "Linia regresji po premierze", 
+                             "Data wydania serialu"), 
+       col = c("blue", "red", "green"), lty = c(1, 1, 2))
+
+# Przykładowe dane - liczba partii z gambitem królowej przed i po premierze serialu
+
+# Boxplot porównujący dystrybucję przed i po
+boxplot(games_count_chrono_przed, games_count_chrono_po, names = c("Przed", "Po"),
+        col = c("lightblue", "lightgreen"),
+        main = "Liczba partii z gambitem królowej przed i po premierze",
+        ylab = "Liczba partii")
+
+```
+
+```{r}
+# Odwróć dane do chronologii
+games_count_chrono <- rev(games_count_italian)
+
+# Podział
+games_count_chrono_przed <- games_count_chrono[1:94]     # przed czerwiec 2023
+games_count_chrono_po    <- games_count_chrono[95:136]   # czerwiec 2023 – kwiecień 2024
+
+# Czas
+time_przed <- 1:94
+time_po <- 95:136
+
+# Regresje
+reg_przed <- lm(games_count_chrono_przed ~ time_przed)
+summary(reg_przed)
+reg_po <- lm(games_count_chrono_po ~ time_po)
+summary(reg_po)
+
+# Wyciągnięcie współczynników regresji (nachylenia)
+beta1_przed <- coef(reg_przed)[2]
+beta1_po <- coef(reg_po)[2]
+delta_beta <- beta1_po - beta1_przed
+cat("Różnica między współczynnikami regresji (po - przed):", delta_beta, "\n")
+
+# Standardowe błędy nachyleń
+se_beta1_przed <- summary(reg_przed)$coefficients[2, 2]
+se_beta1_po <- summary(reg_po)$coefficients[2, 2]
+
+# Standardowy błąd różnicy
+se_diff <- sqrt(se_beta1_przed^2 + se_beta1_po^2)
+
+# Wartość delta (np. o ile oczekujesz, że nachylenie jest większe po premierze)
+delta <- 0  # Możesz ustawić np. delta = 50, jeśli chcesz sprawdzić konkretną różnicę
+
+# Statystyka t dla różnicy nachyleń
+t_stat <- (delta_beta - delta) / se_diff
+
+# Stopnie swobody (przybliżenie)
+df <- min(length(games_count_chrono_przed) - 2, length(games_count_chrono_po) - 2)
+
+# Wartość p dla testu jednostronnego (H1: beta1_po < beta1_przed + delta)
+# Poprawiony kierunek: lower.tail = TRUE, bo testujemy mniejsze nachylenie
+p_value <- pt(t_stat, df, lower.tail = TRUE)
+
+# Wyświetlenie wyników
+cat("Statystyka t:", t_stat, "\n")
+cat("Stopnie swobody:", df, "\n")
+cat("Wartość p:", p_value, "\n")
+
+plot(time, games_count_chrono, type = "l", xlab = "Miesiąc (1 = styczeń 2013, 136 = kwiecień 2024)", 
+     ylab = "Liczba gier z debiutem Partia Włoska")
+abline(reg_przed, col = "blue")  # Linia regresji przed premierą
+abline(reg_po, col = "red")      # Linia regresji po premierze
+abline(v = 94, lty = 2, col = "green")  # Linia oznaczająca październik 2020 (data wydania serialu)
+legend("topleft", legend = c("Linia regresji przed premierą", "Linia regresji po premierze", 
+                             "Data wydania serialu"), 
+       col = c("blue", "red", "green"), lty = c(1, 1, 2))
+
+
+# CDF dla danych 'before' i 'after'
+plot(ecdf(games_count_chrono_przed), col = "blue", main = "Dystrybuanta liczby partii",
+     xlab = "Liczba partii", ylab = "Prawdopodobieństwo <= x")
+lines(ecdf(games_count_chrono_po), col = "green")
+legend("topleft", legend = c("Przed", "Po"), col = c("blue", "green"), lty=1)
+
+```
+
+```{r}
+# Odwróć dane do chronologii
+games_count_chrono <- rev(games_count_cow)
+
+# Podział
+games_count_chrono_przed <- games_count_chrono[1:124]     # przed czerwiec 2023
+games_count_chrono_po    <- games_count_chrono[125:136]   # czerwiec 2023 – kwiecień 2024
+
+# Czas
+time_przed <- 1:124
+time_po <- 125:136
+
+# Regresje
+reg_przed <- lm(games_count_chrono_przed ~ time_przed)
+summary(reg_przed)
+reg_po <- lm(games_count_chrono_po ~ time_po)
+summary(reg_po)
+
+# Wyciągnięcie współczynników regresji (nachylenia)
+beta1_przed <- coef(reg_przed)[2]
+beta1_po <- coef(reg_po)[2]
+delta_beta <- beta1_po - beta1_przed
+cat("Różnica między współczynnikami regresji (po - przed):", delta_beta, "\n")
+
+# Standardowe błędy nachyleń
+se_beta1_przed <- summary(reg_przed)$coefficients[2, 2]
+se_beta1_po <- summary(reg_po)$coefficients[2, 2]
+
+# Standardowy błąd różnicy
+se_diff <- sqrt(se_beta1_przed^2 + se_beta1_po^2)
+
+# Wartość delta (np. o ile oczekujesz, że nachylenie jest większe po premierze)
+delta <- 0  # Możesz ustawić np. delta = 50, jeśli chcesz sprawdzić konkretną różnicę
+
+# Statystyka t dla różnicy nachyleń
+t_stat <- (delta_beta - delta) / se_diff
+
+# Stopnie swobody (przybliżenie)
+df <- min(length(games_count_chrono_przed) - 2, length(games_count_chrono_po) - 2)
+
+# Wartość p dla testu jednostronnego (H1: beta1_po < beta1_przed + delta)
+# Poprawiony kierunek: lower.tail = TRUE, bo testujemy mniejsze nachylenie
+p_value <- pt(t_stat, df, lower.tail = FALSE)
+
+# Wyświetlenie wyników
+cat("Statystyka t:", t_stat, "\n")
+cat("Stopnie swobody:", df, "\n")
+cat("Wartość p:", p_value, "\n")
+
+plot(time, games_count_chrono, type = "l", xlab = "Miesiąc (1 = styczeń 2013, 136 = kwiecień 2024)", 
+     ylab = "Liczba gier z debiutem Otwarcie Krowy")
+abline(reg_przed, col = "blue")  # Linia regresji przed premierą
+abline(reg_po, col = "red")      # Linia regresji po premierze
+abline(v = 94, lty = 2, col = "green")  # Linia oznaczająca październik 2020 (data wydania serialu)
+abline(v = 124, lty = 2, col = "darkgreen")  # Linia oznaczająca październik 2020 (data debiutu krowy)
+legend("topleft", legend = c("Linia regresji przed premierą", "Linia regresji po premierze", 
+                             "Data wydania serialu", "Data wymyślenia debiutu krowy"), 
+       col = c("blue", "red", "green", "darkgreen"), lty = c(1, 1, 2, 2))
+
+```
+
