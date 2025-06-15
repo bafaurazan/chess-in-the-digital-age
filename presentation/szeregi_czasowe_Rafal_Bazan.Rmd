@@ -1,0 +1,551 @@
+---
+title: "analiza_statystyczna_rafal_bazan"
+author: "Rafal Bazan"
+date: "2025-05-30"
+output: html_document
+---
+
+
+# Początkowe ustawienia
+
+<button id="button_my_init" class="my_button" onclick="hideMy_init()">Pokaż</button>
+
+```{css, echo=FALSE}
+.my_button {
+  background-color: #caa8b1;
+  color: #3c2a34;
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  width: 70px;
+}
+h1, h2, h3, h4, h5, h6, p, li {
+      text-align: center;
+      color: #e0cdd6;
+    }
+body {
+  background-color: #3c2a34;
+}
+table {
+   margin:1em auto;
+   color: #e0cdd6;
+}
+ul {
+    text-align: center;
+    list-style-position: inside;
+}
+```
+<div id="my_init">
+
+#### Css
+
+```{css, eval=FALSE}
+.my_button {
+  background-color: #caa8b1;
+  color: #3c2a34;
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  width: 70px;
+}
+h1, h2, h3, h4, h5, h6 {
+      text-align: center;
+      color: #e0cdd6;
+    }
+body {
+  background-color: #3c2a34;
+}
+table {
+   margin:1em auto;
+   color: #e0cdd6;
+}
+```
+
+#### Definiowanie ścieżek
+
+```{r setup}
+project_path = "C:/Users/rafal/moje_2024-07-02/moje/projekty/chess-in-the-digital-age"
+setwd(paste(project_path,"/presentation", sep = ""))
+Dataset_path = paste(project_path,"/Dataset", sep = "")
+selected_date = "2024-04"
+
+knitr::opts_chunk$set(root= paste(project_path,"/presentation", sep = ""))
+```
+
+```{r}
+library(moments)
+library(ggplot2)
+```
+```{r}
+games_count_gambit <- c(3248, 3495, 3270, 3781, 3522, 3473, 3386, 3506, 3662, 3529, 3697, 3884, 3796, 4191, 3732, 4019, 3675, 3562, 3606, 3302, 3622, 3442, 3361, 3420, 3438, 3402, 3539, 4084, 3749, 3354, 3357, 3402, 3503, 3603, 3749, 3836, 3809, 4136, 3762, 4112, 3787, 3253, 2647, 2691, 2904, 2988, 3099, 3269, 3069, 2526, 2021, 2118, 1930, 1745, 1774, 1589, 1650, 1525, 1430, 1614, 1502, 1618, 1410, 1427, 1432, 1151, 1110, 1024, 1057, 969, 904, 1047, 925, 908, 928, 936, 782, 611, 653, 679, 618, 603, 559, 597, 516, 503, 521, 482, 442, 420, 372, 354, 326, 265, 303, 294, 301, 290, 227, 267, 223, 185, 199, 149, 117, 86, 170, 138, 62, 89, 67, 56, 93, 58, 60, 46, 59, 41, 41, 37, 59, 45, 33, 29, 43, 22, 18, 19, 14, 25, 6, 14, 6, 11, 9, 7)
+
+my_games_count <- c(91377787, 95804114, 91567975, 98994760, 96909211, 92389636, 94922297, 93218629, 96118124, 95300285, 96641906, 104193153, 101706224, 108201825, 98471537, 103178407, 93501009, 89319297, 92629656, 89174810, 92670440, 92055571, 87649571, 89300578, 87200457, 91140030, 86339501, 102110423, 95600810, 87113345, 88092721, 88133339, 93679328, 92193352, 92190803, 101011629, 99184138, 100023791, 89892001, 95853038, 89422803, 78268317, 70572373, 68027862, 71405167, 70592022, 70374749, 75628855, 73224608, 55544817, 44004185, 46800709, 44055757, 40357832, 40440254, 36996010, 36745427, 35728182, 33935786, 35236588, 33565536, 34869171, 31023718, 33886899, 31179146, 26136657, 24784600, 22971939, 22635642, 21070917, 20273737, 21442600, 19881929, 20059178, 17383410, 17945784, 16232215, 14306375, 13703878, 12564109, 12458761, 12080314, 11512600, 11693919, 11348506, 11346745, 10194939, 10680708, 9433412, 8021509, 7599868, 6813113, 6483257, 6275933, 6136419, 6225957, 5922667, 5801234, 5015361, 4770357, 4161162, 3595776, 3400418, 2844677, 2621861, 2455141, 2324106, 2137557, 1785418, 1742733, 1495553, 1497237, 1350176, 1209291, 1111302, 1000056, 1013294, 1048440, 961868, 905374, 810463, 795173, 692394, 697600, 578262, 487012, 411039, 325098, 325525, 293459, 224679, 179550, 157871, 158635, 123961, 121332)
+
+Data_games_count
+```
+
+```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10, message=FALSE}
+
+my_plot = ggplot(Data_games_count, aes(x = rev(1:nrow(data.frame(my_games_count))), y = count)) +
+
+  # typ wykresu
+  geom_bar(stat = "identity",aes(fill = year)) +
+  
+  # opis
+  labs(x = "Years", y = "Liczba partii szachowych", title = "Liczba partii szachowych granych na stronie lichess") +
+
+  # legenda
+  scale_fill_manual(name = "Years", values = unique(Data_games_count$year)) +
+  expand_limits(x = c(0, NA), y = c(0,NA)) +
+  scale_x_continuous(breaks = c(rev(first_index_of_years)),
+                     labels = c(rev(unique(my_year_from_imported_links)[,]))) +
+  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6)) +
+  theme(text = element_text(size = 20),
+        axis.text.x = element_text(angle = 90, hjust = 1))
+my_plot
+```
+
+```{r}
+
+
+# Define positions for x-axis ticks (e.g., every January)
+tick_indices <- c(rev(first_index_of_years))
+tick_labels <- c(rev(unique(my_year_from_imported_links)[,]))
+
+# Create the plot with suppressed x-axis and y-axis
+plot(1:length(my_games_count), rev(my_games_count) / 1e6, type = "l", 
+     xlab = "Rok", 
+     ylab = "Liczba zagranych partii na stronie lichess", 
+     xaxt = "n",  # Suppress default x-axis
+     yaxt = "n")  # Suppress default y-axis
+
+# Add custom y-axis with labels in millions
+y_values <- axTicks(2)  # Get default y-axis tick positions
+y_labels <- paste0(y_values, "M")  # Add "M" suffix
+axis(2, at = y_values, labels = y_labels, las = 1)
+
+# Add custom x-axis with month-year labels
+axis(1, at = tick_indices, labels = tick_labels, las = 2)  # Rotate labels 90 degrees
+
+# Add legend
+#legend("topleft", 
+#       legend = c("Linia regresji przed premierą", "Linia regresji po premierze", "Data wydania serialu"), 
+#       col = c("blue", "red", "green"), 
+#       lty = c(1, 1, 2))
+```
+
+```{r}
+
+# Create the plot with suppressed x-axis and y-axis
+plot(1:length(games_count_gambit), 
+     rev(games_count_gambit), 
+     type = "l", 
+     xlab = "Rok", 
+     ylab = "Liczba zagranych partii z debiutem Gambit Królowej po redukcji danych", 
+     xaxt = "n",  # Suppress default x-axis
+     yaxt = "n")  # Suppress default y-axis
+
+# Add custom y-axis with labels in millions
+y_values <- axTicks(2)  # Get default y-axis tick positions
+y_labels <- paste0(y_values)  # Add "M" suffix
+axis(2, at = y_values, labels = y_labels, las = 1)
+
+# Add custom x-axis with month-year labels
+axis(1, at = tick_indices, labels = tick_labels, las = 2)  # Rotate labels 90 degrees
+
+```
+
+# zamiana na szereg czasowy
+```{r}
+ts_my_games_count = ts(rev(my_games_count), start =c(2013,1), end=c(2024,4),frequency = 12)
+
+plot(1:length(rev(my_games_count)),
+     ts_my_games_count / 1e6, 
+     type = "l", 
+     xlab = "Rok", 
+     ylab = "Liczba zagranych partii na stronie lichess", 
+     xaxt = "n", 
+     yaxt = "n") 
+
+y_values <- axTicks(2)
+y_labels <- paste0(y_values, "M")
+axis(2, at = y_values, labels = y_labels, las = 1)
+
+axis(1, at = tick_indices, labels = tick_labels, las = 2)
+
+```
+
+```{r}
+ts_games_count_gambit = ts(rev(games_count_gambit), start =c(2013,1), end=c(2024,4),frequency = 12)
+
+plot(1:length(games_count_gambit), 
+     ts_games_count_gambit, 
+     type = "l", 
+     xlab = "Rok", 
+     ylab = "Liczba zagranych partii z debiutem Gambit Królowej po redukcji danych", 
+     xaxt = "n", 
+     yaxt = "n")
+
+y_values <- axTicks(2) 
+y_labels <- paste0(y_values) 
+axis(2, at = y_values, labels = y_labels, las = 1)
+
+axis(1, at = tick_indices, labels = tick_labels, las = 2)
+
+```
+
+# zmniejszenie przedziałów
+```{r}
+
+window_ts_my_games_count = window(ts_my_games_count, start=c(2013,1), end=c(2020,1))
+
+plot(1:length(window_ts_my_games_count), 
+     window_ts_my_games_count / 1e6, 
+     type = "l", 
+     xlab = "Rok", 
+     ylab = "Liczba zagranych partii na stronie lichess", 
+     xaxt = "n", 
+     yaxt = "n")
+
+y_values <- axTicks(2) 
+y_labels <- paste0(y_values, "M")
+axis(2, at = y_values, labels = y_labels, las = 1)
+
+axis(1, at = tick_indices, labels = tick_labels, las = 2)
+
+```
+# Obserwacje
+
+# monthplot
+```{r}
+# Create the plot with suppressed x-axis and y-axis
+monthplot(ts_my_games_count / 1e6, 
+     type = "l", 
+     xlab = "Rok", 
+     ylab = "Liczba zagranych partii na stronie lichess",  # Suppress default x-axis
+     yaxt = "n")  # Suppress default y-axis
+
+# Add custom y-axis with labels in millions
+y_values <- axTicks(2)  # Get default y-axis tick positions
+y_labels <- paste0(y_values, "M")  # Add "M" suffix
+axis(2, at = y_values, labels = y_labels, las = 1)
+
+# Add custom x-axis with month-year labels
+#axis(1, at = tick_indices, labels = tick_labels, las = 2)  # Rotate labels 90 degrees
+
+```
+
+```{r}
+# Create the plot with suppressed x-axis and y-axis
+monthplot(ts_games_count_gambit, 
+     type = "l", 
+     xlab = "Rok", 
+     ylab = "Liczba zagranych partii z debiutem Gambit Królowej po redukcji danych",  # Suppress default x-axis
+     yaxt = "n")  # Suppress default y-axis
+
+# Add custom y-axis with labels in millions
+y_values <- axTicks(2)  # Get default y-axis tick positions
+y_labels <- paste0(y_values)  # Add "M" suffix
+axis(2, at = y_values, labels = y_labels, las = 1)
+
+# Add custom x-axis with month-year labels
+#axis(1, at = tick_indices, labels = tick_labels, las = 2)  # Rotate labels 90 degrees
+
+```
+
+# boxplot
+```{r}
+# Create the plot with suppressed x-axis and y-axis
+boxplot(ts_my_games_count / 1e6 ~ cycle(ts_my_games_count), 
+     type = "l", 
+     xlab = "Rok", 
+     ylab = "Liczba zagranych partii na stronie lichess",  # Suppress default x-axis
+     yaxt = "n")  # Suppress default y-axis
+
+# Add custom y-axis with labels in millions
+y_values <- axTicks(2)  # Get default y-axis tick positions
+y_labels <- paste0(y_values, "M")  # Add "M" suffix
+axis(2, at = y_values, labels = y_labels, las = 1)
+```
+
+```{r}
+# Create the plot with suppressed x-axis and y-axis
+boxplot(ts_games_count_gambit ~ cycle(ts_games_count_gambit), 
+     type = "l", 
+     xlab = "Rok", 
+     ylab = "Liczba zagranych partii z debiutem Gambit Królowej po redukcji danych",  # Suppress default x-axis
+     yaxt = "n")  # Suppress default y-axis
+
+# Add custom y-axis with labels in millions
+y_values <- axTicks(2)  # Get default y-axis tick positions
+y_labels <- paste0(y_values)  # Add "M" suffix
+axis(2, at = y_values, labels = y_labels, las = 1)
+
+```
+
+# seasonplot
+```{r}
+library(forecast)
+# Create the plot with suppressed x-axis and y-axis
+seasonplot(ts_my_games_count / 1e6, 
+     col = rainbow(12),
+     year.labels = TRUE,
+     pch = 19,
+     type = "l", 
+     xlab = "Rok", 
+     ylab = "Liczba zagranych partii na stronie lichess",  # Suppress default x-axis
+     yaxt = "n")  # Suppress default y-axis
+
+# Add custom y-axis with labels in millions
+y_values <- axTicks(2)  # Get default y-axis tick positions
+y_labels <- paste0(y_values, "M")  # Add "M" suffix
+axis(2, at = y_values, labels = y_labels, las = 1)
+```
+
+```{r}
+# Create the plot with suppressed x-axis and y-axis
+seasonplot(ts_games_count_gambit,
+     col = rainbow(12),
+     year.labels = TRUE,
+     pch = 19,
+     type = "l", 
+     xlab = "Rok", 
+     ylab = "Liczba zagranych partii z debiutem Gambit Królowej po redukcji danych",  # Suppress default x-axis
+     yaxt = "n")  # Suppress default y-axis
+
+# Add custom y-axis with labels in millions
+y_values <- axTicks(2)  # Get default y-axis tick positions
+y_labels <- paste0(y_values)  # Add "M" suffix
+axis(2, at = y_values, labels = y_labels, las = 1)
+
+```
+
+# Lab.plot
+```{r}
+
+# Create the plot with suppressed x-axis and y-axis
+lag.plot(ts_my_games_count / 1e6, 
+     lags=12,
+     do.lines = FALSE,
+     #type = "l", 
+     #xlab = "Rok", 
+     #ylab = "Liczba zagranych partii na stronie lichess",  # Suppress default x-axis
+     #yaxt = "n"
+     )  # Suppress default y-axis
+
+# Add custom y-axis with labels in millions
+y_values <- axTicks(2)  # Get default y-axis tick positions
+y_labels <- paste0(y_values, "M")  # Add "M" suffix
+#axis(2, at = y_values, labels = y_labels, las = 1)
+```
+
+```{r}
+
+# Create the plot with suppressed x-axis and y-axis
+lag.plot(ts_games_count_gambit, 
+     lags=12,
+     do.lines = FALSE,
+     #type = "l", 
+     #xlab = "Rok", 
+     #ylab = "Liczba zagranych partii na stronie lichess",  # Suppress default x-axis
+     #yaxt = "n"
+     )  # Suppress default y-axis
+
+# Add custom y-axis with labels in millions
+y_values <- axTicks(2)  # Get default y-axis tick positions
+y_labels <- paste0(y_values, "M")  # Add "M" suffix
+#axis(2, at = y_values, labels = y_labels, las = 1)
+```
+
+```{r}
+Acf(ts_my_games_count, lag.max=48)
+Acf(ts_games_count_gambit, lag.max=48)
+Pacf(ts_games_count_gambit, lag.max=48)
+Pacf(ts_games_count_gambit, lag.max=48)
+```
+
+# decompose addytywna
+```{r}
+decompose_ts_my_games_count = decompose(ts_my_games_count, type = "additive")
+plot(decompose_ts_my_games_count)
+
+decompose_ts_games_count_gambit = decompose(ts_games_count_gambit, type = "additive")
+plot(decompose_ts_games_count_gambit)
+```
+# decompose multipliaktywna
+```{r}
+decompose_ts_my_games_count = decompose(ts_my_games_count, type = "multiplicative")
+plot(decompose_ts_my_games_count)
+
+decompose_ts_games_count_gambit = decompose(ts_games_count_gambit, type = "multiplicative")
+plot(decompose_ts_games_count_gambit)
+```
+
+# wygładzanie za pomocą ruchomej średniej
+```{r}
+ts_my_games_countAPma3 <- stats::filter(ts_my_games_count, sides = 2, filter = rep(1/3, 3))
+ts_my_games_countAPma7 <- stats::filter(ts_my_games_count, sides = 2, filter = rep(1/7, 7))
+ts_my_games_countAPma11 <- stats::filter(ts_my_games_count, sides = 2, filter = rep(1/11, 11))
+plot(ts_my_games_count)
+lines(ts_my_games_countAPma3, col = "red")
+lines(ts_my_games_countAPma7, col = "purple")
+lines(ts_my_games_countAPma11, col = "green")
+
+ts_games_count_gambitAPma3 <- stats::filter(ts_games_count_gambit, sides = 2, filter = rep(1/3, 3))
+ts_games_count_gambitAPma7 <- stats::filter(ts_games_count_gambit, sides = 2, filter = rep(1/7, 7))
+ts_games_count_gambitAPma11 <- stats::filter(ts_games_count_gambit, sides = 2, filter = rep(1/11, 11))
+plot(ts_games_count_gambit)
+lines(ts_games_count_gambitAPma3, col = "red")
+lines(ts_games_count_gambitAPma7, col = "purple")
+lines(ts_games_count_gambitAPma11, col = "green")
+
+```
+`
+# Dekompozycja na podstawie modelu regresji
+```{r}
+
+ts_my_games_countAPT <- tslm(ts_my_games_count ~ trend) # tworzenie modelu uwzględniającego trend
+summary(ts_my_games_countAPT)
+ts_my_games_countAPTS <- tslm(ts_my_games_count ~ trend + season) #tworzenie modelu uwzględniającego trend i sezonowość
+ts_my_games_count_cox <- tslm(ts_my_games_count ~ trend + season, lambda = "auto") #tworzenie modelu uwzględniającego trend i sezonowość
+plot(ts_my_games_count)
+lines(fitted(ts_my_games_countAPT), col = "red", lty = 2) #rysowanie wartości na podstawie modelu
+lines(fitted(ts_my_games_countAPTS), col = "blue", lty = 2)
+lines(fitted(ts_my_games_count_cox), col = "green", lty = 2)
+legend("topleft", legend = c("Trend","Trend + Sezonowość", "Box-cox"),
+       col = c("red","blue","green"), pch = 16)
+
+ts_games_count_gambitAPT <- tslm(ts_games_count_gambit ~ trend) # tworzenie modelu uwzględniającego trend
+#str(APT) #;)
+summary(ts_games_count_gambitAPT)
+ts_games_count_gambitAPTS <- tslm(ts_games_count_gambit ~ trend + season) #tworzenie modelu uwzględniającego trend i sezonowość
+ts_games_count_gambit_cox <- tslm(ts_games_count_gambit ~ trend + season, lambda = "auto")
+plot(ts_games_count_gambit)
+lines(fitted(ts_games_count_gambitAPT), col = "red", lty = 2) #rysowanie wartości na podstawie modelu
+lines(fitted(ts_games_count_gambitAPTS), col = "blue", lty = 2)
+lines(fitted(ts_games_count_gambit_cox), col = "green", lty = 2)
+legend("topleft", legend = c("Trend","Trend + Sezonowość", "Box-cox"),
+       col = c("red","blue","green"), pch = 16)
+```
+
+# eliminacja trendu i sezonowości
+
+# eliminacja sezonowości
+```{r}
+ts_my_games_countAP <- ts_my_games_count
+ts_my_games_countAPD <-decompose(ts_my_games_countAP, type = "multiplicative")
+ts_my_games_countAPSA <- seasadj(ts_my_games_countAPD)
+plot(ts_my_games_countAP)
+lines(ts_my_games_countAPSA, col = "blue", lty = 1)
+legend("topleft", legend=c("Partie","Dane odsezonowane"), col=c("black","blue"),lty=c(1,2))
+
+ts_games_count_gambitAP <- ts_games_count_gambit
+ts_games_count_gambitAPD <-decompose(ts_games_count_gambitAP, type = "multiplicative")
+ts_games_count_gambitAPSA <- seasadj(ts_games_count_gambitAPD)
+plot(ts_games_count_gambitAP)
+lines(ts_games_count_gambitAPSA, col = "blue", lty = 1)
+legend("topleft", legend=c("Partie","Dane odsezonowane"), col=c("black","blue"),lty=c(1,2))
+```
+
+# eliminacja trendu
+```{r}
+library(expsmooth)
+
+tsdisplay(ts_my_games_count)
+ts_my_games_countDiff <- diff(ts_my_games_count)
+tsdisplay(ts_my_games_countDiff)
+ts_my_games_countDiff2 <- diff(ts_my_games_count, lag = 12)
+tsdisplay(ts_my_games_countDiff2)
+
+tsdisplay(ts_games_count_gambit)
+ts_games_count_gambitDiff <- diff(ts_games_count_gambit)
+tsdisplay(ts_games_count_gambitDiff)
+ts_games_count_gambitDiff2 <- diff(ts_games_count_gambit, lag = 12)
+tsdisplay(ts_games_count_gambitDiff2)
+
+```
+# metody estymacji (dla danych po usunięciu trendu i sezonowości)
+```{r}
+ts_my_games_countDiff2.yw =  ar(ts_my_games_countDiff2, aic=FALSE, order.max = 10, c("yule-walker"))
+print(ts_my_games_countDiff2.yw)
+ts_my_games_countDiff2.mle =  ar(ts_my_games_countDiff2, aic=FALSE, order.max = 7, c("mle"))
+print(ts_my_games_countDiff2.mle)
+ts_my_games_countDiff2.aic = ar(ts_my_games_countDiff2, aic=TRUE)
+print(ts_my_games_countDiff2.aic)
+
+
+ts_games_count_gambitDiff2.yw =  ar(ts_games_count_gambitDiff2, aic=FALSE, order.max = 10, c("yule-walker"))
+print(ts_games_count_gambitDiff2.yw)
+ts_games_count_gambitDiff2.mle =  ar(ts_games_count_gambitDiff2, aic=FALSE, order.max = 7, c("mle"))
+print(ts_games_count_gambitDiff2.mle)
+ts_games_count_gambitDiff2.aic = ar(ts_games_count_gambitDiff2, aic=TRUE)
+print(ts_games_count_gambitDiff2.aic)
+```
+
+# arima
+```{r}
+ts_my_games_countDiff2.arima = Arima(ts_my_games_countDiff2,order = c(2,0,0))
+ts_my_games_countDiff2.arima
+
+ts_games_count_gambitDiff2.arima = Arima(ts_games_count_gambitDiff2,order = c(14,0,1))
+ts_games_count_gambitDiff2.arima
+```
+
+# optymalne modele (auto arima)
+```{r}
+ts_my_games_countDiff2.auto_aic = auto.arima(ts_my_games_countDiff2, ic = "aic")
+ts_my_games_countDiff2.auto_aic
+ts_my_games_countDiff2.auto_aaic = auto.arima(ts_my_games_countDiff2, ic = "aicc")
+ts_my_games_countDiff2.auto_aaic
+ts_my_games_countDiff2.auto_bic = auto.arima(ts_my_games_countDiff2, ic = "bic")
+ts_my_games_countDiff2.auto_bic
+
+ts_games_count_gambitDiff2.auto_aic = auto.arima(ts_games_count_gambitDiff2, ic = "aic")
+ts_games_count_gambitDiff2.auto_aic
+ts_games_count_gambitDiff2.auto_aaic = auto.arima(ts_games_count_gambitDiff2, ic = "aicc")
+ts_games_count_gambitDiff2.auto_aaic
+ts_games_count_gambitDiff2.auto_bic = auto.arima(ts_games_count_gambitDiff2, ic = "bic")
+ts_games_count_gambitDiff2.auto_bic
+
+```
+
+# sprawdzenie szumu białego
+```{r}
+tsdiag(ts_my_games_countDiff2.auto_aic)
+acf(ts_my_games_countDiff2.auto_aic$residuals)
+
+tsdiag(ts_games_count_gambitDiff2.auto_aic)
+acf(ts_games_count_gambitDiff2.auto_aic$residuals)
+```
+
+# przewidywania naiwne
+# na najbliższe 4 lata i rok dla gambitu
+```{r}
+ts_my_games_count.meanf = meanf(ts_my_games_count, h = 48)
+plot(ts_my_games_count.meanf)
+ts_my_games_count.naive = naive(ts_my_games_count, h = 48)
+plot(ts_my_games_count.naive)
+ts_my_games_count.snaive = snaive(ts_my_games_count, h = 48)
+plot(ts_my_games_count.snaive)
+ts_my_games_count.rwf = rwf(ts_my_games_count, h = 48, drift = TRUE)
+plot(ts_my_games_count.rwf)
+
+ts_games_count_gambit.meanf = meanf(ts_games_count_gambit, h = 12)
+plot(ts_games_count_gambit.meanf)
+ts_games_count_gambit.naive = naive(ts_games_count_gambit, h = 12)
+plot(ts_games_count_gambit.naive)
+ts_games_count_gambit.snaive = snaive(ts_games_count_gambit, h = 12)
+plot(ts_games_count_gambit.snaive)
+ts_games_count_gambit.rwf = rwf(ts_games_count_gambit, h = 12, drift = TRUE)
+plot(ts_games_count_gambit.rwf)
+```
+
+# przewidywania nie naiwne
+```{r}
+nie_naiwne = forecast(ts_my_games_countDiff2.auto_aic, h = 48)
+plot(nie_naiwne)
+nie_naiwne2 = forecast(ts_games_count_gambitDiff2.auto_aic, h = 48)
+plot(nie_naiwne2)
+```

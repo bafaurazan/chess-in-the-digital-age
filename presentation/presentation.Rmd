@@ -9,7 +9,7 @@ output: html_document
 
 # Początkowe ustawienia
 
-<button id="button_my_init" class="my_button" onclick="hideMy_init()">Pokaż</button>
+# <button id="button_my_init" class="my_button" onclick="hideMy_init()">Pokaż</button>
 
 ```{css, echo=FALSE}
 .my_button {
