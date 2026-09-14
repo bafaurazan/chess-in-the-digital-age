@@ -9,7 +9,7 @@ output: html_document
 
 # Początkowe ustawienia
 
-<button id="button_my_init" class="my_button" onclick="hideMy_init()">Pokaż</button>
+# <button id="button_my_init" class="my_button" onclick="hideMy_init()">Pokaż</button>
 
 ```{css, echo=FALSE}
 .my_button {
@@ -67,7 +67,7 @@ table {
 #### Definiowanie ścieżek
 
 ```{r setup}
-project_path = "D:/moje/projekty/chess-in-the-digital-age"
+project_path = "C:/Users/rafal/moje_2024-07-02/moje/projekty/chess-in-the-digital-age"
 setwd(paste(project_path,"/presentation", sep = ""))
 Dataset_path = paste(project_path,"/Dataset", sep = "")
 selected_date = "2024-04"
@@ -99,7 +99,7 @@ img4 = readPNG("../pictures/opening_icon.png", native = TRUE)
 
 ```{r}
 url = "https://database.lichess.org"
-path= "/html/body/div/div[2]/div/section[1]/table"
+path= "/html/body/div/div[2]/div[2]/section[1]/table"
 wezel = html_node(read_html(url), xpath=path)
 ```
 
@@ -158,9 +158,46 @@ my_games_count <- data.frame(count=as.numeric(stri_replace_all(games_count_html,
 hyperlinks = html_nodes(wezel, "a")
 my_href = html_attr(hyperlinks, "href")
 links = data.frame(links = paste(url,my_href,sep="/"))
+#####
+choose_max_date_to_scrap1 = function(date){
+  
+  # co drugi link to .zst.torrent wiec go wyodrebniam
+  init_links_for_download = links[seq(2,nrow(links), by=2), 1]
+  
+  full_date_from_imported_links = data.frame(stri_match_all(data.frame(init_links_for_download),
+                                     regex = "rated_\\s*(.*?)\\s*[.]"))[,2]
+  
+  date_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
+  
+  my_links_for_download = init_links_for_download[c(date_location:length(init_links_for_download))]
+  
+  return(my_links_for_download)
+}
 
-init_links_for_download = links[seq(2,nrow(links), by=2), 1]
+init_links_for_download = choose_max_date_to_scrap1(selected_date)
 
+choose_max_date_to_scrap_game_count1 = function(date){
+  # wybor tabeli do analizy
+  my_games_count = html_table(wezel)[[3]]
+  
+  # wybor lat do analizy na podstawie linkow .zst.torrent
+  init_links_for_download = links[seq(2,nrow(links), by=2), 1]
+  
+  # wyodrebnianie dat z linkow
+  full_date_from_imported_links = data.frame(stri_match_all(data.frame(init_links_for_download),
+                                     regex = "rated_\\s*(.*?)\\s*[.]"))[,2]
+  
+  # szukanie indeksow z datami odpowiadajacymi wybranej dacie
+  date_location = which(stri_detect(full_date_from_imported_links, regex = date) == TRUE) 
+  
+  # wyswietlanie liczb gier dla wybranych dat
+  games_count = my_games_count[c(date_location:length(init_links_for_download))]
+  
+  return(games_count)
+}
+
+games_count_html = choose_max_date_to_scrap_game_count1(selected_date)
+my_games_count <- data.frame(count=as.numeric(stri_replace_all(games_count_html,"",regex = "\\,")))
 # wyodrebnianie lat z linkow
 
 my_year_from_imported_links = data.frame(year=data.frame(stri_match_all(data.frame(init_links_for_download),
@@ -181,7 +218,7 @@ first_index_of_years = append(first_index_of_years,which(rev(Data_games_count$ye
 
 ```{r, warning=FALSE, fig.align='center', fig.height=10, fig.width=10, message=FALSE}
 
-my_plot = ggplot(Data_games_count, aes(x = rev(1:nrow(my_games_count)), y = count)) +
+my_plot = ggplot(Data_games_count, aes(x = rev(1:nrow(data.frame(my_games_count))), y = count)) +
 
   # typ wykresu
   geom_bar(stat = "identity",aes(fill = year)) +
@@ -360,7 +397,7 @@ downloading = function(){
 #### Tworzenie struktury plikow i pobieranie w niej zbiorów danych
 
 ```{r warning=FALSE,eval=FALSE}
-downloading()
+# downloading()
 
 ```
 
@@ -509,9 +546,9 @@ removing_oryginal_dataset = function(date){
 #### Wywoływanie funkcji przygotowującej zbiór z konkretnego miesiąca do późniejszej analizy
 
 ```{r eval=FALSE}
-preparing_month_dataset("2021-12")
+# preparing_month_dataset("2021-12")
 
-removing_oryginal_dataset("2013-01")
+# removing_oryginal_dataset("2013-01")
 ```
 
 #### Java-script dla przycisku
@@ -561,19 +598,21 @@ files_to_read = paste(Dataset_path,"/",year_from_imported_links,"/",month_from_i
 
 Percent_games_count=c()
 
-for(i in 1:length(files_to_read)){
-  pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+if (FALSE){
+  for(i in 1:length(files_to_read)){
+    pgn <- read.table(files_to_read[i], quote="", sep="\n", stringsAsFactors=FALSE)
+    
+    pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
+                                byrow=TRUE, ncol=1))
+    
+    opening_index = which(sub("\\[(\\w+).+", "\\1", pgn[1:nrow(pgn.df),1]) == "Opening")
+    
+    All_games_count = length(pgn.df[opening_index,])
+    
+    Queens_Gambit_games_count = length(which(stri_detect(pgn.df[opening_index,], regex = "Queen's Gambit") == TRUE))
   
-  pgn.df <- data.frame(matrix(sub("\\[\\w+ \\\"(.+)\\\"\\]", "\\1", pgn[,1]),
-                              byrow=TRUE, ncol=1))
-  
-  opening_index = which(sub("\\[(\\w+).+", "\\1", pgn[1:nrow(pgn.df),1]) == "Opening")
-  
-  All_games_count = length(pgn.df[opening_index,])
-  
-  Queens_Gambit_games_count = length(which(stri_detect(pgn.df[opening_index,], regex = "Queen's Gambit") == TRUE))
-
-  Percent_games_count = append(Percent_games_count,(Queens_Gambit_games_count/All_games_count)*100)
+    Percent_games_count = append(Percent_games_count,(Queens_Gambit_games_count/All_games_count)*100)
+  }
 }
 
 ```
@@ -1007,6 +1046,6 @@ search_games_by_moves = function(searching_moves, months_to_search){
   return(openings)
 }
 
-pander(head(search_games_by_moves(c("Nf3","Ng1"),1)))
+#pander(head(search_games_by_moves(c("Nf3","Ng1"),1)))
 
 ```
