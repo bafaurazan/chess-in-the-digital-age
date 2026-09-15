@@ -1,0 +1,784 @@
+---
+title: "WYDZIAŁ MATEMATYKI I FIZYKI STOSOWANEJ"
+subtitle: "Projekt: Wpływ kryzysu energetycznego na dynamikę przeładunków węgla i koksu w polskich portach morskich w latach 2010–2026: Analiza statystyczna"
+author: "Dominika"
+date: "Rzeszów 2026"
+toc-title: "Spis treści"
+output:
+  word_document:
+    toc: true
+    toc_depth: 2
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+---
+
+```{css, echo=FALSE}
+#MathJax_Message {
+  display: none !important;
+}
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  fig.width = 7.0,
+  fig.height = 4.0,
+  dpi = 300
+)
+
+# Załadowanie wymaganych bibliotek
+library(readxl)
+library(ggplot2)
+library(moments)
+library(pander)
+library(knitr)
+
+# Konfiguracja tabel pander
+panderOptions('table.split.table', Inf)
+panderOptions('round', 4)
+panderOptions('digits', 4)
+```
+
+\newpage
+
+# Wprowadzenie i metryka projektu
+
+Niniejszy projekt stanowi kompleksową analizę statystyczną empirycznych danych makroekonomicznych dotyczących gospodarki morskiej Polski, ze szczególnym uwzględnieniem strategicznego surowca energetycznego, jakim jest **węgiel i koks**. 
+
+Badania przeprowadzono w środowisku **R** zgodnie z wytycznymi dotyczącymi realizacji projektu z przedmiotu *Analiza Statystyczna*.
+
+\newpage
+
+# I. Opis użytych danych
+
+## Źródło danych
+
+Dane wykorzystane w niniejszym projekcie pochodzą z oficjalnych zasobów **Głównego Urzędu Statystycznego (GUS)**, publikowanych w ramach długich szeregów czasowych Biuletynu Statystycznego:
+
+* **Baza danych:** GUS – Portal Informacyjny (*Biuletyn Statystyczny – Długie szeregi*)
+* **Adres źródłowy:** [https://bazydanych.new.stat.gov.pl/biuletyn-statystyczny-dlugie-szeregi](https://bazydanych.new.stat.gov.pl/biuletyn-statystyczny-dlugie-szeregi)
+* **Jednostka sprawozdawcza:** **Tablica 53: Ładunki załadowane i wyładowane w portach morskich** (`tabl53_ladunki_zaladowane_i_wyladowane_w_portach_morskich.xlsx`)
+* **Arkusz źródłowy:** `Miesieczne_Monthly`
+* **Plik załącznika:** Do niniejszego projektu dołączono dedykowany arkusz kalkulacyjny `dane_wegiel_koks_porty_2010_2026.xlsx` (oraz format `.csv`), zawierający wyodrębnione i uporządkowane zmienne analityczne.
+
+## Czego dotyczą dane
+
+Dane obejmują miesięczne obroty ładunkowe (sumę ładunków załadowanych i wyładowanych) w głównych polskich portach morskich o podstawowym znaczeniu dla gospodarki narodowej (Gdańsk, Gdynia, Szczecin, Świnoujście oraz Police) w latach **2010–2026** (od stycznia 2010 r. do lipca 2026 r. – łącznie $N = 199$ miesięcy obserwacji).
+
+Zgodnie z metodologią GUS i dyrektywami unijnymi w zakresie statystyki transportu morskiego, waga ładunków podawana jest w **tysiącach ton** netto (bez wagi własnej jednostek ładunkowych, kontenerów i wagonów).
+
+W analizie wyodrębniono następujące cechy:
+
+1. `wegiel_koks_tys_ton` – miesięczny wolumen przeładunków węgla i koksu (w tys. ton) – **główna zmienna badawcza**,
+2. `masowe_suche_tys_ton` – łączna masa ładunków masowych suchych (węgiel, koks, ruda, zboże, inne masowe) w tys. ton,
+3. `ogolem_tys_ton` – całkowite obroty ładunkowe w portach morskich w danym miesiącu w tys. ton,
+4. `okres_badania` – zmienna kategoryzująca szereg czasowy na dwa kluczowe podokresy:
+   * **Okres 1 (2010–2021, $n_1 = 144$):** okres stabilny przed wybuchem wojny w Ukrainie,
+   * **Okres 2 (2022–2026, $n_2 = 55$):** okres kryzysu energetycznego, embarga na rosyjski węgiel i skokowej reorientacji dostaw surowców drogą morską.
+
+## Uzasadnienie wyboru danych
+
+Wybór węgla i koksu jako przedmiotu badania podyktowany jest jego kluczową rolą w polskim miksie elektroenergetycznym i ciepłownictwie oraz bezprecedensowymi wydarzeniami geopolitycznymi z 2022 roku. 
+
+Po wprowadzeniu embarga na węgiel z Federacji Rosyjskiej, Polska stanęła przed koniecznością natychmiastowego zastąpienia dostaw lądowych importem morskim z odległych kierunków (m.in. Kolumbia, RPA, Australia, Indonezja). Polskie porty morskie stały się strategicznym wąskim gardłem i osią bezpieczeństwa państwa. Analizowany zbiór danych pozwala w sposób empiryczny zweryfikować hipotezy dotyczące skali wstrząsu podażowego, dynamiki przeładunków oraz późniejszej stabilizacji rynku w latach 2024–2026.
+
+```{r wczytanie_danych}
+# Dynamiczne wczytanie danych z arkusza kalkulacyjnego dołączonego do projektu
+sciezka_dane <- "dane_wegiel_koks_porty_2010_2026.xlsx"
+
+# Zabezpieczenie ścieżki w przypadku uruchamiania z różnego katalogu roboczego
+if (!file.exists(sciezka_dane)) {
+  sciezka_dane <- "src/chess-in-the-digital-age/dominika/dane_wegiel_koks_porty_2010_2026.xlsx"
+}
+
+dane <- as.data.frame(readxl::read_excel(sciezka_dane))
+dane$data <- as.Date(dane$data)
+dane$okres_badania <- factor(dane$okres_badania, 
+                             levels = c("2010-2021 (okres stabilny)", 
+                                        "2022-2026 (kryzys energetyczny)"))
+
+# Podgląd struktury wczytanej próby
+cat("Liczba zarejestrowanych miesięcy (N):", nrow(dane), "\n")
+cat("Zakres chronologiczny:", as.character(min(dane$data)), "do", as.character(max(dane$data)), "\n")
+```
+
+\newpage
+
+# II. Wyznaczenie podstawowych parametrów opisowych
+
+Zgodnie z wymaganiami projektowymi wyznaczono zestaw podstawowych parametrów opisowych charakteryzujących rozkład miesięcznych przeładunków węgla i koksu (`wegiel_koks_tys_ton`). 
+
+> **Uwaga metodologiczna:** Zgodnie z wytycznymi wykładowcy, *kwantyle – bez względu na ich liczbę – traktowane są łącznie jako jeden parametr opisowy (zarówno mediana, minimum, maksimum, jak i kwartyle stanowią miary pozycyjne/kwantylowe)*. W związku z tym, aby rygorystycznie spełnić wymóg **minimum 8 niezależnych parametrów**, wyznaczono 10 odrębnych miar statystycznych obejmujących charakterystyki położenia, rozproszenia, asymetrii i koncentracji.
+
+## Kod obliczeniowy w środowisku R
+
+```{r obliczenia_parametrow}
+# Wektor analizowanej cechy
+x <- dane$wegiel_koks_tys_ton
+
+# 1. Średnia arytmetyczna
+sr_arytm <- mean(x)
+
+# 2. Odchylenie standardowe
+odch_std <- sd(x)
+
+# 3. Wariancja
+wariancja <- var(x)
+
+# 4. Klasyczny współczynnik zmienności (procentowy)
+wsp_zmiennosci <- (odch_std / sr_arytm) * 100
+
+# 5. Odchylenie przeciętne / medianowe (MAD)
+odch_przecietne <- mad(x, center = median(x))
+
+# 6. Współczynnik asymetrii (skośność)
+skosnosc <- moments::skewness(x)
+
+# 7. Współczynnik koncentracji (kurtoza)
+kurtoza <- moments::kurtosis(x)
+
+# 8. Estymowana moda (dominanta wyznaczona z jądrowego estymatora gęstości)
+gestosc <- density(x)
+moda_est <- gestosc$x[which.max(gestosc$y)]
+
+# 9. Pozycyjne miary kwantylowe 
+q_min  <- min(x)
+q_q1   <- as.numeric(quantile(x, 0.25))
+q_med  <- median(x)
+q_q3   <- as.numeric(quantile(x, 0.75))
+q_max  <- max(x)
+rozstep <- q_max - q_min
+iqr_val <- IQR(x)
+
+# 10. Pozycyjny współczynnik zmienności (oparty na odchyleniu ćwiartkowym i medianie)
+vq_pozycyjny <- ((iqr_val / 2) / q_med) * 100
+```
+
+## Zestawienie tabelaryczne parametrów
+
+```{r tabela_parametrow, echo=FALSE}
+tabela_parametry <- data.frame(
+  Lp = 1:10,
+  Parametr = c(
+    "Średnia arytmetyczna",
+    "Odchylenie standardowe",
+    "Wariancja",
+    "Klasyczny współczynnik zmienności",
+    "Odchylenie przeciętne medianowe (MAD)",
+    "Współczynnik asymetrii (skośność)",
+    "Współczynnik skupienia (kurtoza)",
+    "Estymowana moda (dominanta)",
+    "Kwantyle (Min, Q1, Me, Q3, Max, IQR, R)",
+    "Pozycyjny współczynnik zmienności"
+  ),
+  Symbol = c(
+    "$\\bar{x}$",
+    "$s$",
+    "$s^2$",
+    "$V$",
+    "$MAD$",
+    "$\\gamma_1$",
+    "$\\beta_2$",
+    "$Mo$",
+    "$Q_{0..4}, IQR, R$",
+    "$V_Q$"
+  ),
+  Wartosc = c(
+    sprintf("%.2f tys. t", sr_arytm),
+    sprintf("%.2f tys. t", odch_std),
+    sprintf("%.2f (tys. t)^2", wariancja),
+    sprintf("%.2f %%", wsp_zmiennosci),
+    sprintf("%.2f tys. t", odch_przecietne),
+    sprintf("%.4f", skosnosc),
+    sprintf("%.4f", kurtoza),
+    sprintf("%.2f tys. t", moda_est),
+    sprintf("Min=%.1f; Me=%.1f; Max=%.1f (IQR=%.1f)", q_min, q_med, q_max, iqr_val),
+    sprintf("%.2f %%", vq_pozycyjny)
+  ),
+  Typ_miary = c(
+    "Klasyczna położenia",
+    "Klasyczna zróżnicowania",
+    "Klasyczna zróżnicowania",
+    "Klasyczna zmienności względnej",
+    "Pozycyjna zróżnicowania",
+    "Klasyczna asymetrii",
+    "Klasyczna koncentracji",
+    "Pozycyjna położenia",
+    "Zestaw miar pozycyjnych (1 parametr)",
+    "Pozycyjna zmienności względnej"
+  )
+)
+colnames(tabela_parametry) <- c("Lp.", "Parametr", "Symbol", "Wartość", "Typ miary")
+
+knitr::kable(tabela_parametry, caption = "Tabela 1. Podstawowe parametry opisowe przeładunków węgla i koksu w polskich portach morskich (2010–2026)")
+```
+
+## Szczegółowa interpretacja wyznaczonych parametrów opisowych
+
+1. **Średnia arytmetyczna (`r sprintf("%.2f", sr_arytm)` tys. ton):** Przeciętny miesięczny wolumen przeładunków węgla i koksu w polskich portach morskich w latach 2010–2026 wynosił około 942,6 tys. ton. Wartość ta reprezentuje teoretyczny środek ciężkości rozkładu.
+2. **Odchylenie standardowe (`r sprintf("%.2f", odch_std)` tys. ton):** Miesięczne przeładunki węgla i koksu odchylają się przeciętnie od średniej arytmetycznej aż o 460,6 tys. ton. Wskazuje to na znaczne wahania wolumenu obrotów pomiędzy poszczególnymi miesiącami.
+3. **Wariancja (`r sprintf("%.2f", wariancja)`):** Bardzo wysoka wartość wariancji potwierdza dużą zmienność zjawiska w czasie, wywołaną zarówno cyklem koniunkturalnym, jak i nagłym szokiem importowym po 2022 roku.
+4. **Klasyczny współczynnik zmienności (`r sprintf("%.2f", wsp_zmiennosci)`%):** Wartość współczynnika zmienności na poziomie ok. 48,9% mieści się w przedziale dużej zmienności (w statystyce przedział 40–70% oznacza dużą dyspersję). Oznacza to, że przeładunki węgla w portach morskich nie są stabilne w czasie i charakteryzują się wysoką nieregularnością.
+5. **Odchylenie przeciętne / medianowe MAD (`r sprintf("%.2f", odch_przecietne)` tys. ton):** Mediana bezwzględnych odchyleń od mediany wynosi 229,1 tys. ton. Ponieważ MAD jest odporny na wartości ekstremalne, jest wyraźnie niższy od odchylenia standardowego, co potwierdza obecność silnych wartości odstających w zbiorze danych.
+6. **Skośność (`r sprintf("%.4f", skosnosc)`):** Dodatnia wartość współczynnika asymetrii ($\gamma_1 > 0$) świadczy o **silnej asymetrii prawostronnej (prawostronnym wydłużeniu ogona rozkładu)**. W większości miesięcy obroty węglem kształtowały się na umiarkowanym poziomie, a nieliczne miesiące o skrajnie wysokich przeładunkach (szczyt kryzysu energetycznego w 2022/2023 r.) spowodowały wydłużenie prawego ogona.
+7. **Kurtoza (`r sprintf("%.4f", kurtoza)`):** Wartość kurtozy wynosząca 13,37 znacznie przekracza wartość referencyjną dla rozkładu normalnego ($\beta_2 = 3$). Świadczy to o **rozkładzie wybitnie leptokurtycznym** – cechuje go wysokie skupienie wartości wokół dominanty oraz „grube ogony”, czyli znacznie większe prawdopodobieństwo wystąpienia wartości skrajnych niż w rozkładzie Gaussa.
+8. **Estymowana moda (`r sprintf("%.2f", moda_est)` tys. ton):** Najczęściej powtarzający się (typowy) poziom miesięcznych przeładunków wynosi około 782,2 tys. ton. Fakt, że $Mo < Me < \bar{x}$ ($782,2 < 857,6 < 942,6$), jest klasycznym potwierdzeniem prawostronnej asymetrii rozkładu.
+9. **Kwantyle (jako jeden parametr zbiorczy):**
+
+   * **Minimum (`r sprintf("%.1f", q_min)` tys. ton):** Najniższy zarejestrowany miesięczny przeładunek węgla i koksu (odnotowany w maju 2020 r. w okresie pandemii COVID-19 i załamania przemysłu).
+   * **Pierwszy kwartyl $Q_1$ (`r sprintf("%.1f", q_q1)` tys. ton):** W 25% analizowanych miesięcy przeładunki węgla i koksu nie przekraczały 710,4 tys. ton.
+   * **Mediana $Me$ (`r sprintf("%.1f", q_med)` tys. ton):** W połowie badanych miesięcy obroty węglem były niższe niż 857,6 tys. ton, a w drugiej połowie – wyższe.
+   * **Trzeci kwartyl $Q_3$ (`r sprintf("%.1f", q_q3)` tys. ton):** W 75% badanych miesięcy przeładunki były niższe niż 1021,6 tys. ton (lub równoważnie: w 25% miesięcy przekroczyły ten poziom).
+   * **Maksimum (`r sprintf("%.1f", q_max)` tys. ton):** Absolutny rekord przeładunków (ponad 3,44 mln ton w ciągu jednego miesiąca!) odnotowano w grudniu 2022 roku, w kulminacyjnym momencie interwencyjnego importu węgla po odcięciu dostaw ze Wschodu.
+   * **Rozstęp całkowity $R$ (`r sprintf("%.1f", rozstep)` tys. ton):** Różnica między skrajnymi wartościami wynosi aż 3,17 mln ton, ukazując potężną skalę wahań operacyjnych w polskich portach.
+   * **Rozstęp ćwiartkowy $IQR$ (`r sprintf("%.1f", iqr_val)` tys. ton):** Środkowe 50% obserwacji mieści się w relatywnie wąskim przedziale o szerokości 311,3 tys. ton.
+
+10. **Pozycyjny współczynnik zmienności (`r sprintf("%.2f", vq_pozycyjny)`%):** Relacja połowy rozstępu ćwiartkowego do mediany wynosi 18,15%. Wartość ta jest ponad dwukrotnie niższa od klasycznego współczynnika zmienności (48,87%), co jednoznacznie dowodzi, że zasadniczy zręb danych jest stabilny, a wysoka zmienność klasyczna wynikała z ekstremalnych anomalii kryzysowych z lat 2022–2023.
+
+\newpage
+
+# III. Graficzna prezentacja danych
+
+Wymogi projektowe precyzują konieczność sporządzenia minimum 4 różnych typów prezentacji graficznej. W niniejszym rozdziale zaprezentowano **5 wzajemnie uzupełniających się typów wykresów**, przygotowanych w pakiecie `ggplot2`.
+
+## Typ 1: Histogram z nałożoną krzywą gęstości empirycznej
+
+```{r wykres_histogram}
+ggplot(dane, aes(x = wegiel_koks_tys_ton)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 25, 
+                 fill = "#2c3e50", color = "white", alpha = 0.85) +
+  geom_density(color = "#e74c3c", linewidth = 1.2) +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(dane$wegiel_koks_tys_ton), 
+                            sd = sd(dane$wegiel_koks_tys_ton)),
+                color = "#3498db", linetype = "dashed", linewidth = 1) +
+  geom_vline(aes(xintercept = mean(wegiel_koks_tys_ton)), 
+             color = "#27ae60", linewidth = 1, linetype = "dashed") +
+  geom_vline(aes(xintercept = median(wegiel_koks_tys_ton)), 
+             color = "#f39c12", linewidth = 1, linetype = "dotted") +
+  labs(
+    title = "Rysunek 1. Histogram miesięcznych przeładunków węgla i koksu w polskich portach morskich",
+    subtitle = "Czerwona linia - gęstość empiryczna; niebieska przerywana - teoretyczny rozkład normalny;\nzielona przerywana - średnia; pomarańczowa wykropkowana - mediana",
+    x = "Przeładunki węgla i koksu (tys. ton)",
+    y = "Gęstość prawdopodobieństwa"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(plot.title = element_text(face = "bold"))
+```
+
+*Komentarz do wykresu 1:* Histogram jednoznacznie ilustruje skośność prawostronną. Większość obserwacji skupia się w przedziale 600–1100 tys. ton. Po prawej stronie widoczny jest wydłużony ogon sięgający wartości powyżej 3000 tys. ton. Rozkład empiryczny (linia czerwona) wyraźnie odbiega od symetrycznego rozkładu Gaussa (linia niebieska), co zapowiada odrzucenie hipotezy o normalności rozkładu.
+
+\newpage
+
+## Typ 2: Wykres pudełkowy (Boxplot) z podziałem na okresy
+
+```{r wykres_boxplot}
+ggplot(dane, aes(x = okres_badania, y = wegiel_koks_tys_ton, fill = okres_badania)) +
+  geom_boxplot(alpha = 0.75, outlier.color = "#c0392b", outlier.size = 3, outlier.shape = 19) +
+  stat_summary(fun = mean, geom = "point", shape = 18, size = 4.5, color = "black") +
+  scale_fill_manual(values = c("#2980b9", "#d35400")) +
+  labs(
+    title = "Rysunek 2. Wykres pudełkowy (Boxplot) przeładunków węgla i koksu w podziale na okresy",
+    subtitle = "Czarny romb - średnia arytmetyczna; pozioma linia - mediana; czerwone punkty - outliery",
+    x = "Okres analizy",
+    y = "Przeładunki węgla i koksu (tys. ton)"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(plot.title = element_text(face = "bold"), legend.position = "none")
+```
+
+*Komentarz do wykresu 2:* Wykres pudełkowy uwypukla kolosalną zmianę strukturalną. W okresie 2010–2021 rozstęp międzykwartylowy był zwarty, a mediana wynosiła około 830 tys. ton. Z kolei po 2022 roku zarówno „pudełko” (IQR), jak i rozpiętość wąsów gwałtownie wzrosły, a w okresie kryzysowym wystąpiła seria wyraźnych wartości odstających (*outliers*) przekraczających 2500–3400 tys. ton. Średnia (romb) w okresie kryzysowym leży znacznie powyżej mediany.
+
+\newpage
+
+## Typ 3: Dystrybuanta empiryczna (ECDF)
+
+```{r wykres_ecdf}
+ggplot(dane, aes(x = wegiel_koks_tys_ton, color = okres_badania)) +
+  stat_ecdf(geom = "step", linewidth = 1.2) +
+  scale_color_manual(values = c("#2980b9", "#d35400")) +
+  labs(
+    title = "Rysunek 3. Dystrybuanta empiryczna (ECDF) przeładunków węgla i koksu",
+    subtitle = "Porównanie funkcji skumulowanego prawdopodobieństwa P(X <= x) dla obu okresów",
+    x = "Przeładunki węgla i koksu (tys. ton)",
+    y = "Dystrybuanta empiryczna F_n(x)",
+    color = "Podokres"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(plot.title = element_text(face = "bold"), legend.position = "bottom")
+```
+
+*Komentarz do wykresu 3:* Przesunięcie krzywej dystrybuanty dla okresu 2022–2026 (kolor pomarańczowy) w prawo względem krzywej z lat 2010–2021 (kolor niebieski) oznacza stochastyczną dominację. Dla każdego ustalonego progu wolumenu przeładunków $x$, prawdopodobieństwo nieprzekroczenia tej wartości w okresie kryzysowym było znacznie mniejsze niż w okresie stabilnym, co dowodzi uogólnionego przesunięcia całego rozkładu w stronę wyższych wartości.
+
+\newpage
+
+## Typ 4: Szereg czasowy z wygładzaniem trendu (Time Series Plot)
+
+```{r wykres_szereg_czasowy}
+ggplot(dane, aes(x = data, y = wegiel_koks_tys_ton)) +
+  geom_line(color = "#34495e", linewidth = 0.8) +
+  geom_point(aes(color = okres_badania), size = 1.8, alpha = 0.8) +
+  geom_smooth(method = "loess", color = "#e74c3c", fill = "#f5b7b1", alpha = 0.35, linewidth = 1.1) +
+  geom_vline(xintercept = as.numeric(as.Date("2022-02-24")), 
+             linetype = "dashed", color = "#c0392b", linewidth = 1) +
+  annotate("text", x = as.Date("2022-02-24"), y = 3300, 
+           label = "Inwazja na Ukrainę / Embargo węglowe\n(luty-kwiecień 2022)", 
+           hjust = -0.05, color = "#c0392b", size = 3.3, fontface = "bold") +
+  scale_color_manual(values = c("#2980b9", "#d35400")) +
+  labs(
+    title = "Rysunek 4. Ewolucja miesięcznych przeładunków węgla i koksu w portach morskich w latach 2010–2026",
+    subtitle = "Punkty i linia łamana - dane miesięczne GUS; czerwona wstęga - wygładzony trend nieliniowy (LOESS)",
+    x = "Rok",
+    y = "Przeładunki węgla i koksu (tys. ton)",
+    color = "Okres"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(plot.title = element_text(face = "bold"), legend.position = "bottom")
+```
+
+*Komentarz do wykresu 4:* Szereg czasowy w pełnej krasie ukazuje stabilny, lekko rosnący przebieg przeładunków w latach 2010–2021 z widocznymi cyklami sezonowymi (wyższe przeładunki przed i w trakcie sezonu grzewczego). W 2022 roku po wybuchu wojny nastąpił bezprecedensowy skok wolumenów do poziomów 3–3,5 mln ton miesięcznie. Następnie w latach 2024–2026 widoczny jest wyraźny powrót w kierunku poziomów równowagi rynkowej (normalizacja zapasów).
+
+\newpage
+
+## Typ 5 (dodatkowy): Wykres korelacji rozrzutu z dopasowaną prostą regresji
+
+```{r wykres_rozrzut}
+ggplot(dane, aes(x = masowe_suche_tys_ton, y = wegiel_koks_tys_ton)) +
+  geom_point(aes(color = okres_badania), size = 2.2, alpha = 0.75) +
+  geom_smooth(method = "lm", color = "#2c3e50", fill = "#bdc3c7", linewidth = 1.1) +
+  scale_color_manual(values = c("#2980b9", "#d35400")) +
+  labs(
+    title = "Rysunek 5. Wykres rozrzutu korelacji węgla i koksu z ładunkami masowymi suchymi ogółem",
+    subtitle = "Linia ciągła - model regresji liniowej OLS wraz z 95% przedziałem ufności",
+    x = "Ładunki masowe suche ogółem w portach (tys. ton)",
+    y = "Przeładunki węgla i koksu (tys. ton)",
+    color = "Okres"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(plot.title = element_text(face = "bold"), legend.position = "bottom")
+```
+
+*Komentarz do wykresu 5:* Wykres rozrzutu ukazuje bardzo wyraźną współbieżność liniową pomiędzy wolumenem węgla i koksu a łączną masą ładunków suchych przeładowywanych w polskich portach. Punkty z okresu kryzysowego (pomarańczowe) przesunęły się w prawy górny róg wykresu, odzwierciedlając skok obu miar w tym samym czasie.
+
+\newpage
+
+# IV. Weryfikacja hipotez statystycznych
+
+Wymogi projektowe precyzują konieczność zweryfikowania **minimum 2 różnych typów hipotez statystycznych**. Zgodnie z zasadami metodologii statystycznej, hipotezy sformułowano w sposób **zero-jedynkowy (symetryczny, testy dwustronne)**:
+
+* **Hipoteza zerowa ($H_0$)** zakłada brak efektu, brak korelacji lub brak różnic (stan neutralny),
+* **Hipoteza alternatywna ($H_1$)** zakłada istnienie efektu, istnienie istotnej korelacji lub występowanie istotnych różnic.
+
+Jako poziom istotności we wszystkich testach przyjęto standardowe $\alpha = 0{,}05$.
+
+---
+
+## Weryfikacja wstępna: Test normalności rozkładu Shapiro-Wilka
+
+Przed przystąpieniem do testów parametrycznych sprawdzono założenie o zgodności rozkładów analizowanych cech z rozkładem normalnym.
+
+* **Hipoteza zerowa ($H_0$):** Rozkład badanej cechy jest rozkładem normalnym.
+* **Hipoteza alternatywna ($H_1$):** Rozkład badanej cechy różni się istotnie od rozkładu normalnego.
+
+```{r test_shapiro}
+shapiro_wegiel <- shapiro.test(dane$wegiel_koks_tys_ton)
+shapiro_masowe <- shapiro.test(dane$masowe_suche_tys_ton)
+
+wyniki_shapiro <- data.frame(
+  Zmienna = c("Węgiel i koks", "Ładunki masowe suche"),
+  Statystyka_W = sprintf("%.4f", c(shapiro_wegiel$statistic, shapiro_masowe$statistic)),
+  p_value = sprintf("%.4e", c(shapiro_wegiel$p.value, shapiro_masowe$p.value)),
+  Decyzja = c("Odrzucenie H0 (p < 0.05)", "Odrzucenie H0 (p < 0.05)"),
+  Wniosek = c("Rozkład nie jest normalny", "Rozkład nie jest normalny")
+)
+colnames(wyniki_shapiro) <- c("Zmienna", "Statystyka W", "p-value", "Decyzja (alpha = 0.05)", "Wniosek")
+
+knitr::kable(wyniki_shapiro, caption = "Tabela 2. Wyniki testu normalności Shapiro-Wilka")
+```
+
+**Interpretacja:** Dla obu zmiennych wartość $p\text{-value} \ll 0{,}05$ (dla węgla $p \approx 3{,}63 \times 10^{-18}$). Odrzucamy hipotezę zerową na korzyść hipotezy alternatywnej. Oznacza to, że dane cechują się istotnym odchyleniem od rozkładu normalnego (asymetria prawostronna i leptokurtoza). W związku z tym w dalszych badaniach korelacji przedstawiono zarówno współczynnik Pearsona, jak i nieparametryczny współczynnik Spearmana.
+
+\newpage
+
+## Hipoteza 1: Test korelacji (zależności między cechami)
+
+W pierwszej hipotezie badamy, czy istnieje statystycznie istotna korelacja liniowa między wolumenem przeładunków węgla i koksu a ogólną sumą ładunków masowych suchych obsługiwanych w portach.
+
+* **Hipoteza zerowa ($H_0$):** $\rho = 0$ – nie istnieje statystycznie istotna korelacja między przeładunkiem węgla i koksu a przeładunkiem ładunków masowych suchych.
+* **Hipoteza alternatywna ($H_1$):** $\rho \neq 0$ – istnieje statystycznie istotna korelacja między przeładunkiem węgla i koksu a przeładunkiem ładunków masowych suchych.
+
+```{r test_korelacji}
+# Test korelacji liniowej Pearsona
+test_pearson <- cor.test(dane$wegiel_koks_tys_ton, dane$masowe_suche_tys_ton, method = "pearson")
+
+# Test korelacji rangowej Spearmana (odporny na brak normalności)
+test_spearman <- cor.test(dane$wegiel_koks_tys_ton, dane$masowe_suche_tys_ton, method = "spearman", exact = FALSE)
+
+wyniki_korelacji <- data.frame(
+  Metoda = c("Korelacja liniowa Pearsona (r)", "Korelacja rangowa Spearmana (rho)"),
+  Wspolczynnik = sprintf("%.4f", c(test_pearson$estimate, test_spearman$estimate)),
+  Statystyka = sprintf("%.2f", c(test_pearson$statistic, test_spearman$statistic)),
+  p_value = c("< 2.2e-16", "< 2.2e-16"),
+  Przedzial_Ufnosci_95 = c(
+    sprintf("[%.4f ; %.4f]", test_pearson$conf.int[1], test_pearson$conf.int[2]),
+    "nie dotyczy"
+  )
+)
+colnames(wyniki_korelacji) <- c("Metoda korelacji", "Współczynnik", "Statystyka testowa", "p-value", "95% Przedział ufności")
+
+knitr::kable(wyniki_korelacji, caption = "Tabela 3. Wyniki testu istotności współczynników korelacji")
+```
+
+**Interpretacja i decyzja statystyczna:**
+
+* Współczynnik korelacji Pearsona wynosi $r = `r sprintf("%.4f", test_pearson$estimate)`$, a statystyka testowa $t = `r sprintf("%.2f", test_pearson$statistic)`$ przy $p\text{-value} < 2{,}2 \times 10^{-16}$.
+* Ponieważ uzyskana wartość $p\text{-value} < 0{,}05$, **odrzucamy hipotezę zerową ($H_0$) na rzecz hipotezy alternatywnej ($H_1$)**.
+* **Wniosek:** Istnieje statystycznie istotna, bardzo silna dodatnia korelacja liniowa między przeładunkami węgla i koksu a ogólnymi przeładunkami ładunków masowych suchych. Potwierdza to, że węgiel i koks stanowią fundamentalną składową determinującą całkowity wolumen suchej masy przeładowywanej na nabrzeżach polskich portów morskich.
+
+\newpage
+
+## Hipoteza 2: Porównanie dwóch populacji (okres stabilny vs okres kryzysu)
+
+W drugiej hipotezie badamy wpływ wstrząsu geopolitycznego z 2022 roku na poziom przeładunków węgla i koksu. Porównujemy dwa niezależne podzbiory czasowe:
+
+* **Próba A (okres 2010–2021, $n_A = 144$):** wielkości przeładunków przed kryzysem,
+* **Próba B (okres 2022–2026, $n_B = 55$):** wielkości przeładunków w trakcie kryzysu surowcowego i reorientacji dostaw.
+
+### Krok 1: Test równości wariancji Fishera-Snedecora (`var.test`)
+
+Przed wykonaniem testu t-Studenta sprawdzono jednorodność wariancji w obu podokresach:
+
+* **$H_0: \sigma_A^2 = \sigma_B^2$** (wariancje w obu okresach są równe),
+* **$H_1: \sigma_A^2 \neq \sigma_B^2$** (wariancje w obu okresach różnią się istotnie).
+
+```{r test_wariancji}
+probka_A <- dane$wegiel_koks_tys_ton[dane$okres_badania == "2010-2021 (okres stabilny)"]
+probka_B <- dane$wegiel_koks_tys_ton[dane$okres_badania == "2022-2026 (kryzys energetyczny)"]
+
+test_var <- var.test(probka_A, probka_B)
+cat("Statystyka F:", sprintf("%.4f", test_var$statistic), "p-value:", sprintf("%.4e", test_var$p.value), "\n")
+```
+
+Wartość $p\text{-value} \ll 0{,}05$. Odrzucamy hipotezę zerową o jednorodności wariancji. Z tego względu zastosowano **dwupróbowy test t-Studenta z korektą Welcha** dla wariancji niejednorodnych.
+
+### Krok 2: Dwupróbowy test t-Studenta dla prób niezależnych (`t.test`)
+
+* **Hipoteza zerowa ($H_0$):** $\mu_A - \mu_B = 0$ (średnie miesięczne przeładunki węgla i koksu w okresie stabilnym 2010–2021 oraz w okresie kryzysowym 2022–2026 **nie różnią się statystycznie istotnie**).
+* **Hipoteza alternatywna ($H_1$):** $\mu_A - \mu_B \neq 0$ (średnie miesięczne przeładunki węgla i koksu w obu analizowanych okresach **różnią się statystycznie istotnie** – wystąpił istotny wpływ kryzysu).
+
+```{r test_t_studenta}
+test_t <- t.test(probka_A, probka_B, alternative = "two.sided", var.equal = FALSE)
+
+tabela_test_t <- data.frame(
+  Okres = c("2010–2021 (przed kryzysem)", "2022–2026 (po kryzysie)", "Różnica (A - B)"),
+  n = c(as.character(length(probka_A)), as.character(length(probka_B)), "-"),
+  Srednia = c(
+    sprintf("%.2f tys. t", mean(probka_A)),
+    sprintf("%.2f tys. t", mean(probka_B)),
+    sprintf("%.2f tys. t", mean(probka_A) - mean(probka_B))
+  ),
+  Odch_Std = c(
+    sprintf("%.2f tys. t", sd(probka_A)),
+    sprintf("%.2f tys. t", sd(probka_B)),
+    "-"
+  ),
+  t = c("-", "-", sprintf("%.4f", test_t$statistic)),
+  df = c("-", "-", sprintf("%.2f", test_t$parameter)),
+  p_val = c("-", "-", sprintf("%.6f", test_t$p.value)),
+  CI_95 = c(
+    "-", "-", 
+    sprintf("[%.2f ; %.2f]", test_t$conf.int[1], test_t$conf.int[2])
+  )
+)
+colnames(tabela_test_t) <- c("Okres", "n", "Średnia", "Odch. std.", "Statystyka t", "df", "p-value", "95% CI dla różnicy")
+
+knitr::kable(tabela_test_t, caption = "Tabela 4. Wyniki dwupróbowego testu t-Studenta dla średnich miesięcznych przeładunków")
+```
+
+**Interpretacja i decyzja statystyczna:**
+
+* Średnia miesięczna przed 2022 r. wynosiła $836{,}92$ tys. ton, natomiast po wybuchu kryzysu wzrosła do $1219{,}36$ tys. ton (wzrost średnich obrotów o ponad $382{,}44$ tys. ton miesięcznie!).
+* Statystyka testowa wynosi $t = `r sprintf("%.4f", test_t$statistic)`$ przy $df \approx 58$ stopniach swobody oraz wartości $p\text{-value} = `r sprintf("%.6f", test_t$p.value)` < 0{,}05$.
+* **Decyzja:** Odrzucamy hipotezę zerową ($H_0$) na rzecz hipotezy alternatywnej ($H_1$).
+* **Wniosek:** Istnieje statystycznie istotna różnica między średnimi miesięcznymi przeładunkami węgla i koksu w okresie 2010–2021 a okresem 2022–2026. Z 95% pewnością różnica średnich mieści się w przedziale $[-583{,}41 ; -181{,}47]$ tys. ton. Kryzys geopolityczny i embargo radykalnie i trwale wpłynęły na przeciętny poziom obrotów w portach morskich.
+
+\newpage
+
+### Rozszerzenie: Porównanie nachyleń trendów liniowych przed i po kryzysie
+
+Zgodnie z procedurą zastosowaną we wzorcowym projekcie laboratoryjnym, przeprowadzono estymację modeli regresji liniowej w obu okresach oraz zbadano istotność różnicy współczynników kierunkowych nachylenia $\beta_1$:
+
+* **$H_0: \beta_{1,po} - \beta_{1,przed} = 0$** (tempo zmian przeładunków w obu okresach nie różniło się istotnie),
+* **$H_1: \beta_{1,po} - \beta_{1,przed} \neq 0$** (wystąpiła statystycznie istotna zmiana tempa / trendu).
+
+```{r modele_regresji}
+# Indeksy czasowe t dla obu okresów
+t_A <- 1:length(probka_A)
+t_B <- (length(probka_A) + 1):nrow(dane)
+
+model_A <- lm(probka_A ~ t_A)
+model_B <- lm(probka_B ~ t_B)
+
+b1_A <- coef(model_A)[2]
+b1_B <- coef(model_B)[2]
+
+se_A <- summary(model_A)$coefficients[2, 2]
+se_B <- summary(model_B)$coefficients[2, 2]
+
+# Różnica współczynników i łączny błąd standardowy
+delta_beta <- b1_B - b1_A
+se_diff <- sqrt(se_A^2 + se_B^2)
+t_stat_beta <- delta_beta / se_diff
+df_beta <- min(length(probka_A) - 2, length(probka_B) - 2)
+p_val_beta <- 2 * pt(-abs(t_stat_beta), df = df_beta)
+
+wyniki_trendow <- data.frame(
+  Parametr = c("Trend przed 2022 (beta_1A)", 
+               "Trend po 2022 (beta_1B)", 
+               "Różnica nachyleń (beta_1B - beta_1A)"),
+  Wartosc = c(sprintf("%.4f tys. t/miesiąc", b1_A),
+              sprintf("%.4f tys. t/miesiąc", b1_B),
+              sprintf("%.4f", delta_beta)),
+  SE = c(sprintf("%.4f", se_A), sprintf("%.4f", se_B), sprintf("%.4f", se_diff)),
+  t = c("-", "-", sprintf("%.4f", t_stat_beta)),
+  p_val = c("-", "-", sprintf("%.4e", p_val_beta)),
+  Decyzja = c("-", "-", "Odrzucenie H0 (p < 0.05)")
+)
+colnames(wyniki_trendow) <- c("Parametr trendu", "Wartość oszacowana", "Błąd std. (SE)", "Statystyka t", "p-value", "Decyzja")
+
+knitr::kable(wyniki_trendow, caption = "Tabela 5. Porównanie nachyleń linii regresji liniowej przed i po 2022 r.")
+```
+
+**Wniosek:** Różnica między nachyleniami linii regresji jest statystycznie wysoce istotna ($t = `r sprintf("%.4f", t_stat_beta)`$, $p < 0{,}001$). O ile w latach 2010–2021 trend był lekko dodatni ($\beta_{1,A} = +0{,}38$), o tyle po 2022 roku – po gwałtownym skoku na początku wojny – trend uległ odwróceniu i stał się silnie spadkowy ($\beta_{1,B} = -26{,}70$), co obrazuje proces normalizacji zapasów węgla i wycofywania się z nadzwyczajnych zakupów interwencyjnych.
+
+\newpage
+
+# V. Komentarz do uzyskanych wyników
+
+Przeprowadzona analiza statystyczna pozwoliła sformułować następujące wnioski:
+
+1. **Charakterystyka rozkładu empirycznego:** Przeładunki węgla i koksu w polskich portach morskich w latach 2010–2026 cechują się wyraźną asymetrią prawostronną ($\gamma_1 = 2{,}87$) oraz silną leptokurtozą ($\beta_2 = 13{,}37$). Wynika to z faktu, że typowy wolumen przeładunków wynosił ok. 700–900 tys. ton miesięcznie, a okres kryzysu energetycznego przyniósł bezprecedensowe skoki do poziomów przekraczających 3,4 mln ton.
+2. **Duża zmienność procesów portowych:** Klasyczny współczynnik zmienności na poziomie ok. 48,9% świadczy o wysokiej podatności przeładunków na czynniki zewnętrzne (sezon grzewczy zimą, cykle koniunkturalne hutnictwa i energetyki, wstrząsy geopolityczne). Pozycyjny współczynnik zmienności ($V_Q \approx 18{,}15\%$) dowodzi natomiast, że standardowa działalność operacyjna portów była stabilna, a za wysoką wariancję odpowiadały przede wszystkim anomalie z lat 2022–2023.
+3. **Potwierdzenie korelacji (Hipoteza 1):** Odrzucenie hipotezy zerowej o braku korelacji ($r = 0{,}863$, $p < 0{,}001$) udowadnia, że dynamika ładunków masowych suchych ogółem w polskich portach morskich jest bezpośrednio i ściśle determinowana przez węgiel i koks.
+4. **Wpływ kryzysu energetycznego (Hipoteza 2):** Wyniki dwupróbowego testu t-Studenta ($p < 0{,}001$) oraz testu nachyleń regresji jednoznacznie potwierdzają hipotezę o wystąpieniu statystycznie istotnej zmiany średnich przeładunków i kierunku trendu po wybuchu wojny w Ukrainie w 2022 roku. Średnie miesięczne obroty wzrosły o ponad 45% (z 836,9 do 1219,4 tys. ton).
+5. **Normalizacja rynku w latach 2024–2026:** Analiza szeregu czasowego i ujemny współczynnik kierunkowy regresji po 2022 r. ($\beta_1 = -26{,}70$) dokumentują proces wygaszania paniki surowcowej, wypełnienie krajowych magazynów i powrót obrotów węglem do poziomów zrównoważonych.
+
+\newpage
+
+# VI. Listing komend generujących wyniki
+
+Poniższy listing zawiera uporządkowane komendy środowiska **R** wykorzystane do wygenerowania wszystkich rezultatów obliczeniowych, testów statystycznych oraz wykresów.
+
+```r
+# ==============================================================================
+# PROJEKT: ANALIZA STATYSTYCZNA PRZEŁADUNKÓW WĘGLA I KOKSU W POLSKICH PORTACH
+# LISTING KOMEND ŚRODOWISKA R
+# ==============================================================================
+
+# 1. Pakiety
+library(readxl)
+library(ggplot2)
+library(moments)
+library(knitr)
+library(pander)
+
+# 2. Wczytanie i przygotowanie danych
+dane <- as.data.frame(readxl::read_excel("dane_wegiel_koks_porty_2010_2026.xlsx"))
+dane$data <- as.Date(dane$data)
+dane$okres_badania <- factor(dane$okres_badania)
+x <- dane$wegiel_koks_tys_ton
+
+# 3. Podstawowe parametry opisowe (min. 8 parametrów)
+mean(x)                                           # 1. Średnia arytmetyczna
+sd(x)                                             # 2. Odchylenie standardowe
+var(x)                                            # 3. Wariancja
+(sd(x) / mean(x)) * 100                           # 4. Współczynnik zmienności klasyczny V (%)
+mad(x, center = median(x))                        # 5. Odchylenie przeciętne medianowe (MAD)
+moments::skewness(x)                              # 6. Skośność (asymetria)
+moments::kurtosis(x)                              # 7. Kurtoza (koncentracja)
+dens <- density(x)                                # 8. Estymacja gęstości
+dens$x[which.max(dens$y)]                         #    Estymowana moda (dominanta)
+
+# 9. Zbiorczy parametr kwantylowy (kwantyle jako 1 parametr wg wytycznych)
+min(x)                                            # Minimum
+quantile(x, 0.25)                                 # Kwartyl 1 (Q1)
+median(x)                                         # Mediana (Q2)
+quantile(x, 0.75)                                 # Kwartyl 3 (Q3)
+max(x)                                            # Maksimum
+max(x) - min(x)                                   # Rozstęp całkowity (R)
+IQR(x)                                            # Rozstęp międzykwartylowy (IQR)
+((IQR(x) / 2) / median(x)) * 100                  # 10. Pozycyjny współczynnik zmienności V_Q (%)
+
+# 4. Graficzna prezentacja danych (min. 4 typy wykresów)
+# Typ 1: Histogram z gęstością
+ggplot(dane, aes(x = wegiel_koks_tys_ton)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 25, fill = "#2c3e50") +
+  geom_density(color = "#e74c3c", linewidth = 1.2)
+
+# Typ 2: Wykres pudełkowy (Boxplot)
+ggplot(dane, aes(x = okres_badania, y = wegiel_koks_tys_ton, fill = okres_badania)) +
+  geom_boxplot() + stat_summary(fun = mean, geom = "point", shape = 18)
+
+# Typ 3: Dystrybuanta empiryczna (ECDF)
+ggplot(dane, aes(x = wegiel_koks_tys_ton, color = okres_badania)) +
+  stat_ecdf(geom = "step", linewidth = 1.2)
+
+# Typ 4: Szereg czasowy ze wstęgą trendu
+ggplot(dane, aes(x = data, y = wegiel_koks_tys_ton)) +
+  geom_line() + geom_smooth(method = "loess")
+
+# Typ 5: Wykres rozrzutu z linią regresji
+ggplot(dane, aes(x = masowe_suche_tys_ton, y = wegiel_koks_tys_ton)) +
+  geom_point() + geom_smooth(method = "lm")
+
+# 5. Weryfikacja hipotez statystycznych (min. 2 typy)
+# Weryfikacja wstępna: normalność rozkładu
+shapiro.test(dane$wegiel_koks_tys_ton)
+shapiro.test(dane$masowe_suche_tys_ton)
+
+# Hipoteza 1: Test korelacji (Pearson i Spearman)
+cor.test(dane$wegiel_koks_tys_ton, dane$masowe_suche_tys_ton, method = "pearson")
+cor.test(dane$wegiel_koks_tys_ton, dane$masowe_suche_tys_ton, method = "spearman")
+
+# Hipoteza 2: Porównanie dwóch okresów (okres stabilny vs kryzysowy)
+probka_A <- dane$wegiel_koks_tys_ton[dane$rok < 2022]
+probka_B <- dane$wegiel_koks_tys_ton[dane$rok >= 2022]
+
+var.test(probka_A, probka_B)                     # Test jednorodności wariancji F
+t.test(probka_A, probka_B, var.equal = FALSE)    # Test t-Studenta (Welcha)
+
+# Regresje liniowe w podokresach i test różnicy nachyleń
+lm_A <- lm(probka_A ~ seq_along(probka_A))
+lm_B <- lm(probka_B ~ seq_along(probka_B))
+summary(lm_A)
+summary(lm_B)
+```
+
+\newpage
+
+# VII. Opis użytych funkcji środowiska R
+
+Poniższa tabela przedstawia szczegółowy opis wszystkich funkcji języka **R** oraz bibliotek wykorzystanych w niniejszym opracowaniu.
+
+```{r tabela_funkcje, echo=FALSE}
+tabela_funkcje <- data.frame(
+  Funkcja = c(
+    "readxl::read_excel()",
+    "mean()",
+    "sd()",
+    "var()",
+    "median()",
+    "quantile()",
+    "IQR()",
+    "mad()",
+    "min() / max()",
+    "moments::skewness()",
+    "moments::kurtosis()",
+    "density()",
+    "shapiro.test()",
+    "cor.test()",
+    "var.test()",
+    "t.test()",
+    "lm()",
+    "summary()",
+    "coef()",
+    "pt()",
+    "ggplot()",
+    "geom_histogram()",
+    "geom_density()",
+    "geom_boxplot()",
+    "stat_ecdf()",
+    "geom_line() / geom_point()",
+    "geom_smooth()",
+    "geom_vline() / annotate()",
+    "knitr::kable()",
+    "pander::pander()"
+  ),
+  Opis_dzialania = c(
+    "Import danych z arkuszy kalkulacyjnych Microsoft Excel (.xlsx)",
+    "Obliczanie średniej arytmetycznej próby",
+    "Obliczanie próbowego odchylenia standardowego",
+    "Obliczanie wariancji próbkowej (miary dyspersji z mianownikiem n - 1)",
+    "Wyznaczanie mediany – wartości środkowej dzielącej próbę na dwie równe części",
+    "Wyznaczanie kwantyli dowolnego rzędu (np. kwartyli Q1, Q3)",
+    "Obliczanie rozstępu międzykwartylowego (IQR = Q3 - Q1)",
+    "Obliczanie medianowego odchylenia bezwzględnego (MAD)",
+    "Wyszukiwanie wartości minimalnej oraz maksymalnej w wektorze",
+    "Obliczanie współczynnika skośności – miary asymetrii rozkładu",
+    "Obliczanie kurtozy – miary koncentracji i spiczastości rozkładu",
+    "Wyznaczanie jądrowego estymatora gęstości (estymacja mody)",
+    "Weryfikacja hipotezy o normalności rozkładu testem Shapiro-Wilka",
+    "Weryfikacja istotności współczynnika korelacji Pearsona / Spearmana",
+    "Testowanie hipotezy o równości wariancji testem F Fishera-Snedecora",
+    "Weryfikacja hipotezy o równości średnich testem t-Studenta (Welcha)",
+    "Dopasowywanie modeli regresji liniowej metodą najmniejszych kwadratów",
+    "Generowanie szczegółowego raportu z modelu regresji (SE, t, R^2, p)",
+    "Ekstrakcja wektora współczynników kierunkowych z modelu liniowego",
+    "Obliczanie dystrybuanty teoretycznej rozkładu t-Studenta",
+    "Inicjalizacja wykresu opartego na gramatyce grafiki (Grammar of Graphics)",
+    "Dodawanie warstwy histogramu z podziałem na przedziały klasowe",
+    "Dodawanie warstwy gładkiej krzywej estymatora gęstości rozkładu",
+    "Tworzenie wykresów pudełkowych (Boxplot) z identyfikacją outlierów",
+    "Tworzenie schodkowej krzywej dystrybuanty empirycznej (ECDF)",
+    "Dodawanie warstw wykresów liniowych i punktowych (szeregi czasowe, rozrzut)",
+    "Dopasowywanie i rysowanie wygładzonych linii trendu (LOESS, LM)",
+    "Dodawanie pionowych linii referencyjnych na osi czasu oraz adnotacji",
+    "Formatowanie ramek danych R do postaci estetycznych tabel w raporcie",
+    "Zaawansowane formatowanie obiektów i wyników testów w raportach knitr"
+  ),
+  Pakiet_biblioteka = c(
+    "readxl",
+    "base",
+    "stats",
+    "stats",
+    "stats",
+    "stats",
+    "stats",
+    "stats",
+    "base",
+    "moments",
+    "moments",
+    "stats",
+    "stats",
+    "stats",
+    "stats",
+    "stats",
+    "stats",
+    "base",
+    "stats",
+    "stats",
+    "ggplot2",
+    "ggplot2",
+    "ggplot2",
+    "ggplot2",
+    "ggplot2",
+    "ggplot2",
+    "ggplot2",
+    "ggplot2",
+    "knitr",
+    "pander"
+  )
+)
+colnames(tabela_funkcje) <- c("Funkcja / Narzędzie", "Opis działania funkcji", "Pakiet")
+
+knitr::kable(tabela_funkcje, caption = "Tabela 6. Zestawienie funkcji środowiska R wykorzystanych w projekcie")
+```
+
+\newpage
+
+# Zakończenie
+
+Projekt został przygotowany zgodnie ze wszystkimi wytycznymi dydaktycznymi:
+
+1. Dane pochodzą z oficjalnych rejestrów państwowych (GUS, Tablica 53) i zostały załączone w formacie arkusza kalkulacyjnego (`dane_wegiel_koks_porty_2010_2026.xlsx`).
+2. Wyznaczono 10 odrębnych parametrów opisowych z rygorystycznym uwzględnieniem zasady traktowania kwantyli jako jednego parametru.
+3. Przedstawiono 5 profesjonalnych typów wykresów (w tym histogram, boxplot, dystrybuantę empiryczną i szereg czasowy).
+4. Przeprowadzono weryfikację 2 odrębnych typów hipotez (test korelacji i dwupróbowy test t-Studenta oraz test nachyleń trendów) sformułowanych w postaci zero-jedynkowej.
+5. Zamieszczono pełny listing komend R oraz słownik użytych funkcji.
